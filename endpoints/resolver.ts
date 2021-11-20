@@ -15,7 +15,7 @@ export default async function resolve(
   const resolved = {
     err: null,
     res: null,
-  } as IResolve;
+  } as any;
 
   try {
     const res = await fetch(config, internalURL);
