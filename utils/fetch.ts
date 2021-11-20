@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 const productionURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://meta-scraper69.herokuapp.com'
+    ? 'https://api.movielot.xyz'
     : 'http://localhost:8080';
 
 const fetch = (config: AxiosRequestConfig, internalURL = false) => {
