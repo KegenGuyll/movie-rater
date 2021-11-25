@@ -13,6 +13,7 @@ interface Props {
   setAdvanceScore: (value: boolean) => void;
   movie: RottenMovie | null;
   imdb: IMDBMovie | null;
+  closeModal: (value: boolean) => void;
 }
 
 const Rating: FunctionComponent<Props> = ({
@@ -20,9 +21,8 @@ const Rating: FunctionComponent<Props> = ({
   setAdvanceScore,
   movie,
   imdb,
+  closeModal,
 }: Props) => {
-  console.log(movie, imdb);
-
   const [plot, setPlot] = useState<number | null>(null);
   const [theme, setTheme] = useState<number | null>(null);
   const [climax, setClimax] = useState<number | null>(null);
@@ -61,8 +61,6 @@ const Rating: FunctionComponent<Props> = ({
     ]
   );
 
-  console.log(process.env['NEXT_PUBLIC_JWT_PRIVATE_KEY']);
-
   const submitAdvanceScore = async () => {
     if (!authUser) return;
     if (
@@ -82,7 +80,8 @@ const Rating: FunctionComponent<Props> = ({
           { rotten: movie?.uuid, imdb: imdb?.uuid },
           process.env['NEXT_PUBLIC_JWT_PRIVATE_KEY'] as string
         ),
-        date: Timestamp.fromDate(new Date()),
+        createdAt: Timestamp.fromDate(new Date()),
+        updatedAt: Timestamp.fromDate(new Date()),
         title: movie?.title,
         rotten: {
           ...movie,
@@ -117,10 +116,47 @@ const Rating: FunctionComponent<Props> = ({
         },
       };
 
-      await setDoc(doc(db, 'users', authUser.uid), {
-        movies: arrayUnion(docData),
+      await setDoc(doc(db, authUser.uid, movie!.uuid), docData, {
+        mergeFields: [
+          'advancedScore',
+          'averagedAdvancedScore',
+          'updatedAt',
+          'rotten',
+          'imdb',
+        ],
       });
+
+      closeModal(false);
     }
+  };
+
+  const submitSimpleScore = async () => {
+    if (!authUser) return;
+
+    const docData = {
+      unqiueid: jwt.sign(
+        { rotten: movie?.uuid, imdb: imdb?.uuid },
+        process.env['NEXT_PUBLIC_JWT_PRIVATE_KEY'] as string
+      ),
+      createdAt: Timestamp.fromDate(new Date()),
+      updatedAt: Timestamp.fromDate(new Date()),
+      title: movie?.title,
+      rotten: {
+        ...movie,
+      },
+      imdb: {
+        ...imdb,
+      },
+      simpleScore: score,
+      averagedAdvancedScore: null,
+      advancedScore: null,
+    };
+
+    await setDoc(doc(db, authUser.uid, movie!.uuid), docData, {
+      mergeFields: ['simpleScore', 'updatedAt'],
+    });
+
+    closeModal(false);
   };
 
   if (advanceScore) {
@@ -171,6 +207,7 @@ const Rating: FunctionComponent<Props> = ({
       <div className='flex flex-col space-y-4'>
         <RateList scale={10} setValue={setScore} label='Score' />
         <button
+          onClick={submitSimpleScore}
           className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'
           disabled={!score}>
           <Typography>Rate Movie</Typography>
