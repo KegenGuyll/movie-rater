@@ -17,7 +17,14 @@ import getRottenTomatoesSearch from '../../endpoints/getRottenTomatoesSearch';
 import { IMDBMovie } from '../../models/imdb/popular';
 import { RottenMovie, RottenTomatoesSearch } from '../../models/rottenTomatoes';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import { doc, getDoc } from 'firebase/firestore';
 import Rating from '../../components/rating';
+import db from '../../config/firebaseInit';
+import { useAuth } from '../../context/AuthUserContext';
+import { MovieDocument } from '../../models/firestore';
+import UserMeter from '../../components/userMeter';
+import clsx from 'clsx';
+import WhereToWatch from '../../components/whereToWatch';
 
 const Movie: NextPage = () => {
   const router = useRouter();
@@ -30,6 +37,10 @@ const Movie: NextPage = () => {
   const query = useMemo(() => router.query, [router.query]);
   const [movieReview, setMovieReview] = useState<boolean>(false);
   const [advancedScoring, setAdvancedScoring] = useState<boolean>(false);
+  const [documentMovie, setDocumentMovie] = useState<MovieDocument | null>(
+    null
+  );
+  const { authUser } = useAuth();
 
   useEffect(() => {
     if (!query.title || !query.year) return;
@@ -63,6 +74,23 @@ const Movie: NextPage = () => {
     setIsLoading(false);
   }, [query]);
 
+  useEffect(() => {
+    if (movie && authUser && movie.uuid) {
+      console.log(db, authUser.uid, movie.uuid);
+      const docRef = doc(db, authUser.uid, movie.uuid);
+
+      getDoc(docRef).then((docSnap) => {
+        if (docSnap.exists()) {
+          console.log('Document data:', docSnap.data());
+          setDocumentMovie(docSnap.data() as MovieDocument);
+        } else {
+          // doc.data() will be undefined in this case
+          console.log('No such document!');
+        }
+      });
+    }
+  }, [movie, authUser, movieReview]);
+
   if (!movie || isLoading) {
     return (
       <div className='h-screen w-full justify-center text-dark-text text-xl relative'>
@@ -91,7 +119,7 @@ const Movie: NextPage = () => {
             <div className='flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-5 sm:items-center'>
               <MovieRating rating={movie.rating} />
               <Typography variant='h2'>{movie.title}</Typography>
-              <Typography variant='legal'>2021</Typography>
+              <Typography variant='legal'>{query.year as string}</Typography>
             </div>
             <div className='flex flex-wrap mt-5 items-center'>
               {movie.movieInfo.genre.map((value) => {
@@ -105,15 +133,19 @@ const Movie: NextPage = () => {
               })}
             </div>
           </MediaCard>
-          <MediaCard className='col-span-1'>
-            <div
-              onClick={() => setMovieReview(true)}
-              className='flex items-center text-center border rounded border-dark-text border-dashed p-11'>
-              <Typography>Rate this movie</Typography>
-            </div>
-          </MediaCard>
-          <MediaCard className='col-span-1'>
-            <div className='flex flex-col items-stretch'>
+
+          {!documentMovie && (
+            <MediaCard className='col-span-1'>
+              <div
+                onClick={() => setMovieReview(true)}
+                className='flex items-center text-center border rounded border-dark-text border-dashed p-11'>
+                <Typography>Rate this movie</Typography>
+              </div>
+            </MediaCard>
+          )}
+
+          <MediaCard className={'col-span-1'}>
+            <div className={clsx('flex flex-col items-stretch')}>
               <TomatoMeter
                 rottenTomatoesScore={movie.tomatometerscore}
                 rottenTomatoesStatus={movie.tomatometerstate as any}
@@ -123,8 +155,31 @@ const Movie: NextPage = () => {
                 rottenTomatoesStatus={movie.audiencestate as any}
               />
               {imdb && <ImdbMeter rating={imdb.score} />}
+              {documentMovie && authUser && (
+                <UserMeter documentMovie={documentMovie} authUser={authUser} />
+              )}
             </div>
           </MediaCard>
+          {movie && movie.whereToWatch.length && (
+            <MediaCard
+              className={clsx(documentMovie ? 'col-span-1' : 'col-span-2')}>
+              <div
+                className={clsx(
+                  'grid grid-cols-1  xs:grid-cols-2  xs:gap-1 lg:gap-8',
+                  documentMovie ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
+                )}>
+                {movie.whereToWatch.map((value, key) => {
+                  return (
+                    <WhereToWatch
+                      key={key}
+                      provider={value.provider as any}
+                      availability={value.availability}
+                    />
+                  );
+                })}
+              </div>
+            </MediaCard>
+          )}
           <MediaCard className='col-span-2'>
             <div>
               <Typography>{movie.movieSynopsis}</Typography>
@@ -198,6 +253,7 @@ const Movie: NextPage = () => {
       <Modal open={movieReview} setOpen={setMovieReview}>
         <div>
           <Rating
+            closeModal={setMovieReview}
             movie={movie}
             imdb={imdb}
             advanceScore={advancedScoring}
