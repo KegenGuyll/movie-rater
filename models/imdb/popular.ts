@@ -8,6 +8,7 @@ export interface IMDBPopular {
 }
 
 export interface IMDBMovie {
+  uuid: string;
   title: string;
   score: string;
   metaScore: string;

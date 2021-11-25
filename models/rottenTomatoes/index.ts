@@ -8,6 +8,7 @@ type RottenTomatoesSearch = {
 };
 
 export interface RottenMovie {
+  uuid: string;
   audiencescore: string;
   rating: string;
   audiencestate: string;
