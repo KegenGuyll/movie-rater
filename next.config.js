@@ -8,6 +8,8 @@ module.exports = {
       'media.giphy.com',
       'resizing.flixster.com',
       'staticv2-4.rottentomatoes.com',
+      'lh3.googleusercontent.com',
+      'www.rottentomatoes.com',
     ],
   },
   swcMinify: true,
