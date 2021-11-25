@@ -26,6 +26,8 @@ module.exports = {
       backgroundBlendMode: ['hover', 'focus'],
       visibility: ['hover', 'focus'],
       display: ['hover', 'focus'],
+      cursor: ['disabled'],
+      opacity: ['disabled'],
     },
   },
   plugins: [],
