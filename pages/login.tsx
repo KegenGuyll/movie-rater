@@ -7,13 +7,19 @@ import { useAuth } from '../context/AuthUserContext';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { createUserWithEmailAndPassword } = useAuth();
+  const { createUserWithEmailAndPassword, signInWithGoogle } = useAuth();
   const router = useRouter();
   const submit = (event: any) => {
     event.preventDefault();
     createUserWithEmailAndPassword(email, password).then((value) =>
       router.push('/')
     );
+  };
+
+  const google = async () => {
+    await signInWithGoogle();
+
+    router.push('/');
   };
 
   return (
@@ -32,6 +38,7 @@ const Login = () => {
         />
         <button type='submit'>Submit</button>
       </form>
+      <button onClick={google}>Google Login</button>
     </div>
   );
 };
