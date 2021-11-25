@@ -80,6 +80,7 @@ const Movie: NextPage = () => {
       const docRef = doc(db, authUser.uid, movie.uuid);
 
       getDoc(docRef).then((docSnap) => {
+        console.log(docSnap.data());
         if (docSnap.exists()) {
           console.log('Document data:', docSnap.data());
           setDocumentMovie(docSnap.data() as MovieDocument);
