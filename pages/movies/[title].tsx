@@ -17,7 +17,7 @@ import getRottenTomatoesSearch from '../../endpoints/getRottenTomatoesSearch';
 import { IMDBMovie } from '../../models/imdb/popular';
 import { RottenMovie, RottenTomatoesSearch } from '../../models/rottenTomatoes';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import { doc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import Rating from '../../components/rating';
 import db from '../../config/firebaseInit';
 import { useAuth } from '../../context/AuthUserContext';
@@ -76,6 +76,12 @@ const Movie: NextPage = () => {
 
   useEffect(() => {
     if (movie && authUser && movie.uuid) {
+      getDocs(collection(db, authUser.uid)).then((value) => {
+        value.forEach((doc) => {
+          console.log(doc.data());
+        });
+      });
+
       console.log(db, authUser.uid, movie.uuid);
       const docRef = doc(db, authUser.uid, movie.uuid);
 
