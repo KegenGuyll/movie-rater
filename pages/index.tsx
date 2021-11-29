@@ -34,6 +34,7 @@ const Home: NextPage = () => {
               <Poster
                 year={value.year}
                 key={index}
+                img={value.img}
                 title={value.title}
                 uuid={value.uuid}
                 type={value.type}

@@ -25,6 +25,7 @@ import { MovieDocument } from '../../models/firestore';
 import UserMeter from '../../components/userMeter';
 import clsx from 'clsx';
 import WhereToWatch from '../../components/whereToWatch';
+import getReviewedMovie from '../../endpoints/getReviewMovie';
 
 const Movie: NextPage = () => {
   const router = useRouter();
@@ -76,17 +77,12 @@ const Movie: NextPage = () => {
 
   useEffect(() => {
     if (movie && authUser && movie.uuid) {
-      console.log(db, authUser.uid, movie.uuid);
-      const docRef = doc(db, authUser.uid, movie.uuid);
-
-      getDoc(docRef).then((docSnap) => {
-        if (docSnap.exists()) {
-          console.log('Document data:', docSnap.data());
-          setDocumentMovie(docSnap.data() as MovieDocument);
-        } else {
-          // doc.data() will be undefined in this case
-          console.log('No such document!');
-        }
+      authUser.getIdToken(true).then((token) => {
+        getReviewedMovie(movie.uuid, token).then((value) => {
+          if (value.res) {
+            setDocumentMovie(value.res.data);
+          }
+        });
       });
     }
   }, [movie, authUser, movieReview]);

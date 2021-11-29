@@ -1,12 +1,11 @@
 import { FunctionComponent, useMemo, useState } from 'react';
 import Typography from '../typography';
 import RateList from './rateList';
-import db from '../../config/firebaseInit';
-import { doc, setDoc, Timestamp, arrayUnion } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthUserContext';
 import { RottenMovie } from '../../models/rottenTomatoes';
 import { IMDBMovie } from '../../models/imdb/popular';
-import jwt from 'jsonwebtoken';
+import createReviewedMovie from '../../endpoints/createReviewMovie';
 
 interface Props {
   advanceScore?: boolean;
@@ -76,10 +75,7 @@ const Rating: FunctionComponent<Props> = ({
       personalScore
     ) {
       const docData = {
-        unqiueid: jwt.sign(
-          { rotten: movie?.uuid, imdb: imdb?.uuid },
-          process.env['NEXT_PUBLIC_JWT_PRIVATE_KEY'] as string
-        ),
+        uuid: movie?.uuid,
         createdAt: Timestamp.fromDate(new Date()),
         updatedAt: Timestamp.fromDate(new Date()),
         title: movie?.title,
@@ -116,15 +112,9 @@ const Rating: FunctionComponent<Props> = ({
         },
       };
 
-      await setDoc(doc(db, authUser.uid, movie!.uuid), docData, {
-        mergeFields: [
-          'advancedScore',
-          'averagedAdvancedScore',
-          'updatedAt',
-          'rotten',
-          'imdb',
-        ],
-      });
+      const token = await authUser.getIdToken(true);
+
+      await createReviewedMovie(docData, token);
 
       closeModal(false);
     }
@@ -134,10 +124,7 @@ const Rating: FunctionComponent<Props> = ({
     if (!authUser) return;
 
     const docData = {
-      unqiueid: jwt.sign(
-        { rotten: movie?.uuid, imdb: imdb?.uuid },
-        process.env['NEXT_PUBLIC_JWT_PRIVATE_KEY'] as string
-      ),
+      uuid: movie?.uuid,
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
       title: movie?.title,
@@ -152,9 +139,9 @@ const Rating: FunctionComponent<Props> = ({
       advancedScore: null,
     };
 
-    await setDoc(doc(db, authUser.uid, movie!.uuid), docData, {
-      mergeFields: ['simpleScore', 'updatedAt'],
-    });
+    const token = await authUser.getIdToken(true);
+
+    await createReviewedMovie(docData, token);
 
     closeModal(false);
   };
