@@ -3,6 +3,7 @@ import { IMDBMovie } from '../imdb/popular';
 import { RottenMovie } from '../rottenTomatoes';
 
 export interface MovieDocument {
+  _id: string;
   advancedScore: AdvancedScore | null;
   averagedAdvancedScore: number | null;
   createdAt: Timestamp;
@@ -14,7 +15,7 @@ export interface MovieDocument {
   updatedAt: Timestamp;
 }
 
-type AdvancedScore = {
+export type AdvancedScore = {
   acting: number;
   characters: number;
   cinematography: number;
