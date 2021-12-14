@@ -152,7 +152,11 @@ const Movie: NextPage = () => {
               />
               {imdb && <ImdbMeter rating={imdb.score} />}
               {documentMovie && authUser && (
-                <UserMeter documentMovie={documentMovie} authUser={authUser} />
+                <UserMeter
+                  setMovieReview={setMovieReview}
+                  documentMovie={documentMovie}
+                  authUser={authUser}
+                />
               )}
             </div>
           </MediaCard>
@@ -249,6 +253,8 @@ const Movie: NextPage = () => {
       <Modal open={movieReview} setOpen={setMovieReview}>
         <div>
           <Rating
+            defaultSimpleScore={documentMovie?.simpleScore}
+            defaultScore={documentMovie?.advancedScore}
             closeModal={setMovieReview}
             movie={movie}
             imdb={imdb}

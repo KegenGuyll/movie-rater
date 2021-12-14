@@ -6,14 +6,24 @@ interface Props {
   label: string;
   setValue: (value: number | null) => void;
   scale: number;
+  defaultValue?: number | null;
 }
 
 const RateList: FunctionComponent<Props> = ({
   scale,
   setValue,
   label,
+  defaultValue,
 }: Props) => {
-  const [selectedValue, setSelectedValue] = useState<number | null>(null);
+  const [selectedValue, setSelectedValue] = useState<number | null>(
+    defaultValue || null
+  );
+
+  useEffect(() => {
+    if (!defaultValue) return;
+    setSelectedValue(defaultValue);
+  }, [defaultValue]);
+
   const array = useMemo(
     () => Array.from({ length: scale }, (v, k) => k + 1),
     [scale]

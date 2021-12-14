@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthUserContext';
 import { RottenMovie } from '../../models/rottenTomatoes';
 import { IMDBMovie } from '../../models/imdb/popular';
 import createReviewedMovie from '../../endpoints/createReviewMovie';
+import { AdvancedScore } from '../../models/firestore';
 
 interface Props {
   advanceScore?: boolean;
@@ -13,6 +14,8 @@ interface Props {
   movie: RottenMovie | null;
   imdb: IMDBMovie | null;
   closeModal: (value: boolean) => void;
+  defaultScore?: AdvancedScore | null;
+  defaultSimpleScore?: number | null;
 }
 
 const Rating: FunctionComponent<Props> = ({
@@ -21,6 +24,8 @@ const Rating: FunctionComponent<Props> = ({
   movie,
   imdb,
   closeModal,
+  defaultScore,
+  defaultSimpleScore,
 }: Props) => {
   const [plot, setPlot] = useState<number | null>(null);
   const [theme, setTheme] = useState<number | null>(null);
@@ -155,20 +160,62 @@ const Rating: FunctionComponent<Props> = ({
           <Typography>Simple Rating</Typography>
         </button>
         <div className='flex flex-col space-y-4'>
-          <RateList scale={10} setValue={setPlot} label='Plot' />
-          <RateList scale={10} setValue={setTheme} label='Theme' />
-          <RateList scale={10} setValue={setClimax} label='Climax' />
-          <RateList scale={10} setValue={setEnding} label='Ending' />
-          <RateList scale={10} setValue={setActing} label='Acting' />
-          <RateList scale={10} setValue={setCharacters} label='Characters' />
-          <RateList scale={10} setValue={setMusic} label='Music' />
           <RateList
+            defaultValue={defaultScore?.plot}
+            scale={10}
+            setValue={setPlot}
+            label='Plot'
+          />
+          <RateList
+            defaultValue={defaultScore?.theme}
+            scale={10}
+            setValue={setTheme}
+            label='Theme'
+          />
+          <RateList
+            defaultValue={defaultScore?.climax}
+            scale={10}
+            setValue={setClimax}
+            label='Climax'
+          />
+          <RateList
+            defaultValue={defaultScore?.ending}
+            scale={10}
+            setValue={setEnding}
+            label='Ending'
+          />
+          <RateList
+            defaultValue={defaultScore?.acting}
+            scale={10}
+            setValue={setActing}
+            label='Acting'
+          />
+          <RateList
+            defaultValue={defaultScore?.characters}
+            scale={10}
+            setValue={setCharacters}
+            label='Characters'
+          />
+          <RateList
+            defaultValue={defaultScore?.music}
+            scale={10}
+            setValue={setMusic}
+            label='Music'
+          />
+          <RateList
+            defaultValue={defaultScore?.cinematography}
             scale={10}
             setValue={setCinematography}
             label='Cinematography'
           />
-          <RateList scale={10} setValue={setVisuals} label='Visuals' />
           <RateList
+            defaultValue={defaultScore?.visuals}
+            scale={10}
+            setValue={setVisuals}
+            label='Visuals'
+          />
+          <RateList
+            defaultValue={defaultScore?.personalScore}
             scale={10}
             setValue={setPersonalScore}
             label='Personal Score'
@@ -192,7 +239,12 @@ const Rating: FunctionComponent<Props> = ({
         <Typography>Advanced Rating</Typography>
       </button>
       <div className='flex flex-col space-y-4'>
-        <RateList scale={10} setValue={setScore} label='Score' />
+        <RateList
+          defaultValue={defaultSimpleScore}
+          scale={10}
+          setValue={setScore}
+          label='Score'
+        />
         <button
           onClick={submitSimpleScore}
           className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'
