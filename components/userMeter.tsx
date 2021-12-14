@@ -1,5 +1,5 @@
 import { User } from 'firebase/auth';
-import { FunctionComponent } from 'react';
+import { Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
 import { MovieDocument } from '../models/firestore';
 import Typography from './typography';
 import Image from 'next/image';
@@ -7,11 +7,21 @@ import Image from 'next/image';
 interface Props {
   documentMovie: MovieDocument;
   authUser: User;
+  setMovieReview: Dispatch<SetStateAction<boolean>>;
 }
 
-const UserMeter: FunctionComponent<Props> = ({ documentMovie, authUser }) => {
+const UserMeter: FunctionComponent<Props> = ({
+  documentMovie,
+  authUser,
+  setMovieReview,
+}) => {
+  const [hover, setHover] = useState<boolean>(false);
+
   return (
-    <div className='flex flex-row  items-center'>
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className='flex flex-row items-center'>
       {authUser.photoURL ? (
         <Image
           alt={authUser.displayName || authUser.email || 'user'}
@@ -44,6 +54,13 @@ const UserMeter: FunctionComponent<Props> = ({ documentMovie, authUser }) => {
             <span className='text-3xl'>{documentMovie.simpleScore}</span>/ 10
           </Typography>
         </div>
+      )}
+      {hover && (
+        <button
+          onClick={() => setMovieReview(true)}
+          className='flex items-center justify-center ml-8'>
+          <span className='material-icons'>edit</span>
+        </button>
       )}
     </div>
   );
