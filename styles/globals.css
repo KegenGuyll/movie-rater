@@ -10,6 +10,17 @@ body {
   font-family: 'Open Sans', sans-serif !important;
 }
 
+th,
+td {
+  text-align: left;
+  border-bottom: 1px solid #aeaeb2;
+}
+
+th:last-child,
+td:last-child {
+  border-right: none;
+}
+
 .typography--variant-h1 {
   font-size: 36px !important;
   line-height: 42px !important;
