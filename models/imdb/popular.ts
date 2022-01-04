@@ -5,6 +5,8 @@ export interface IMDBPopular {
   url: string;
   uuid: string;
   year: string;
+  titleMeter: 'positive' | 'negative';
+  popularityChange: string;
 }
 
 export interface IMDBMovie {

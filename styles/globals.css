@@ -42,13 +42,13 @@ td:last-child {
 .typography--variant-h4 {
   font-size: 16px;
   line-height: 24px;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .typography--variant-h5 {
   font-size: 14px;
   line-height: 22px;
-  font-weight: 400;
+  font-weight: 600;
 }
 
 .typography--variant-subtitle {
@@ -73,4 +73,25 @@ td:last-child {
   font-size: 12px;
   line-height: 22px;
   font-weight: 400;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #131313;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #292929;
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #575757;
 }

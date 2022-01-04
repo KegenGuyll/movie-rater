@@ -4,6 +4,7 @@ import getAllReviewedMovies from '../endpoints/getAllReviewsMovie';
 import { useAuth } from '../context/AuthUserContext';
 import { MovieDocument } from '../models/firestore';
 import ReviewedMoviesTable from '../components/my-movies/ReviewedMoviesTable';
+import Navigation from '../components/navigation';
 
 const MyMovie: NextPage = () => {
   const { authUser } = useAuth();
@@ -26,8 +27,11 @@ const MyMovie: NextPage = () => {
   }, [authUser]);
 
   return (
-    <div className='p-5'>
-      <ReviewedMoviesTable movies={movies} fetchMovies={fetchMovies} />
+    <div>
+      <Navigation />
+      <div className='p-5'>
+        <ReviewedMoviesTable movies={movies} fetchMovies={fetchMovies} />
+      </div>
     </div>
   );
 };

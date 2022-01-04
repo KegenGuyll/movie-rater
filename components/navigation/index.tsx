@@ -1,51 +1,48 @@
-import clsx from 'clsx';
-import { useRouter } from 'next/dist/client/router';
-import { FormEvent, FunctionComponent, useState } from 'react';
+import { useRouter } from 'next/router';
+import { FunctionComponent } from 'react';
+import Image from 'next/image';
+import Search from '../search';
+import Typography from '../typography';
+import { useAuth } from '../../context/AuthUserContext';
+import NavItem from './navItem';
 
-const Search: FunctionComponent = () => {
-  const [hover, setHover] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>('');
+const Navigation: FunctionComponent = () => {
   const router = useRouter();
+  const { authUser } = useAuth();
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!search) return;
-
+  const handleSearch = (search: string) => {
     router.push(`/movies/search?search=${search}`);
   };
 
   return (
-    <div
-      onClick={() => setHover(true)}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      className='flex items-center cursor-pointer transition-colors duration-150 text-dark-text hover:bg-dark-background rounded-full p-3'>
-      <span className='material-icons-outlined mr-3'>search</span>
-      <form className='flex items-center' onSubmit={onSubmit}>
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.currentTarget.value)}
-          className={clsx(
-            hover ? 'block' : 'hidden',
-            'py-1 pl-3 mr-3 bg-dark-components focus:outline-none rounded-full'
-          )}
-        />
-        {!!search && (
-          <button type='submit' className={clsx(hover ? 'block' : 'hidden')}>
-            <span className='material-icons-outlined'>check</span>
-          </button>
+    <nav className=' sticky top-0 mb-10 z-50'>
+      <div className='flex items-center bg-dark-components text-dark-text px-4 py-4 h-16 w-full'>
+        <NavItem href='/'>
+          <Image src='/img/brand.svg' width='100' height='42' alt='brand' />
+        </NavItem>
+        <Search className='min-w-fit flex-grow' submitFunction={handleSearch} />
+        <NavItem href='/'>
+          <span className='material-icons-outlined mr-4'>trending_up</span>
+          <Typography>Trending</Typography>
+        </NavItem>
+        <NavItem href='/watch-list'>
+          <span className='material-icons-outlined mr-4'>list</span>
+          <Typography>Watch List</Typography>
+        </NavItem>
+        {authUser && (
+          <NavItem href='/my-movies'>
+            <div className='mr-4 flex items-center'>
+              <Image
+                className='rounded-full'
+                src={authUser.photoURL || ''}
+                height='40'
+                width='40'
+                alt={authUser.displayName || 'user'}
+              />
+            </div>
+            <Typography>{authUser.displayName}</Typography>
+          </NavItem>
         )}
-      </form>
-    </div>
-  );
-};
-
-const Navigation: FunctionComponent = () => {
-  return (
-    <nav className='mb-10'>
-      <div className='flex items-center bg-dark-components h-16 w-full'>
-        <Search />
       </div>
     </nav>
   );

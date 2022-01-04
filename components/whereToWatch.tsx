@@ -72,8 +72,8 @@ const WhereToWatch: FunctionComponent<Props> = ({
   if (!image) return null;
 
   return (
-    <div className='flex space-x-5 items-center'>
-      <div className='w-20 h-10 flex items-center'>
+    <button className='flex flex-wrap items-center bg-dark-light rounded p-3 max-w-max'>
+      <div className='w-20 h-10 flex items-center mr-4'>
         <img
           width={'inherit'}
           height={'inherit'}
@@ -83,9 +83,8 @@ const WhereToWatch: FunctionComponent<Props> = ({
           src={image}
         />
       </div>
-
-      <Typography>{availability}</Typography>
-    </div>
+      <Typography variant='subtitle'>{availability || 'Theaters'}</Typography>
+    </button>
   );
 };
 

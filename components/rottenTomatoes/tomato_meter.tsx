@@ -1,5 +1,6 @@
 import React, { FunctionComponent, useState } from 'react';
 import Image from 'next/image';
+import clsx from 'clsx';
 
 interface Props {
   rottenTomatoesStatus: 'certified-fresh' | 'rotten' | 'fresh' | '';
@@ -13,7 +14,7 @@ const TomatoMeter: FunctionComponent<Props> = ({
   if (!rottenTomatoesStatus) return null;
 
   return (
-    <div className='flex flex-wrap items-center'>
+    <div className={clsx('flex flex-wrap items-center')}>
       <div className='mr-5'>
         <Image
           width={48}

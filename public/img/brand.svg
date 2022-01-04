@@ -1,0 +1,7 @@
+<svg id="Brand" xmlns="http://www.w3.org/2000/svg" width="100" height="42" viewBox="0 0 100 42">
+  <g id="Group_52" data-name="Group 52" transform="translate(-0.428 -0.019)">
+    <rect id="Rectangle_39" data-name="Rectangle 39" width="100" height="42" rx="4" transform="translate(0.428 0.019)" fill="#131313"/>
+    <text id="Movie" transform="translate(14.325 30.566) rotate(-9)" fill="#e82763" font-size="18" font-family="Montserrat-Bold, Montserrat" font-weight="700" letter-spacing="-0.086em"><tspan x="0" y="0">Movie</tspan></text>
+    <text id="Lot" transform="translate(61.428 27.019)" fill="#e82763" font-size="18" font-family="Montserrat-Bold, Montserrat" font-weight="700" letter-spacing="-0.086em"><tspan x="0" y="0">Lot</tspan></text>
+  </g>
+</svg>

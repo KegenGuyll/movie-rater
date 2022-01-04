@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { FunctionComponent } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
@@ -21,9 +22,13 @@ const Modal: FunctionComponent<Props> = ({
   document.body.style.overflow = 'hidden';
 
   return (
-    <div className='absolute top-0 z-50 min-h-full w-full bg-black bg-opacity-25'>
+    <div className=' bg-dark-light bg-opacity-50 absolute z-50 top-0 bottom-0 right-0 left-0'>
       <OutsideClickHandler onOutsideClick={(e) => setOpen(false)}>
-        <div className='absolute h-full mx-auto w-3/4 bg-dark-background p-5 overflow-scroll'>
+        <div
+          className={clsx(
+            'absolute px-4 pt-8 pb-8 max-w-2xl max-h-fit overflow-auto m-auto top-0 bottom-0 right-0 left-0 z-50 rounded',
+            'bg-dark-background shadow transition-height duration-150'
+          )}>
           <button
             onClick={(e) => setOpen(false)}
             className='text-dark-text mb-10 float-right'>

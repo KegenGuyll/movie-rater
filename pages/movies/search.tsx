@@ -33,40 +33,36 @@ const Search: NextPage = () => {
     router.push(`/movies/${value.title}?year=${value.year}`);
   };
 
-  if (!results || isLoading) {
-    return (
-      <div className='h-screen w-full justify-center text-dark-text text-xl relative'>
-        <div className='absolute bottom-1/2 top-1/2 m-auto right-1/2'>
-          <Spinner />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <Navigation />
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        {results.map((value, key) => (
-          <MediaCard onClick={() => onSelect(value)} key={key}>
-            <div className='flex items-center'>
-              <div className='mr-5'>
-                <Image
-                  className='rounded'
-                  src={value.img}
-                  width={137}
-                  height={221}
-                  alt={value.title}
-                />
+      {!results || isLoading ? (
+        <div className='flex h-full w-full justify-center items-center text-dark-text text-xl'>
+          <Spinner />
+        </div>
+      ) : (
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          {results.map((value, key) => (
+            <MediaCard onClick={() => onSelect(value)} key={key}>
+              <div className='flex items-center'>
+                <div className='mr-5'>
+                  <Image
+                    className='rounded'
+                    src={value.img}
+                    width={137}
+                    height={221}
+                    alt={value.title}
+                  />
+                </div>
+                <div className='flex flex-col'>
+                  <Typography variant='h3'>{value.title}</Typography>
+                  <Typography>{value.year}</Typography>
+                </div>
               </div>
-              <div className='flex flex-col'>
-                <Typography variant='h3'>{value.title}</Typography>
-                <Typography>{value.year}</Typography>
-              </div>
-            </div>
-          </MediaCard>
-        ))}
-      </div>
+            </MediaCard>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
