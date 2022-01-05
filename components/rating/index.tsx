@@ -5,7 +5,7 @@ import { Timestamp } from 'firebase/firestore';
 import { useAuth } from '../../context/AuthUserContext';
 import { RottenMovie } from '../../models/rottenTomatoes';
 import { IMDBMovie } from '../../models/imdb/popular';
-import createReviewedMovie from '../../endpoints/createReviewMovie';
+import createReviewedMovie from '../../endpoints/review/createReviewMovie';
 import { AdvancedScore } from '../../models/firestore';
 
 interface Props {

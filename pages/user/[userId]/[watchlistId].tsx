@@ -7,6 +7,7 @@ import { useAuth } from '../../../context/AuthUserContext';
 import getWatchList from '../../../endpoints/watchlist/getWatchList';
 import { WatchList } from '../../../models/watchlist';
 import Image from 'next/image';
+import dayjs from 'dayjs';
 
 const WatchList = () => {
   const [watchList, setWatchLists] = useState<WatchList | null>(null);
@@ -18,8 +19,6 @@ const WatchList = () => {
     () => router.query.watchlistId as string,
     [router.query]
   );
-
-  console.log(router.query.userId);
 
   useEffect(() => {
     if (!userId || !watchListId) return;
@@ -44,28 +43,33 @@ const WatchList = () => {
 
   const renderWatchList = () => {
     return (
-      <div className='flex flex-wrap justify-center'>
+      <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
         {watchList?.movies.map((value) => {
           return (
-            <button key={value.imdbId}>
-              <div className='flex flex-col items-center justify-center text-left bg-dark-components p-4 rounded text-dark-text'>
-                <div className='my-4 shadow'>
-                  <Image
-                    className='rounded shadow'
-                    alt={watchList.title}
-                    objectFit='cover'
-                    src={value.poster}
-                    width={126}
-                    height={126}
-                  />
-                </div>
-                <Typography
-                  title={value.title}
-                  className='truncate'
-                  variant='h4'>
+            <button
+              onClick={() =>
+                router.push(
+                  `/movies/${value.title}?year=${value.year}&imdbuuid=${value.imdbId}`
+                )
+              }
+              key={value.imdbId}
+              className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
+              <div className='lg:mr-8 mr-0'>
+                <Image
+                  className='rounded shadow'
+                  alt={watchList.title}
+                  objectFit='cover'
+                  layout='fixed'
+                  height='400'
+                  width='235'
+                  src={value.poster}
+                />
+              </div>
+              <div className='flex flex-col'>
+                <Typography title={value.title} variant='h2'>
                   {value.title}
                 </Typography>
-                <Typography title={value.description} variant='subtitle'>
+                <Typography title={value.description} variant='light'>
                   {value.description}
                 </Typography>
               </div>
@@ -79,11 +83,22 @@ const WatchList = () => {
   return (
     <>
       <Head>
-        <title>WatchList | User</title>
-        <meta name='description' content='View and Create movie watchlists' />
+        <title>{`WatchList | ${watchList?.title}`}</title>
+        <meta name='description' content={watchList?.description} />
       </Head>
       <Navigation />
-      <div className='lg:px-4'>{renderWatchList()}</div>
+      <div className='mb-4 text-dark-text bg-dark-background sticky  top-16  z-40 lg:px-8 py-4 '>
+        <Typography variant='h1'>WatchList | {watchList?.title}</Typography>
+        <Typography variant='subtitle'>{watchList?.description}</Typography>
+        {watchList && (
+          <Typography variant='legal'>
+            {`Last Updated - ${dayjs(
+              watchList.updated_at._seconds * 1000
+            ).format('MMMM, DD YYYY')}`}
+          </Typography>
+        )}
+      </div>
+      <div className='lg:px-8 text-dark-text'>{renderWatchList()}</div>
     </>
   );
 };

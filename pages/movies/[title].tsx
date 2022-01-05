@@ -1,4 +1,4 @@
-import { NextPage } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
@@ -10,9 +10,9 @@ import AudienceMeter from '../../components/rottenTomatoes/audience_meter';
 import TomatoMeter from '../../components/rottenTomatoes/tomato_meter';
 import Spinner from '../../components/spinner';
 import Typography from '../../components/typography';
-import getIMDBMovie from '../../endpoints/getImdbMovie';
-import getRottenMovie from '../../endpoints/getRottenTomatoesMovie';
-import getRottenTomatoesSearch from '../../endpoints/getRottenTomatoesSearch';
+import getIMDBMovie from '../../endpoints/imdb/getImdbMovie';
+import getRottenMovie from '../../endpoints/rotten/getRottenTomatoesMovie';
+import getRottenTomatoesSearch from '../../endpoints/rotten/getRottenTomatoesSearch';
 import { IMDBMovie } from '../../models/imdb/popular';
 import { RottenMovie, RottenTomatoesSearch } from '../../models/rottenTomatoes';
 import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
@@ -22,10 +22,11 @@ import { MovieDocument } from '../../models/firestore';
 import UserMeter from '../../components/userMeter';
 import clsx from 'clsx';
 import WhereToWatch from '../../components/whereToWatch';
-import getReviewedMovie from '../../endpoints/getReviewMovie';
+import getReviewedMovie from '../../endpoints/review/getReviewMovie';
 import Navigation from '../../components/navigation';
 import Button from '../../components/button';
 import Head from 'next/head';
+import WatchListModal from '../../components/watch-lists/watchListModal';
 
 const Movie: NextPage = () => {
   const router = useRouter();
@@ -56,7 +57,6 @@ const Movie: NextPage = () => {
         setRottenTomatoesSearch(res.data);
         getRottenMovie(res.data[0].type, res.data[0].uuid).then(
           ({ res: rotten }) => {
-            console.log(rotten);
             if (rotten) {
               setMovie(rotten.data);
             }
@@ -121,12 +121,14 @@ const Movie: NextPage = () => {
               priority
             />
           </div>
-          <Button className='hidden lg:block'>
-            <Typography className='flex items-center' variant='subtitle'>
-              <span className='material-icons-outlined mr-2'>add</span>
-              Add to Watchlist
-            </Typography>
-          </Button>
+          <WatchListModal
+            rotten={movie}
+            imdb={imdb}
+            personal={documentMovie}
+            title={movie.title}
+            poster={imdb?.poster || movie.poster}
+            year={Number(query.year)}
+          />
           <Button
             onClick={() => setMovieReview(true)}
             className='hidden lg:block'
@@ -194,7 +196,7 @@ const Movie: NextPage = () => {
             </MediaCard>
           )}
           <MediaCard
-            title='Ratings'
+            title='Reviews'
             className={clsx(
               'col-span-1 gap-1',
               'lg:col-span-2 lg:gap-2  2xl:gap-4 2xl:col-span-1'

@@ -20,7 +20,7 @@ const MediaCard: FunctionComponent<Props> = ({
         className
       )}>
       {title && (
-        <div className='sticky z-50 top-0 w-full bg-dark-components shadow py-4 px-3 lg:px-6 2xl:px-2'>
+        <div className='sticky z-30 top-0 w-full bg-dark-components shadow py-4 px-3 lg:px-6 2xl:px-2'>
           <Typography variant='h3'>{title}</Typography>
         </div>
       )}

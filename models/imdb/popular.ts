@@ -18,4 +18,5 @@ export interface IMDBMovie {
   movieSynopsis: string;
   genre: string[];
   poster: string;
+  year: string;
 }

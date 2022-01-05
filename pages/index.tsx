@@ -3,7 +3,7 @@ import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import Poster from '../components/movies/poster';
 import Navigation from '../components/navigation';
-import getIMDBPopular from '../endpoints/getPopular';
+import getIMDBPopular from '../endpoints/imdb/getPopular';
 import { IMDBPopular } from '../models/imdb/popular';
 
 const Home: NextPage = () => {

@@ -89,7 +89,6 @@ const Table: React.FC<Props> = ({
       return;
     }
     items.forEach((value) => {
-      console.log(value);
       if (!selected.includes(value.id)) {
         handleSelections(value.id);
       }

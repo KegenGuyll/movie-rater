@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import getIMDBMovie from '../../endpoints/getImdbMovie';
+import getIMDBMovie from '../../endpoints/imdb/getImdbMovie';
 import { IMDBMovie } from '../../models/imdb/popular';
 import Spinner from '../spinner';
 import Typography from '../typography';

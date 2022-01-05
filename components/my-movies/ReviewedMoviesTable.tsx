@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useAuth } from '../../context/AuthUserContext';
 import { useRouter } from 'next/router';
-import deleteReviewedMovie from '../../endpoints/deleteReviewedMovie';
+import deleteReviewedMovie from '../../endpoints/review/deleteReviewedMovie';
 import { MovieDocument } from '../../models/firestore';
 import Table, { Columns } from '../table';
 

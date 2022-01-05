@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
-import { RottenMovie } from '../models/rottenTomatoes';
+import { IMDBMovie } from '../../models/imdb/popular';
 
-import resolve from './resolver';
+import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
-  data: RottenMovie;
+  data: IMDBMovie;
 }
 
 interface IResolvedMovie {
@@ -12,13 +12,13 @@ interface IResolvedMovie {
   err: Error | null;
 }
 
-export default function getRottenMovie(
+export default function getIMDBMovie(
   type: string,
   uuid: string
 ): Promise<IResolvedMovie> {
   return resolve(
     {
-      url: `/rotten/${type}/${uuid}`,
+      url: `/imdb/${type}/${uuid}`,
     },
     true
   );

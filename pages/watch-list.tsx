@@ -39,7 +39,7 @@ const WatchList = () => {
     }
 
     return (
-      <div className='flex flex-wrap justify-center'>
+      <div className='flex flex-wrap justify-evenly'>
         {watchList?.map((value) => {
           return <PreviewPoster key={value._id} watchList={value} />;
         })}

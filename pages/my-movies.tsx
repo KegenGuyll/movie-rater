@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
-import getAllReviewedMovies from '../endpoints/getAllReviewsMovie';
+import getAllReviewedMovies from '../endpoints/review/getAllReviewsMovie';
 import { useAuth } from '../context/AuthUserContext';
 import { MovieDocument } from '../models/firestore';
 import ReviewedMoviesTable from '../components/my-movies/ReviewedMoviesTable';
