@@ -8,9 +8,18 @@ import getWatchList from '../../../endpoints/watchlist/getWatchList';
 import { WatchList } from '../../../models/watchlist';
 import Image from 'next/image';
 import dayjs from 'dayjs';
+import MoviePosterRating from '../../../components/watch-lists/moviePosterRating';
+import { User } from '../../../models/user';
+import getUserByUid from '../../../endpoints/user/getUserByUid';
+import Button from '../../../components/button';
+import { NextPage } from 'next/types';
+import Spinner from '../../../components/spinner';
 
-const WatchList = () => {
+export const WatchListPage: NextPage = () => {
   const [watchList, setWatchLists] = useState<WatchList | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [creator, setCreator] = useState<User | null>(null);
+  const [error, setError] = useState<string>('');
   const { authUser } = useAuth();
   const router = useRouter();
 
@@ -21,12 +30,29 @@ const WatchList = () => {
   );
 
   useEffect(() => {
+    if (!userId) return;
+
+    getUserByUid(userId).then(({ res }) => {
+      if (res) {
+        setCreator(res.data);
+      }
+    });
+  }, [userId]);
+
+  useEffect(() => {
     if (!userId || !watchListId) return;
+    setIsLoading(true);
 
     if (!authUser) {
-      getWatchList(watchListId, undefined, userId).then(({ res }) => {
+      getWatchList(watchListId, undefined, userId).then(({ res, err }) => {
         if (res) {
           setWatchLists(res.data);
+          setError('');
+          setIsLoading(false);
+        }
+        if (err) {
+          setError((err as any).response.data);
+          setIsLoading(false);
         }
       });
       return;
@@ -36,9 +62,12 @@ const WatchList = () => {
       getWatchList(watchListId, authToken).then(({ res }) => {
         if (res) {
           setWatchLists(res.data);
+          setError('');
         }
       });
     });
+
+    setIsLoading(false);
   }, [authUser, userId, watchListId]);
 
   const renderWatchList = () => {
@@ -53,7 +82,7 @@ const WatchList = () => {
                 )
               }
               key={value.imdbId}
-              className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
+              className='flex text-center lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
               <div className='lg:mr-8 mr-0'>
                 <Image
                   className='rounded shadow'
@@ -69,6 +98,7 @@ const WatchList = () => {
                 <Typography title={value.title} variant='h2'>
                   {value.title}
                 </Typography>
+                <MoviePosterRating user={creator} ratings={value.rating} />
                 <Typography title={value.description} variant='light'>
                   {value.description}
                 </Typography>
@@ -80,6 +110,32 @@ const WatchList = () => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className='flex h-screen w-full justify-center items-center text-dark-text'>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <Head>
+          <title>{`WatchList | Private`}</title>
+          <meta name='description' content={error} />
+        </Head>
+        <Navigation />
+        <div className='text-dark-text flex justify-center items-center space-y-5 flex-col text-center'>
+          <Typography>{error}</Typography>
+          <Button onClick={() => router.push('/login')}>
+            <Typography>Login</Typography>
+          </Button>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Head>
@@ -90,6 +146,9 @@ const WatchList = () => {
       <div className='mb-4 text-dark-text bg-dark-background sticky  top-16  z-40 lg:px-8 py-4 '>
         <Typography variant='h1'>WatchList | {watchList?.title}</Typography>
         <Typography variant='subtitle'>{watchList?.description}</Typography>
+        {creator && creator.displayName && (
+          <Typography variant='legal'>{`Created By - ${creator.displayName}`}</Typography>
+        )}
         {watchList && (
           <Typography variant='legal'>
             {`Last Updated - ${dayjs(
@@ -103,4 +162,4 @@ const WatchList = () => {
   );
 };
 
-export default WatchList;
+export default WatchListPage;

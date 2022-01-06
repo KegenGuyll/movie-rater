@@ -26,14 +26,14 @@ type Movies = {
   title: string;
   poster: string;
   description: string;
-  ratings: Rating[];
+  rating: Rating;
   year: number;
 };
 
-type Rating = {
+export type Rating = {
   rotten: {
-    audiencestate: string;
-    tomatometerstate: string;
+    audiencestate: 'spilled' | 'upright' | '';
+    tomatometerstate: 'certified-fresh' | 'rotten' | 'fresh' | '';
     tomatometerscore: string;
     audiencescore: string;
   };
@@ -42,7 +42,7 @@ type Rating = {
     metaScore: string | null;
   };
   personal: {
-    advancedScore: AdvancedScore | null;
+    advancedScore: number | null;
     simpleScore: number | null;
   };
 };

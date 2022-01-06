@@ -93,8 +93,8 @@ const WatchListModal: FunctionComponent<Props> = ({
         rating: {
           rotten: {
             audiencescore: rotten.audiencescore,
-            audiencestate: rotten.audiencestate,
-            tomatometerstate: rotten.tomatometerstate,
+            audiencestate: rotten.audiencestate as any,
+            tomatometerstate: rotten.tomatometerstate as any,
             tomatometerscore: rotten.tomatometerscore,
           },
           imdb: {
@@ -102,7 +102,7 @@ const WatchListModal: FunctionComponent<Props> = ({
             metaScore: imdb?.metaScore || null,
           },
           personal: {
-            advancedScore: personal?.advancedScore || null,
+            advancedScore: personal?.averagedAdvancedScore || null,
             simpleScore: personal?.simpleScore || null,
           },
         },

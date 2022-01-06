@@ -22,26 +22,31 @@ const PreviewPoster: FunctionComponent<Props> = ({
       <button
         onClick={() => router.push(`/user/${authUser.uid}/${watchList._id}`)}
         {...props}>
-        <div className='flex flex-col items-center justify-center text-left bg-dark-components p-4 rounded text-dark-text'>
+        <div className='flex flex-col items-center justify-center text-left hover:bg-dark-light bg-dark-components w-64 overflow-hidden p-4 rounded text-dark-text'>
           <div className='my-4 shadow'>
             <Image
               className='rounded shadow'
               alt={watchList.title}
               objectFit='cover'
-              src={watchList.movies[0].poster}
+              src={`https://avatars.dicebear.com/api/identicon/${watchList._id}.svg`}
               width={126}
               height={126}
             />
           </div>
-          <Typography title={watchList.title} className='truncate' variant='h3'>
-            {watchList.title}
-          </Typography>
-          <Typography
-            title={watchList.description}
-            className='truncate'
-            variant='subtitle'>
-            {watchList.description}
-          </Typography>
+          <div className=' text-center w-full'>
+            <Typography
+              title={watchList.title}
+              className='truncate'
+              variant='h3'>
+              {watchList.title}
+            </Typography>
+            <Typography
+              title={watchList.description}
+              className='truncate'
+              variant='subtitle'>
+              {watchList.description}
+            </Typography>
+          </div>
         </div>
       </button>
     );

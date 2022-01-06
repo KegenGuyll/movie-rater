@@ -14,6 +14,16 @@ const WatchList = () => {
   const { authUser } = useAuth();
   const router = useRouter();
 
+  const totalMovies = () => {
+    let movies = 0;
+
+    watchList?.forEach((el) => {
+      movies += el.movies.length;
+    });
+
+    return movies;
+  };
+
   useEffect(() => {
     if (!authUser) return;
 
@@ -50,11 +60,23 @@ const WatchList = () => {
   return (
     <>
       <Head>
-        <title>WatchList | User</title>
-        <meta name='description' content='View and Create movie watchlists' />
+        <title>WatchList | {`${authUser?.displayName}` || 'User'}</title>
+        <meta name='description' content='View and Create movie WatchLists' />
       </Head>
       <Navigation />
-      <div className='lg:px-4'>{renderWatchList()}</div>
+      <div className='px-2 lg:px-4 text-dark-text'>
+        {authUser && (
+          <div className='mb-4'>
+            <Typography variant='h1'>
+              {`${authUser?.displayName}'s | WatchList`}
+            </Typography>
+            <Typography variant='subtitle'>
+              {`${watchList?.length} WatchLists | ${totalMovies()} Movies`}
+            </Typography>
+          </div>
+        )}
+        {renderWatchList()}
+      </div>
     </>
   );
 };
