@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
-import { MovieDocument } from '../models/firestore';
+import { CreateWatchList } from '../../models/watchlist';
 
-import resolve from './resolver';
+import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
-  data: MovieDocument[];
+  data: any;
 }
 
 interface IResolvedPopular {
@@ -12,7 +12,8 @@ interface IResolvedPopular {
   err: Error | null;
 }
 
-export default function getAllReviewedMovies(
+export default function createWatchList(
+  data: CreateWatchList,
   authToken: string
 ): Promise<IResolvedPopular> {
   return resolve(
@@ -20,7 +21,9 @@ export default function getAllReviewedMovies(
       headers: {
         Authorization: authToken,
       },
-      url: `/movie/all`,
+      data,
+      method: 'POST',
+      url: `/watch-list/`,
     },
     true
   );

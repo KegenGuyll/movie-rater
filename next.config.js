@@ -10,6 +10,7 @@ module.exports = {
       'staticv2-4.rottentomatoes.com',
       'lh3.googleusercontent.com',
       'www.rottentomatoes.com',
+      'avatars.dicebear.com',
     ],
   },
   swcMinify: true,

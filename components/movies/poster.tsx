@@ -1,28 +1,18 @@
 import { FunctionComponent, useState } from 'react';
 import Image from 'next/image';
-import PosterDescription from './posterDescription';
 import { useRouter } from 'next/dist/client/router';
+import PopularityRating from './popularityRating';
+import { IMDBPopular } from '../../models/imdb/popular';
 
 interface Props {
-  title: string;
-  uuid: string;
-  type: string;
-  year: string;
-  img?: string;
+  movie: IMDBPopular;
   clickable?: boolean;
 }
 
-const Poster: FunctionComponent<Props> = ({
-  title,
-  uuid,
-  type,
-  img,
-  year,
-  clickable,
-}) => {
-  const [hover, setHover] = useState<boolean>(false);
+const Poster: FunctionComponent<Props> = ({ movie, clickable }) => {
   const [display, setDisplay] = useState<boolean>(true);
   const router = useRouter();
+  const { title, uuid, img, year } = movie;
 
   const imgNotFound = () => {
     setDisplay(false);
@@ -39,11 +29,9 @@ const Poster: FunctionComponent<Props> = ({
       disabled={!clickable}
       type='button'
       onClick={() => onClick(title, year)}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
       className='bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative'>
       <Image
-        className='rounded object-fill transition-opacity select-none duration-150 opacity-60 hover:opacity-100'
+        className='rounded object-fill select-none'
         layout='fill'
         objectFit='fill'
         src={
@@ -52,7 +40,9 @@ const Poster: FunctionComponent<Props> = ({
         alt={title}
         onError={imgNotFound}
       />
-      <PosterDescription uuid={uuid} type={type} hover={hover} title={title} />
+      <div className='absolute top-1 right-1'>
+        <PopularityRating movie={movie} />
+      </div>
     </button>
   );
 };

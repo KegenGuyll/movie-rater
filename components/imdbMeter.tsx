@@ -8,12 +8,17 @@ interface Props {
 
 const ImdbMeter: FunctionComponent<Props> = ({ rating }: Props) => {
   return (
-    <div className='flex flex-wrap items-center'>
-      <div className='mr-5'>
-        <Image width={75} height={35} alt='imdb' src={'/img/imdb-icon.svg'} />
+    <div className='flex flex-row items-center'>
+      <div className='mr-2'>
+        <Image
+          width={48}
+          height={48}
+          alt='imdb'
+          src={'/img/IMDb_Logo_Square.svg'}
+        />
       </div>
 
-      <span className='text-dark-text text-2xl'>{`${rating} / 10`}</span>
+      <span className='text-dark-text text-2xl lg:text-xl'>{`${rating} / 10`}</span>
     </div>
   );
 };

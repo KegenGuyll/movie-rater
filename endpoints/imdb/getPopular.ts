@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
-import { IMDBPopular } from '../models/imdb/popular';
+import { IMDBPopular } from '../../models/imdb/popular';
 
-import resolve from './resolver';
+import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
   data: IMDBPopular[];

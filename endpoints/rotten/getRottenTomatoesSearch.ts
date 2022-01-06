@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
-import { IMDBPopular } from '../models/imdb/popular';
-import { RottenTomatoesSearch } from '../models/rottenTomatoes';
+import { IMDBPopular } from '../../models/imdb/popular';
+import { RottenTomatoesSearch } from '../../models/rottenTomatoes';
 
-import resolve from './resolver';
+import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
   data: RottenTomatoesSearch[];
