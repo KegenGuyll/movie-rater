@@ -14,6 +14,7 @@ import getUserByUid from '../../../endpoints/user/getUserByUid';
 import Button from '../../../components/button';
 import { NextPage } from 'next/types';
 import Spinner from '../../../components/spinner';
+import WatchListVisibility from '../../../components/watch-lists/watchListVisibility';
 
 export const WatchListPage: NextPage = () => {
   const [watchList, setWatchLists] = useState<WatchList | null>(null);
@@ -82,20 +83,22 @@ export const WatchListPage: NextPage = () => {
                 )
               }
               key={value.imdbId}
-              className='flex text-center lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
-              <div className='lg:mr-8 mr-0'>
+              className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
+              <div className='lg:mr-8 mr-0 flex w-full items-center justify-center'>
                 <Image
                   className='rounded shadow'
                   alt={watchList.title}
                   objectFit='cover'
-                  layout='fixed'
                   height='400'
                   width='235'
                   src={value.poster}
                 />
               </div>
               <div className='flex flex-col'>
-                <Typography title={value.title} variant='h2'>
+                <Typography
+                  className=' text-left md:text-center'
+                  title={value.title}
+                  variant='h2'>
                   {value.title}
                 </Typography>
                 <MoviePosterRating user={creator} ratings={value.rating} />
@@ -143,8 +146,12 @@ export const WatchListPage: NextPage = () => {
         <meta name='description' content={watchList?.description} />
       </Head>
       <Navigation />
-      <div className='mb-4 text-dark-text bg-dark-background sticky  top-16  z-40 lg:px-8 py-4 '>
-        <Typography variant='h1'>WatchList | {watchList?.title}</Typography>
+      <div className='mb-4 text-dark-text bg-dark-background sticky  top-16  z-30 px-2 lg:px-8 py-4 '>
+        <div className='flex items-center space-x-2'>
+          <Typography variant='h1'>WatchList | {watchList?.title}</Typography>
+          <WatchListVisibility visible={watchList?.public} />
+        </div>
+
         <Typography variant='subtitle'>{watchList?.description}</Typography>
         {creator && creator.displayName && (
           <Typography variant='legal'>{`Created By - ${creator.displayName}`}</Typography>

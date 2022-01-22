@@ -231,7 +231,7 @@ const Movie: NextPage = () => {
                   <Typography
                     className={clsx('hidden', 'lg:block mb-3')}
                     variant='h4'>
-                    IMBb
+                    IMDb
                   </Typography>
                   <ImdbMeter rating={imdb.score} />
                 </div>

@@ -27,7 +27,7 @@ const Home: NextPage = () => {
         <div
           className={clsx(
             'm-8 p-8 auto-cols-min w-max gap-2 md:gap-4',
-            'grid grid-cols-2 xs:grid-cols-3 md:grid-cols-4 2xl:grid-cols-7'
+            'grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 2xl:grid-cols-7'
           )}>
           {popularMovies?.map((value) => {
             return <Poster key={value.uuid} movie={value} />;
