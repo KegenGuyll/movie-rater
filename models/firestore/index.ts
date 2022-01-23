@@ -13,6 +13,7 @@ export interface MovieDocument {
   title: string | null;
   unqiueid: string;
   updatedAt: Timestamp;
+  notes?: string;
 }
 
 export type AdvancedScore = {
