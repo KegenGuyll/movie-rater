@@ -27,6 +27,7 @@ import Navigation from '../../components/navigation';
 import Button from '../../components/button';
 import Head from 'next/head';
 import WatchListModal from '../../components/watch-lists/watchListModal';
+import PirateWhereToWatch from '../../components/pirateWhereToWatch';
 
 const Movie: NextPage = () => {
   const router = useRouter();
@@ -121,23 +122,29 @@ const Movie: NextPage = () => {
               priority
             />
           </div>
-          <WatchListModal
-            rotten={movie}
-            imdb={imdb}
-            personal={documentMovie}
-            title={movie.title}
-            poster={imdb?.poster || movie.poster}
-            year={Number(query.year)}
-          />
-          <Button
-            onClick={() => setMovieReview(true)}
-            className='hidden lg:block'
-            variant='primary'>
-            <Typography className='flex items-center' variant='h4'>
-              <span className='material-icons-outlined mr-2'>rate_review</span>
-              Add Review
-            </Typography>
-          </Button>
+          {authUser && (
+            <WatchListModal
+              rotten={movie}
+              imdb={imdb}
+              personal={documentMovie}
+              title={movie.title}
+              poster={imdb?.poster || movie.poster}
+              year={Number(query.year)}
+            />
+          )}
+          {authUser && (
+            <Button
+              onClick={() => setMovieReview(true)}
+              className='hidden lg:block'
+              variant='primary'>
+              <Typography className='flex items-center' variant='h4'>
+                <span className='material-icons-outlined mr-2'>
+                  rate_review
+                </span>
+                Add Review
+              </Typography>
+            </Button>
+          )}
         </div>
 
         <div className='grid grid-cols-2 gap-2 w-full'>
@@ -186,7 +193,7 @@ const Movie: NextPage = () => {
               </div>
             </div>
           </MediaCard>
-          {!documentMovie && (
+          {!documentMovie && authUser && (
             <MediaCard className='block lg:hidden col-span-1'>
               <div
                 onClick={() => setMovieReview(true)}
@@ -278,6 +285,7 @@ const Movie: NextPage = () => {
                   );
                 })}
               </div>
+              <PirateWhereToWatch title={movie.title} />
             </MediaCard>
           )}
           <MediaCard
@@ -285,6 +293,11 @@ const Movie: NextPage = () => {
             className={clsx('col-span-2', 'lg:col-auto')}>
             <Typography>{movie.movieSynopsis}</Typography>
           </MediaCard>
+          {documentMovie && documentMovie.notes && (
+            <MediaCard title='Personal Notes'>
+              <Typography>{documentMovie.notes}</Typography>
+            </MediaCard>
+          )}
           <MediaCard title='Movie Info' className='col-span-1'>
             <div>
               {Object.keys(movie.movieInfo).map((value) => {

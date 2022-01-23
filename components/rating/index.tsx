@@ -38,6 +38,8 @@ const Rating: FunctionComponent<Props> = ({
   const [visuals, setVisuals] = useState<number | null>(null);
   const [personalScore, setPersonalScore] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [notes, setNotes] = useState<string>('');
+  const [openNotes, setOpenNotes] = useState<boolean>(false);
   const { authUser } = useAuth();
   const buttonDisabled = useMemo(
     () =>
@@ -90,6 +92,7 @@ const Rating: FunctionComponent<Props> = ({
         imdb: {
           ...imdb,
         },
+        notes,
         simpleScore: score,
         averagedAdvancedScore:
           (plot +
@@ -133,6 +136,7 @@ const Rating: FunctionComponent<Props> = ({
       createdAt: Timestamp.fromDate(new Date()),
       updatedAt: Timestamp.fromDate(new Date()),
       title: movie?.title,
+      notes,
       rotten: {
         ...movie,
       },
@@ -220,6 +224,18 @@ const Rating: FunctionComponent<Props> = ({
             setValue={setPersonalScore}
             label='Personal Score'
           />
+          {openNotes && (
+            <textarea
+              className='bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2'
+              onChange={(e) => setNotes(e.currentTarget.value)}
+              rows={4}
+            />
+          )}
+          <button
+            onClick={() => setOpenNotes(!openNotes)}
+            className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'>
+            <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
+          </button>
           <button
             onClick={submitAdvanceScore}
             className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'
@@ -245,6 +261,18 @@ const Rating: FunctionComponent<Props> = ({
           setValue={setScore}
           label='Score'
         />
+        {openNotes && (
+          <textarea
+            className='bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2'
+            onChange={(e) => setNotes(e.currentTarget.value)}
+            rows={4}
+          />
+        )}
+        <button
+          onClick={() => setOpenNotes(!openNotes)}
+          className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'>
+          <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
+        </button>
         <button
           onClick={submitSimpleScore}
           className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'

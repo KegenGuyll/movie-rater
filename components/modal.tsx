@@ -26,7 +26,7 @@ const Modal: FunctionComponent<Props> = ({
       <OutsideClickHandler onOutsideClick={(e) => setOpen(false)}>
         <div
           className={clsx(
-            'absolute px-4 pt-8 pb-8 max-w-2xl max-h-fit overflow-auto m-auto top-0 bottom-0 right-0 left-0 z-50 rounded',
+            'absolute px-4 pt-8 pb-8 max-w-2xl overflow-auto h-3/4 m-auto top-0 bottom-0 right-0 left-0 z-50 rounded',
             'bg-dark-background shadow transition-height duration-150'
           )}>
           <button

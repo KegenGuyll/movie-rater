@@ -7,11 +7,11 @@ import { useAuth } from '../context/AuthUserContext';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { signInWithGoogle, signInWithEmailAndPassword } = useAuth();
+  const { createUserWithEmailAndPassword, signInWithGoogle } = useAuth();
   const router = useRouter();
   const submit = (event: any) => {
     event.preventDefault();
-    signInWithEmailAndPassword(email, password).then((value) =>
+    createUserWithEmailAndPassword(email, password).then((value) =>
       router.push('/')
     );
   };
@@ -26,7 +26,7 @@ const Login = () => {
     <div className=' flex items-center justify-center h-screen w-screen'>
       <div className=' bg-dark-components text-dark-text w-max rounded p-5 flex flex-col text-center'>
         <Typography className='mb-5' variant='h1'>
-          Login
+          Register
         </Typography>
         <form className='flex flex-col space-y-4' onSubmit={submit}>
           <input
@@ -50,9 +50,9 @@ const Login = () => {
           onClick={google}>
           <img className='rounded' src='/img/google_icon.svg' />
         </button>
-        <Link passHref href={'/register'}>
+        <Link passHref href={'/login'}>
           <a className=' text-blue-400 mt-4'>
-            <Typography>need a account?</Typography>
+            <Typography>already have an account?</Typography>
           </a>
         </Link>
       </div>
