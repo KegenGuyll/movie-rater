@@ -6,7 +6,7 @@ interface Props {
 }
 
 const WatchListVisibility: FunctionComponent<Props> = ({ visible }) => {
-  if (!visible) return null;
+  if (typeof visible === 'undefined') return null;
 
   return (
     <div className='py-1 px-2 rounded-full border border-dark-text  text-dark-text'>

@@ -14,12 +14,16 @@ const Modal: FunctionComponent<Props> = ({
   children,
 }: Props) => {
   if (!open) {
-    document.body.style.overflow = 'unset';
+    if (process.browser) {
+      document.body.style.overflow = 'unset';
+    }
     return null;
   }
 
-  document.body.scrollTop = document.documentElement.scrollTop = 0;
-  document.body.style.overflow = 'hidden';
+  if (process.browser) {
+    document.body.scrollTop = document.documentElement.scrollTop = 0;
+    document.body.style.overflow = 'hidden';
+  }
 
   return (
     <div className=' bg-dark-light bg-opacity-50 absolute z-50 top-0 bottom-0 right-0 left-0'>

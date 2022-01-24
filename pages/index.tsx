@@ -4,20 +4,69 @@ import { useEffect, useState } from 'react';
 import Poster from '../components/movies/poster';
 import Navigation from '../components/navigation';
 import getIMDBPopular from '../endpoints/imdb/getPopular';
+import getTrendingMovies from '../endpoints/TMDB/getTrending';
 import { IMDBPopular } from '../models/imdb/popular';
+import { Trending } from '../models/TMDB';
 
 const Home: NextPage = () => {
   const [popularMovies, setPopularMovies] = useState<IMDBPopular[] | null>(
     null
   );
+  const [trendingMovies, setTrendingMovies] = useState<Trending>({
+    page: 1,
+    results: [],
+  });
+  const [page, setPage] = useState(1);
+
+  const fetchTrending = async () => {
+    try {
+      const { res } = await getTrendingMovies('movie', 'week');
+
+      if (res) {
+        setTrendingMovies(res.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchNewPage = async () => {
+    try {
+      const { res } = await getTrendingMovies(
+        'movie',
+        'week',
+        trendingMovies.page + 1
+      );
+
+      if (res) {
+        setTrendingMovies((prevState) => ({
+          page: res.data.page,
+          results: [...prevState.results, ...res.data.results],
+        }));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleWindow = () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight) {
+      fetchNewPage();
+    }
+  };
 
   useEffect(() => {
-    getIMDBPopular().then(({ res, err }) => {
-      if (res) {
-        setPopularMovies(res.data);
-        return res.data;
-      }
-    });
+    if (trendingMovies.page === 1) {
+      fetchNewPage();
+    }
+
+    window.addEventListener('scroll', handleWindow);
+
+    return () => window.removeEventListener('scroll', handleWindow);
+  }, [trendingMovies]);
+
+  useEffect(() => {
+    fetchTrending();
   }, []);
 
   return (
@@ -29,8 +78,8 @@ const Home: NextPage = () => {
             'm-8 p-8 auto-cols-min w-max gap-2 md:gap-4',
             'grid grid-cols-2 xs:grid-cols-3 md:grid-cols-3 2xl:grid-cols-7'
           )}>
-          {popularMovies?.map((value) => {
-            return <Poster key={value.uuid} movie={value} />;
+          {trendingMovies?.results?.map((value) => {
+            return <Poster key={value.id} movie={value} />;
           })}
         </div>
       </section>

@@ -2,7 +2,7 @@ import { FunctionComponent } from 'react';
 import Typography from '../typography';
 
 interface Props {
-  rating: string;
+  rating: string | null | undefined;
 }
 
 const MovieRating: FunctionComponent<Props> = ({ rating }: Props) => {

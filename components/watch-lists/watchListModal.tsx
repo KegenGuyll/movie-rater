@@ -17,10 +17,12 @@ import Typography from '../typography';
 interface Props {
   title: string;
   poster: string;
-  rotten: RottenMovie;
+  rotten: RottenMovie | undefined | null;
   imdb: IMDBMovie | null;
   personal: MovieDocument | null;
+  imdbScore: number;
   year: number;
+  imdbId: string;
 }
 
 const WatchListModal: FunctionComponent<Props> = ({
@@ -29,7 +31,9 @@ const WatchListModal: FunctionComponent<Props> = ({
   rotten,
   imdb,
   personal,
+  imdbScore,
   year,
+  imdbId,
 }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [watchListTitle, setWatchListTitle] = useState<string>('');
@@ -42,11 +46,11 @@ const WatchListModal: FunctionComponent<Props> = ({
   const router = useRouter();
 
   const handleExistMovie = async () => {
-    if (!imdb || !authUser) return;
+    if (!imdbId || !authUser) return;
 
     const authToken = await authUser.getIdToken();
 
-    getMovieExist(authToken, imdb.uuid).then(({ res }) => {
+    getMovieExist(authToken, imdbId).then(({ res }) => {
       if (res) {
         setExistMovie(res.data);
       }
@@ -72,14 +76,14 @@ const WatchListModal: FunctionComponent<Props> = ({
 
   useEffect(() => {
     handleExistMovie();
-  }, [imdb, authUser]);
+  }, [imdb, authUser, imdbId]);
 
   useEffect(() => {
     handleGetLists();
   }, [authUser]);
 
   const handleMovieAdd = async (listId: string) => {
-    if (!authUser) return;
+    if (!authUser || !rotten) return;
 
     try {
       const authToken = await authUser.getIdToken(true);
@@ -88,8 +92,8 @@ const WatchListModal: FunctionComponent<Props> = ({
         title: rotten.title,
         description: rotten.movieSynopsis,
         rottenId: rotten.uuid,
-        imdbId: imdb?.uuid || null,
-        poster: imdb?.poster || rotten.poster,
+        imdbId: imdbId,
+        poster: `https://image.tmdb.org/t/p/w500${poster}`,
         rating: {
           rotten: {
             audiencescore: rotten.audiencescore,
@@ -98,7 +102,7 @@ const WatchListModal: FunctionComponent<Props> = ({
             tomatometerscore: rotten.tomatometerscore,
           },
           imdb: {
-            score: imdb?.score || null,
+            score: String(imdbScore),
             metaScore: imdb?.metaScore || null,
           },
           personal: {
@@ -147,6 +151,8 @@ const WatchListModal: FunctionComponent<Props> = ({
     }
   };
 
+  if (!rotten) return null;
+
   const renderModalAddWatchList = () => {
     return (
       <div className='text-dark-text'>
@@ -155,7 +161,7 @@ const WatchListModal: FunctionComponent<Props> = ({
             <Image
               className='rounded'
               alt={title}
-              src={poster}
+              src={`https://image.tmdb.org/t/p/w500${poster}`}
               objectFit='cover'
               height={120}
               width={80}

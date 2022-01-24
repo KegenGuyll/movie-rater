@@ -1,18 +1,17 @@
 import { FunctionComponent, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/dist/client/router';
-import PopularityRating from './popularityRating';
-import { IMDBPopular } from '../../models/imdb/popular';
+import { Movie } from '../../models/TMDB';
 
 interface Props {
-  movie: IMDBPopular;
+  movie: Movie;
   clickable?: boolean;
 }
 
 const Poster: FunctionComponent<Props> = ({ movie, clickable }) => {
   const [display, setDisplay] = useState<boolean>(true);
   const router = useRouter();
-  const { title, uuid, img, year } = movie;
+  const { title, poster_path, release_date, id } = movie;
 
   const imgNotFound = () => {
     setDisplay(false);
@@ -21,28 +20,24 @@ const Poster: FunctionComponent<Props> = ({ movie, clickable }) => {
   if (!display) return null;
 
   const onClick = (title: string, year: string) => {
-    router.push(`/movies/${title}?year=${year}&imdbuuid=${uuid}`);
+    router.push(`/movies/${title}?year=${year}&id=${id}`);
   };
 
   return (
     <button
       disabled={!clickable}
       type='button'
-      onClick={() => onClick(title, year)}
+      onClick={() => onClick(title, release_date.split('-')[0])}
       className='bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative'>
       <Image
         className='rounded object-fill select-none'
         layout='fill'
         objectFit='fill'
-        src={
-          img ? img : `http://img.omdbapi.com/?i=${uuid}&h=600&apikey=8a6ad534`
-        }
+        src={`https://image.tmdb.org/t/p/w500${poster_path}`}
         alt={title}
+        blurDataURL={`https://image.tmdb.org/t/p/w100${poster_path}`}
         onError={imgNotFound}
       />
-      <div className='absolute top-1 right-1'>
-        <PopularityRating movie={movie} />
-      </div>
     </button>
   );
 };

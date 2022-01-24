@@ -11,6 +11,7 @@ module.exports = {
       'lh3.googleusercontent.com',
       'www.rottentomatoes.com',
       'avatars.dicebear.com',
+      'image.tmdb.org',
     ],
   },
   swcMinify: true,

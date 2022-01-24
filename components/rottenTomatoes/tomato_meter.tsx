@@ -3,15 +3,15 @@ import Image from 'next/image';
 import clsx from 'clsx';
 
 interface Props {
-  rottenTomatoesStatus: 'certified-fresh' | 'rotten' | 'fresh' | '';
-  rottenTomatoesScore: string;
+  rottenTomatoesStatus: 'certified-fresh' | 'rotten' | 'fresh' | '' | undefined;
+  rottenTomatoesScore: string | undefined;
 }
 
 const TomatoMeter: FunctionComponent<Props> = ({
   rottenTomatoesScore,
   rottenTomatoesStatus,
 }: Props) => {
-  if (!rottenTomatoesStatus) return null;
+  if (!rottenTomatoesStatus || !rottenTomatoesScore) return null;
 
   return (
     <div className={clsx('flex flex-wrap items-center')}>
