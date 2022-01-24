@@ -2,15 +2,15 @@ import { FunctionComponent } from 'react';
 import Image from 'next/image';
 
 interface Props {
-  rottenTomatoesStatus: 'spilled' | 'upright' | '';
-  rottenTomatoesScore: string;
+  rottenTomatoesStatus: 'spilled' | 'upright' | '' | undefined;
+  rottenTomatoesScore: string | undefined;
 }
 
 const AudienceMeter: FunctionComponent<Props> = ({
   rottenTomatoesScore,
   rottenTomatoesStatus,
 }: Props) => {
-  if (!rottenTomatoesStatus) return null;
+  if (!rottenTomatoesStatus || !rottenTomatoesScore) return null;
 
   return (
     <div className='flex flex-wrap items-center'>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://movielot.vercel.app</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/login</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/my-movies</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/register</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/search</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/watch-list</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/movies/[title]</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/movies/search</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/user/[userId]/[watchlistId]</loc>
+  </url>
+</urlset>

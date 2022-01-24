@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      require('./scripts/generate-sitemap.js');
+    }
+
+    return config;
+  },
   reactStrictMode: true,
   images: {
     domains: [
@@ -11,6 +18,7 @@ module.exports = {
       'lh3.googleusercontent.com',
       'www.rottentomatoes.com',
       'avatars.dicebear.com',
+      'image.tmdb.org',
     ],
   },
   swcMinify: true,
