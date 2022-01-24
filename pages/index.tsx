@@ -1,5 +1,6 @@
 import clsx from 'clsx';
 import type { NextPage } from 'next';
+import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import Poster from '../components/movies/poster';
 import Navigation from '../components/navigation';
@@ -71,6 +72,10 @@ const Home: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>MovieLot | Trending</title>
+        <meta name='description' content='View the new trending movies' />
+      </Head>
       <Navigation />
       <section className='flex flex-col items-center'>
         <div

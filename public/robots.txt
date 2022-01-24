@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://movielot.vercel.app/sitemap.xml
