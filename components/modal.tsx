@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import { FunctionComponent } from 'react';
-import OutsideClickHandler from 'react-outside-click-handler';
 
 interface Props {
   open: boolean;
@@ -27,20 +26,18 @@ const Modal: FunctionComponent<Props> = ({
 
   return (
     <div className=' bg-dark-light bg-opacity-50 absolute z-50 top-0 bottom-0 right-0 left-0'>
-      <OutsideClickHandler onOutsideClick={(e) => setOpen(false)}>
-        <div
-          className={clsx(
-            'absolute px-4 pt-8 pb-8 max-w-2xl overflow-auto h-3/4 m-auto top-0 bottom-0 right-0 left-0 z-50 rounded',
-            'bg-dark-background shadow transition-height duration-150'
-          )}>
-          <button
-            onClick={(e) => setOpen(false)}
-            className='text-dark-text mb-10 float-right'>
-            <span className='material-icons '>close</span>
-          </button>
-          <div className='mt-10'>{children}</div>
-        </div>
-      </OutsideClickHandler>
+      <div
+        className={clsx(
+          'absolute px-4 pt-8 pb-8 max-w-2xl overflow-auto h-3/4 m-auto top-0 bottom-0 right-0 left-0 z-50 rounded',
+          'bg-dark-background shadow transition-height duration-150'
+        )}>
+        <button
+          onClick={(e) => setOpen(false)}
+          className='text-dark-text mb-10 float-right'>
+          <span className='material-icons '>close</span>
+        </button>
+        <div className='mt-10'>{children}</div>
+      </div>
     </div>
   );
 };
