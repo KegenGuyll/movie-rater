@@ -1,6 +1,7 @@
-import { FunctionComponent, useState } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/dist/client/router';
+import { useRouter } from 'next/router';
+import React, { FunctionComponent, useState } from 'react';
+
 import { Movie } from '../../models/TMDB';
 
 interface Props {
@@ -19,23 +20,24 @@ const Poster: FunctionComponent<Props> = ({ movie, clickable }) => {
 
   if (!display) return null;
 
-  const onClick = (title: string, year: string) => {
-    router.push(`/movies/${title}?year=${year}&id=${id}`);
+  const onClick = (onClickTitle: string, year: string) => {
+    router.push(`/movies/${onClickTitle}?year=${year}&id=${id}`);
   };
 
   return (
     <button
+      className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative"
       disabled={!clickable}
-      type='button'
+      type="button"
       onClick={() => onClick(title, release_date.split('-')[0])}
-      className='bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative'>
+    >
       <Image
-        className='rounded object-fill select-none'
-        layout='fill'
-        objectFit='fill'
-        src={`https://image.tmdb.org/t/p/w500${poster_path}`}
         alt={title}
         blurDataURL={`https://image.tmdb.org/t/p/w100${poster_path}`}
+        className="rounded object-fill select-none"
+        layout="fill"
+        objectFit="fill"
+        src={`https://image.tmdb.org/t/p/w500${poster_path}`}
         onError={imgNotFound}
       />
     </button>

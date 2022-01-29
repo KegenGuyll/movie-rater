@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/interactive-supports-focus */
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import React, { memo, useEffect, useRef, useState } from 'react';
@@ -10,6 +11,7 @@ export interface Columns {
   name: string;
   type: 'number' | 'string' | 'date';
   clickable?: boolean;
+  // eslint-disable-next-line no-unused-vars
   clickEvent?: (value: any) => void;
 }
 
@@ -24,6 +26,7 @@ interface Props {
       enabled: boolean;
       sortKey: string;
     };
+    // eslint-disable-next-line no-unused-vars
     delete?: (id: (string | number)[]) => void;
   };
 }
@@ -56,12 +59,16 @@ const Table: React.FC<Props> = ({
     if (!options || !options.search) return () => {};
 
     const newArray = items.filter((value) =>
+      // eslint-disable-next-line prettier/prettier
       String(value[options.search!.sortKey])
         .toLowerCase()
         .includes(search.toLowerCase())
     );
 
     setFilteredRows(newArray);
+
+
+    return () => {}
   }, [search, items, rows, options]);
 
   useEffect(() => {
@@ -109,6 +116,7 @@ const Table: React.FC<Props> = ({
               className='flex items-center ml-4 text-white disabled:text-gray-500'
               disabled={!selected.length}
               tabIndex={0}
+              type='button'
               onClick={() => {
                 if (options && options.delete) {
                   options.delete(selected);
@@ -124,8 +132,8 @@ const Table: React.FC<Props> = ({
           <div className='relative text-white'>
             <form>
               <input
-                placeholder='search...'
                 className='relative pr-16 px-4 py-2 ml-4 w-11/12  bg-dark-components rounded focus:outline-none'
+                placeholder='search...'
                 type='text'
                 value={search}
                 onChange={(e) => setSearch(e.currentTarget.value)}
@@ -157,7 +165,7 @@ const Table: React.FC<Props> = ({
                   </button>
                 </th>
               )}
-              {columns.map((header, index) => (
+              {columns.map((header) => (
                 <th key={header.id} className='p-4'>
                   <button
                     className={clsx(['flex flex-row place-items-center'])}
@@ -207,9 +215,11 @@ const Table: React.FC<Props> = ({
                   {columns.map((header) => (
                     <td key={header.id} className={clsx('p-3', 'text-left')}>
                       {header.clickable ? (
+                        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
                         <a
-                          onClick={() => header.clickEvent!(row.id)}
-                          className='hover:underline decoration-sky-500'>
+                          className='hover:underline decoration-sky-500'
+                          role='button'
+                          onClick={() => header.clickEvent!(row.id)}>
                           <Typography variant='light'>
                             {header.type === 'date'
                               ? dayjs(row[header.name]).format('MMMM, DD YYYY')
@@ -240,5 +250,11 @@ const Table: React.FC<Props> = ({
     </>
   );
 };
+
+Table.defaultProps = {
+  defaultKey: undefined,
+  options: undefined
+};
+
 
 export default memo(Table);

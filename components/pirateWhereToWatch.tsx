@@ -1,8 +1,9 @@
-import { FunctionComponent, useEffect, useState } from 'react';
-import { FSearch, NumberSearch } from '../models/pirate';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+
 import searchFMovie from '../endpoints/pirate/searchFMovies';
 import searchNumberMovie from '../endpoints/pirate/searchNumberMovies';
-import Typography from './typography';
+import { FSearch, NumberSearch } from '../models/pirate';
+import Logger from '../utils/logger';
 
 interface Props {
   title: string;
@@ -20,7 +21,7 @@ const PirateWhereToWatch: FunctionComponent<Props> = ({ title }: Props) => {
         setF(res.data);
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   };
 
@@ -32,7 +33,7 @@ const PirateWhereToWatch: FunctionComponent<Props> = ({ title }: Props) => {
         setNumber(res.data);
       }
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   };
 
@@ -44,43 +45,47 @@ const PirateWhereToWatch: FunctionComponent<Props> = ({ title }: Props) => {
   }, [title]);
 
   return (
-    <div className='flex xs:mt-1 lg:mt-8  xs:space-x-1 lg:space-x-8'>
+    <div className="flex xs:mt-1 lg:mt-8  xs:space-x-1 lg:space-x-8">
       {!!f.length && (
         <button
+          className="flex flex-wrap items-center bg-dark-light rounded p-3 max-w-max "
+          type="button"
           onClick={() => window.open(f[0].url)}
-          className='flex flex-wrap items-center bg-dark-light rounded p-3 max-w-max '>
-          <div className='w-20 h-10 flex items-center'>
+        >
+          <div className="w-20 h-10 flex items-center">
             <img
-              width={'inherit'}
-              height={'inherit'}
-              style={{
-                width: 'inherit',
-                maxHeight: 'inherit',
-                height: 'inherit',
-              }}
-              className='object-contain object-left-center'
               alt={f[0].uuid}
-              src={'/img/f-movies-logo.png'}
+              className="object-contain object-left-center"
+              height="inherit"
+              src="/img/f-movies-logo.png"
+              style={{
+                height: 'inherit',
+                maxHeight: 'inherit',
+                width: 'inherit',
+              }}
+              width="inherit"
             />
           </div>
         </button>
       )}
       {!!number.length && (
         <button
+          className="flex flex-wrap items-center bg-dark-light  rounded p-3 max-w-max"
+          type="button"
           onClick={() => window.open(number[0].url)}
-          className='flex flex-wrap items-center bg-dark-light  rounded p-3 max-w-max'>
-          <div className='w-20 h-10 flex items-center'>
+        >
+          <div className="w-20 h-10 flex items-center">
             <img
-              width={'inherit'}
-              height={'inherit'}
-              style={{
-                width: 'inherit',
-                maxHeight: 'inherit',
-                height: 'inherit',
-              }}
-              className='object-contain object-left-center'
               alt={number[0].uuid}
-              src={'/img/123-movies-logo.svg'}
+              className="object-contain object-left-center"
+              height="inherit"
+              src="/img/123-movies-logo.svg"
+              style={{
+                height: 'inherit',
+                maxHeight: 'inherit',
+                width: 'inherit',
+              }}
+              width="inherit"
             />
           </div>
         </button>

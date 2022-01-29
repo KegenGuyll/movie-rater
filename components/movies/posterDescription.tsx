@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+
 import getIMDBMovie from '../../endpoints/imdb/getImdbMovie';
 import { IMDBMovie } from '../../models/imdb/popular';
 import Spinner from '../spinner';
@@ -59,7 +60,9 @@ const PosterDescription: FunctionComponent<Props> = ({
           )}
         </div>
       );
-    } else null;
+    }
+
+    return null;
   };
 
   return (
@@ -67,13 +70,15 @@ const PosterDescription: FunctionComponent<Props> = ({
       className={clsx([
         'absolute bottom-0 w-full bg-dark-components text-dark-text rounded-b  transition-height duration-150',
         showDetails ? 'h-72 p-3' : 'h-14 p-2 overflow-hidden whitespace-nowrap',
-      ])}>
+      ])}
+    >
       <Typography
-        className='mb-4 flex items-center overflow-ellipsis'
-        variant='h4'>
+        className="mb-4 flex items-center overflow-ellipsis"
+        variant="h4"
+      >
         {title}
         {details && showDetails && (
-          <div className='ml-2'>
+          <div className="ml-2">
             <MovieRating rating={details.rating} />
           </div>
         )}

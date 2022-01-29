@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+
 import Button from '../components/button';
 import Navigation from '../components/navigation';
 import Typography from '../components/typography';
@@ -9,7 +10,9 @@ import { useAuth } from '../context/AuthUserContext';
 import getAllWatchLists from '../endpoints/watchlist/getAllWatchLists';
 import { WatchList } from '../models/watchlist';
 
-const WatchList = () => {
+interface Props {}
+
+const WatchListComponent: FunctionComponent<Props> = () => {
   const [watchList, setWatchLists] = useState<WatchList[] | null>(null);
   const { authUser } = useAuth();
   const router = useRouter();
@@ -39,7 +42,7 @@ const WatchList = () => {
   const renderWatchList = () => {
     if (!authUser) {
       return (
-        <div className='text-dark-text flex justify-center items-center space-y-5 flex-col text-center'>
+        <div className="text-dark-text flex justify-center items-center space-y-5 flex-col text-center">
           <Typography>You must Login to create a watch list</Typography>
           <Button onClick={() => router.push('/login')}>
             <Typography>Login</Typography>
@@ -49,10 +52,10 @@ const WatchList = () => {
     }
 
     return (
-      <div className='flex flex-wrap justify-evenly'>
-        {watchList?.map((value) => {
-          return <PreviewPoster key={value._id} watchList={value} />;
-        })}
+      <div className="flex flex-wrap justify-evenly">
+        {watchList?.map((value) => (
+          <PreviewPoster key={value._id} watchList={value} />
+        ))}
       </div>
     );
   };
@@ -61,16 +64,16 @@ const WatchList = () => {
     <>
       <Head>
         <title>WatchList | {`${authUser?.displayName}` || 'User'}</title>
-        <meta name='description' content='View and Create movie WatchLists' />
+        <meta content="View and Create movie WatchLists" name="description" />
       </Head>
       <Navigation />
-      <div className='px-2 lg:px-4 text-dark-text'>
+      <div className="px-2 lg:px-4 text-dark-text">
         {authUser && (
-          <div className='mb-4'>
-            <Typography variant='h1'>
+          <div className="mb-4">
+            <Typography variant="h1">
               {`${authUser?.displayName}'s | WatchList`}
             </Typography>
-            <Typography variant='subtitle'>
+            <Typography variant="subtitle">
               {`${watchList?.length} WatchLists | ${totalMovies()} Movies`}
             </Typography>
           </div>
@@ -81,4 +84,4 @@ const WatchList = () => {
   );
 };
 
-export default WatchList;
+export default WatchListComponent;

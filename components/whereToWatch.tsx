@@ -1,6 +1,6 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+
 import Typography from './typography';
-import Image from 'next/image';
 
 interface Props {
   provider:
@@ -72,18 +72,21 @@ const WhereToWatch: FunctionComponent<Props> = ({
   if (!image) return null;
 
   return (
-    <button className='flex flex-wrap items-center bg-dark-light rounded p-3 max-w-max'>
-      <div className='w-20 h-10 flex items-center mr-4'>
+    <button
+      className="flex flex-wrap items-center bg-dark-light rounded p-3 max-w-max"
+      type="button"
+    >
+      <div className="w-20 h-10 flex items-center mr-4">
         <img
-          width={'inherit'}
-          height={'inherit'}
-          style={{ width: 'inherit', maxHeight: 'inherit', height: 'inherit' }}
-          className='object-contain object-left-center'
           alt={provider}
+          className="object-contain object-left-center"
+          height="inherit"
           src={image}
+          style={{ height: 'inherit', maxHeight: 'inherit', width: 'inherit' }}
+          width="inherit"
         />
       </div>
-      <Typography variant='subtitle'>{availability || 'Theaters'}</Typography>
+      <Typography variant="subtitle">{availability || 'Theaters'}</Typography>
     </button>
   );
 };

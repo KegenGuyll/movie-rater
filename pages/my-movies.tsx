@@ -1,10 +1,11 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
-import getAllReviewedMovies from '../endpoints/review/getAllReviewsMovie';
-import { useAuth } from '../context/AuthUserContext';
-import { MovieDocument } from '../models/firestore';
+import React, { useEffect, useState } from 'react';
+
 import ReviewedMoviesTable from '../components/my-movies/ReviewedMoviesTable';
 import Navigation from '../components/navigation';
+import { useAuth } from '../context/AuthUserContext';
+import getAllReviewedMovies from '../endpoints/review/getAllReviewsMovie';
+import { MovieDocument } from '../models/firestore';
 
 const MyMovie: NextPage = () => {
   const { authUser } = useAuth();
@@ -29,8 +30,8 @@ const MyMovie: NextPage = () => {
   return (
     <div>
       <Navigation />
-      <div className='p-5'>
-        <ReviewedMoviesTable movies={movies} fetchMovies={fetchMovies} />
+      <div className="p-5">
+        <ReviewedMoviesTable fetchMovies={fetchMovies} movies={movies} />
       </div>
     </div>
   );

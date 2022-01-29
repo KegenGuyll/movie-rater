@@ -1,7 +1,6 @@
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import isEmpty from 'lodash.isempty';
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 
-import fetch from '../utils/fetch';
+import fetch from "../utils/fetch";
 
 interface IResolve {
   res: AxiosResponse | null;
@@ -20,11 +19,7 @@ export default async function resolve(
   try {
     const res = await fetch(config, internalURL);
 
-    if (isEmpty(res.data)) {
-      resolved.err = new Error(`${config.url}: No data was returned`);
-    } else {
-      resolved.res = res;
-    }
+    resolved.res = res;
   } catch (err) {
     resolved.err = err;
   }

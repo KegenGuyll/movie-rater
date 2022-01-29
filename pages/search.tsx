@@ -1,5 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import React from 'react';
+
 import Navigation from '../components/navigation';
 import Search from '../components/search';
 
@@ -13,7 +15,7 @@ const SearchPage: NextPage = () => {
   return (
     <div>
       <Navigation />
-      <div className=' bg-dark-components p-2 rounded mx-2'>
+      <div className=" bg-dark-components p-2 rounded mx-2">
         <Search submitFunction={handleSearch} />
       </div>
     </div>

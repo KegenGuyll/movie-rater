@@ -1,5 +1,5 @@
-import { FunctionComponent } from 'react';
 import Image from 'next/image';
+import React, { FunctionComponent } from 'react';
 
 interface Props {
   rottenTomatoesStatus: 'spilled' | 'upright' | '' | undefined;
@@ -13,17 +13,17 @@ const AudienceMeter: FunctionComponent<Props> = ({
   if (!rottenTomatoesStatus || !rottenTomatoesScore) return null;
 
   return (
-    <div className='flex flex-wrap items-center'>
-      <div className='mr-5'>
+    <div className="flex flex-wrap items-center">
+      <div className="mr-5">
         <Image
-          width={45}
-          height={54}
           priority
-          src={`/img/rottenTomatoes/${rottenTomatoesStatus}.svg`}
           alt={rottenTomatoesStatus}
+          height={54}
+          src={`/img/rottenTomatoes/${rottenTomatoesStatus}.svg`}
+          width={45}
         />
       </div>
-      <span className='text-dark-text text-2xl'>{`${rottenTomatoesScore}%`}</span>
+      <span className="text-dark-text text-2xl">{`${rottenTomatoesScore}%`}</span>
     </div>
   );
 };

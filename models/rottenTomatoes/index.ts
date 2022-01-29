@@ -1,18 +1,18 @@
 type RottenTomatoesSearch = {
-  url: string;
-  img: string;
-  type: string;
-  uuid: string;
-  title: string;
-  year: string;
+  url: string,
+  img: string,
+  type: string,
+  uuid: string,
+  title: string,
+  year: string,
 };
 
 export interface RottenMovie {
   uuid: string;
   audiencescore: string;
   rating: string;
-  audiencestate: string;
-  tomatometerstate: string;
+  audiencestate: '' | 'spilled' | 'upright' | undefined;
+  tomatometerstate: '' | 'certified-fresh' | 'rotten' | 'fresh' | undefined;
   tomatometerscore: string;
   title: string;
   info: Info;

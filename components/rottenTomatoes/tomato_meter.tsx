@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useState } from 'react';
-import Image from 'next/image';
 import clsx from 'clsx';
+import Image from 'next/image';
+import React, { FunctionComponent } from 'react';
 
 interface Props {
   rottenTomatoesStatus: 'certified-fresh' | 'rotten' | 'fresh' | '' | undefined;
@@ -15,16 +15,16 @@ const TomatoMeter: FunctionComponent<Props> = ({
 
   return (
     <div className={clsx('flex flex-wrap items-center')}>
-      <div className='mr-5'>
+      <div className="mr-5">
         <Image
-          width={48}
-          height={48}
           priority
-          src={`/img/rottenTomatoes/${rottenTomatoesStatus}.svg`}
           alt={rottenTomatoesStatus}
+          height={48}
+          src={`/img/rottenTomatoes/${rottenTomatoesStatus}.svg`}
+          width={48}
         />
       </div>
-      <span className='text-dark-text text-2xl'>{`${rottenTomatoesScore}%`}</span>
+      <span className="text-dark-text text-2xl">{`${rottenTomatoesScore}%`}</span>
     </div>
   );
 };

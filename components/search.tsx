@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 
 interface Props extends HtmlHTMLAttributes<HTMLDivElement> {
+  // eslint-disable-next-line no-unused-vars
   submitFunction: (text: string) => void;
 }
 
@@ -26,15 +27,16 @@ const Search: FunctionComponent<Props> = ({
   };
 
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <div className={clsx(className, 'flex text-dark-text ')} {...props}>
-      <form onSubmit={onSubmit} className='w-full'>
+      <form className="w-full" onSubmit={onSubmit}>
         <input
-          value={search}
-          onChange={(e) => setSearch(e.currentTarget.value)}
           className={clsx(
             'py-[7px] px-3 w-full bg-dark-background rounded',
             'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
           )}
+          value={search}
+          onChange={(e) => setSearch(e.currentTarget.value)}
         />
       </form>
       <button
@@ -42,9 +44,10 @@ const Search: FunctionComponent<Props> = ({
           'py-[7px] px-3 rounded-r bg-dark-light flex items-center justify-center',
           'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
         )}
-        type='button'
-        onClick={(e: any) => onSubmit(e)}>
-        <span className='material-icons-outlined px-4 '>search</span>
+        type="button"
+        onClick={(e: any) => onSubmit(e)}
+      >
+        <span className="material-icons-outlined px-4 ">search</span>
       </button>
     </div>
   );
