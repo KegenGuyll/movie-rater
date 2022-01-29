@@ -1,7 +1,7 @@
-import { AxiosResponse } from 'axios';
-import { MovieDetails } from '../../models/TMDB';
+import { AxiosResponse } from "axios";
 
-import resolve from '../resolver';
+import { MovieDetails } from "../../models/TMDB";
+import resolve from "../resolver";
 
 interface IResponse extends AxiosResponse {
   data: MovieDetails;

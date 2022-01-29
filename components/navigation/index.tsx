@@ -1,6 +1,5 @@
 import clsx from 'clsx';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
@@ -10,13 +9,8 @@ import Typography from '../typography';
 import NavItem from './navItem';
 
 const Navigation: FunctionComponent = () => {
-  const router = useRouter();
   const { authUser } = useAuth();
   const [open, setOpen] = useState<boolean>(false);
-
-  const handleSearch = (search: string) => {
-    router.push(`/movies/search?search=${search}`);
-  };
 
   return (
     <nav className="sticky top-0 mb-10 z-40">
@@ -24,10 +18,7 @@ const Navigation: FunctionComponent = () => {
         <NavItem className="flex-grow lg:flex-none" href="/">
           <Image alt="brand" height="42" src="/img/brand.svg" width="100" />
         </NavItem>
-        <Search
-          className="min-w-fit flex-grow hidden lg:flex"
-          submitFunction={handleSearch}
-        />
+        <Search className="min-w-fit flex-grow hidden lg:flex" />
         <NavItem className="hidden lg:flex" href="/">
           <span className="material-icons-outlined mr-4">trending_up</span>
           <Typography>Trending</Typography>

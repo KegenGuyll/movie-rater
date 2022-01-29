@@ -1,3 +1,5 @@
+import MultiSearch, { Person, TV } from "./multiSearch";
+
 interface Popular {
   page: number;
   results: Movie[];
@@ -8,9 +10,9 @@ interface Trending {
   results: Movie[];
 }
 
-type MediaType = 'all' | 'movie' | 'tv' | 'person';
+type MediaType = "all" | "movie" | "tv" | "person";
 
-type TimeWindow = 'day' | 'week';
+type TimeWindow = "day" | "week";
 
 type Cast = {
   adult: boolean;
@@ -130,30 +132,35 @@ type KnownFor = {
 };
 
 type Movie = {
+  poster_path: string | null;
   adult: boolean;
-  backdrop_path: string;
+  overview: string;
+  release_date: string;
+  original_title: string;
   genre_ids: number[];
   id: number;
+  media_type: "movie";
   original_language: string;
-  original_title: string;
-  overview: string;
-  popularity: number;
-  poster_path: string;
-  release_date: string;
   title: string;
+  backdrop_path: string | null;
+  popularity: number;
+  vote_count: number;
   video: boolean;
   vote_average: number;
-  vote_count: number;
 };
 
 export type {
-  Popular,
-  Trending,
-  PopularPerson,
+  KnownFor,
   MediaType,
-  TimeWindow,
   Movie,
-  MovieDetails,
   MovieCast,
+  MovieDetails,
+  MultiSearch,
+  Person,
+  Popular,
+  PopularPerson,
   SearchSource,
+  TimeWindow,
+  Trending,
+  TV,
 };
