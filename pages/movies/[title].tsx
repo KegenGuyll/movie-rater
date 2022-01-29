@@ -1,44 +1,46 @@
+import clsx from 'clsx';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import Head from 'next/head';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useState } from 'react';
+
+import Button from '../../components/button';
 import MediaCard from '../../components/mediaCard';
 import Modal from '../../components/modal';
+import CastCard from '../../components/movies/castCard';
 import MovieRating from '../../components/movies/rating';
+import ReviewCard from '../../components/movies/reviewCard';
+import Navigation from '../../components/navigation';
+import PirateWhereToWatch from '../../components/pirateWhereToWatch';
+import Rating from '../../components/rating';
 import Spinner from '../../components/spinner';
 import Typography from '../../components/typography';
+import WatchListModal from '../../components/watch-lists/watchListModal';
+import WhereToWatch from '../../components/whereToWatch';
+import { useAuth } from '../../context/AuthUserContext';
 import getIMDBMovie from '../../endpoints/imdb/getImdbMovie';
+import getReviewedMovie from '../../endpoints/review/getReviewMovie';
 import getRottenMovie from '../../endpoints/rotten/getRottenTomatoesMovie';
 import getRottenTomatoesSearch from '../../endpoints/rotten/getRottenTomatoesSearch';
+import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
+import getMovieDetails from '../../endpoints/TMDB/getMovie';
+import getMovieCast from '../../endpoints/TMDB/getMovieCast';
+import { MovieDocument } from '../../models/firestore';
 import { IMDBMovie } from '../../models/imdb/popular';
 import { RottenMovie } from '../../models/rottenTomatoes';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
-import Rating from '../../components/rating';
-import { useAuth } from '../../context/AuthUserContext';
-import { MovieDocument } from '../../models/firestore';
-import clsx from 'clsx';
-import WhereToWatch from '../../components/whereToWatch';
-import getReviewedMovie from '../../endpoints/review/getReviewMovie';
-import Navigation from '../../components/navigation';
-import Button from '../../components/button';
-import Head from 'next/head';
-import WatchListModal from '../../components/watch-lists/watchListModal';
-import PirateWhereToWatch from '../../components/pirateWhereToWatch';
-import getMovieDetails from '../../endpoints/TMDB/getMovie';
 import { MovieCast, MovieDetails } from '../../models/TMDB';
-import getMovieCast from '../../endpoints/TMDB/getMovieCast';
-import CastCard from '../../components/movies/castCard';
-import ReviewCard from '../../components/movies/reviewCard';
-import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
+import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import Logger from '../../utils/logger';
 
 interface Props {
   details: MovieDetails | null;
   cast: MovieCast | null;
 }
 
-const Movie: NextPage<Props> = ({ details, cast }) => {
+const Movie: NextPage<Props> = ({ details, cast }: Props) => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   const [movie, setMovie] = useState<RottenMovie | null>(null);
   const [imdb, setImdb] = useState<IMDBMovie | null>(null);
   const query = useMemo(() => router.query, [router.query]);
@@ -50,8 +52,9 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
   const { authUser } = useAuth();
 
   useEffect(() => {
-    setIsLoading(true);
+  
     getRottenTomatoesSearch(
+      // eslint-disable-next-line prettier/prettier
       query.title as string,
       'm',
       query.year as string
@@ -62,11 +65,11 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
             if (rotten) {
               setMovie(rotten.data);
             }
-            if (!!query.imdbuuid) {
+            if (query.imdbuuid) {
               getIMDBMovie('title', query.imdbuuid as string).then(
-                ({ res: imdb }) => {
-                  if (imdb) {
-                    setImdb(imdb.data);
+                ({ res: imdbRes }) => {
+                  if (imdbRes) {
+                    setImdb(imdbRes.data);
                   }
                 }
               );
@@ -75,7 +78,7 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
         );
       }
     });
-    setIsLoading(false);
+ 
   }, [query]);
 
   useEffect(() => {
@@ -106,7 +109,7 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
         <title>{`${details.title} | ${
           details.release_date.split('-')[0]
         }`}</title>
-        <meta name='description' content={details.overview} />
+        <meta content={details.overview} name='description' />
       </Head>
       <Navigation />
       <div
@@ -117,31 +120,31 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
         <div className='flex flex-col px-4 space-y-3'>
           <div className='h-96 w-56  lg:h-[500px] lg:w-[340px] rounded relative'>
             <Image
+              priority
+              alt={details.title}
               className='rounded'
               layout='fill'
               objectFit='cover'
               src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
-              alt={details.title}
-              priority
             />
           </div>
           {authUser && (
             <WatchListModal
-              imdbScore={details.vote_average}
-              rotten={movie}
               imdb={imdb}
-              personal={documentMovie}
-              title={details.title}
-              poster={details.poster_path}
-              year={Number(query.year)}
               imdbId={details.imdb_id}
+              imdbScore={details.vote_average}
+              personal={documentMovie}
+              poster={details.poster_path}
+              rotten={movie}
+              title={details.title}
+              year={Number(query.year)}
             />
           )}
           {authUser && (
             <Button
-              onClick={() => setMovieReview(true)}
               className='hidden lg:block'
-              variant='primary'>
+              variant='primary'
+              onClick={() => setMovieReview(true)}>
               <Typography className='flex items-center' variant='h4'>
                 <span className='material-icons-outlined mr-2'>
                   rate_review
@@ -189,61 +192,59 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
                   'flex flex-wrap mt-5 items-center',
                   'lg:mt-0 lg:items-start lg:grid lg:gap-1 lg:grid-cols-2 xl:grid-cols-3'
                 )}>
-                {details.genres.map((value) => {
-                  return (
+                {details.genres.map((value) => (
                     <div
-                      title={value.name}
+                      key={value.id}
                       className='border mx-3 my-2 truncate border-dark-text py-1 px-3 rounded-3xl'
-                      key={value.id}>
+                      title={value.name}>
                       <Typography variant='light'>{value.name}</Typography>
                     </div>
-                  );
-                })}
+                  ))}
               </div>
             </div>
           </MediaCard>
           {!documentMovie && authUser && (
             <MediaCard className='block lg:hidden col-span-1'>
-              <div
-                onClick={() => setMovieReview(true)}
-                className='flex items-center text-center border rounded border-dark-text border-dashed p-11'>
+              <button
+                className='flex items-center text-center border rounded border-dark-text border-dashed p-11'
+                type='button'
+                onClick={() => setMovieReview(true)}>
                 <Typography>Rate this movie</Typography>
-              </div>
+              </button>
             </MediaCard>
           )}
           <ReviewCard
             details={details}
-            movie={movie}
             documentMovie={documentMovie}
+            movie={movie}
             setMovieReview={setMovieReview}
           />
           {movie && !!movie.whereToWatch.length && (
             <MediaCard
-              title='Where To Watch'
               className={clsx(
                 documentMovie ? 'col-span-1' : 'col-span-2 lg:col-span-1'
-              )}>
+              )}
+              title='Where To Watch'>
               <div
                 className={clsx(
                   'grid grid-cols-1  xs:grid-cols-2  xs:gap-1 lg:gap-8',
                   documentMovie ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
                 )}>
-                {movie.whereToWatch.map((value, key) => {
-                  return (
+                {movie.whereToWatch.map((value, key) => (
                     <WhereToWatch
+                      // eslint-disable-next-line react/no-array-index-key
                       key={key}
-                      provider={value.provider as any}
                       availability={value.availability}
+                      provider={value.provider as any}
                     />
-                  );
-                })}
+                  ))}
               </div>
               <PirateWhereToWatch title={details.title} />
             </MediaCard>
           )}
           <MediaCard
-            title='Synopsis'
-            className={clsx('col-span-2', 'lg:col-auto')}>
+            className={clsx('col-span-2', 'lg:col-auto')}
+            title='Synopsis'>
             <Typography>{details.overview}</Typography>
           </MediaCard>
           {documentMovie && documentMovie.notes && (
@@ -252,7 +253,7 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
             </MediaCard>
           )}
           {movie && (
-            <MediaCard title='Movie Info' className='col-span-1'>
+            <MediaCard className='col-span-1' title='Movie Info'>
               {movie && movie.movieInfo && (
                 <div>
                   {Object.keys(movie.movieInfo).map((value) => {
@@ -260,29 +261,28 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
                       return null;
                     }
                     return (
-                      <div className='my-5' key={value}>
+                      <div key={value} className='my-5'>
                         <Typography variant='h4'>
                           {capitalizeFirstLetter(value).replace('-', ' ')} -{' '}
                         </Typography>
                         {(typeof (movie.movieInfo as any)[value] as any) ===
                         'string' ? (
-                          <Typography variant='light' className='pl-3'>
+                          <Typography className='pl-3' variant='light'>
                             {(movie.movieInfo as any)[value]}
                           </Typography>
                         ) : (
                           <ul>
                             {((movie.movieInfo as any)[value] as string[]).map(
-                              (value: string, index) => {
-                                return (
+                              (info: string, index) => (
+                                  // eslint-disable-next-line react/no-array-index-key
                                   <li key={index}>
                                     <Typography
-                                      variant='light'
-                                      className='pl-3'>
-                                      {value}
+                                      className='pl-3'
+                                      variant='light'>
+                                      {info}
                                     </Typography>
                                   </li>
-                                );
-                              }
+                                )
                             )}
                           </ul>
                         )}
@@ -300,12 +300,12 @@ const Movie: NextPage<Props> = ({ details, cast }) => {
       <Modal open={movieReview} setOpen={setMovieReview}>
         <div>
           <Rating
-            defaultSimpleScore={documentMovie?.simpleScore}
-            defaultScore={documentMovie?.advancedScore}
-            closeModal={setMovieReview}
-            movie={movie}
-            imdb={imdb}
             advanceScore={advancedScoring}
+            closeModal={setMovieReview}
+            defaultScore={documentMovie?.advancedScore}
+            defaultSimpleScore={documentMovie?.simpleScore}
+            imdb={imdb}
+            movie={movie}
             setAdvanceScore={setAdvancedScoring}
           />
         </div>
@@ -335,21 +335,21 @@ Movie.getInitialProps = async (context) => {
 
     if (movieCastData && movieDetailsData) {
       return {
-        details: movieDetailsData.data,
         cast: movieCastData.data,
+        details: movieDetailsData.data,
       };
-    } else {
+    } 
       return {
-        details: null,
         cast: null,
+        details: null,
       };
-    }
+    
   } catch (error) {
-    console.error(error);
+     Logger.error(error);
 
     return {
-      details: null,
       cast: null,
+      details: null,
     };
   }
 };

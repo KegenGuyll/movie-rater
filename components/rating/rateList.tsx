@@ -1,9 +1,11 @@
-import { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+
 import Typography from '../typography';
 import RateItem from './rateItem';
 
 interface Props {
   label: string;
+  // eslint-disable-next-line no-unused-vars
   setValue: (value: number | null) => void;
   scale: number;
   defaultValue?: number | null;
@@ -34,22 +36,26 @@ const RateList: FunctionComponent<Props> = ({
   }, [selectedValue, setValue]);
 
   return (
-    <div className='text-dark-text'>
-      <Typography className='mb-2' variant='h3'>
+    <div className="text-dark-text">
+      <Typography className="mb-2" variant="h3">
         {label}
       </Typography>
-      <div className='flex flex-wrap justify-between items-center'>
+      <div className="flex flex-wrap justify-between items-center">
         {array.map((value) => (
           <RateItem
             key={value}
-            value={value}
             selected={selectedValue === value}
             setClicked={setSelectedValue}
+            value={value}
           />
         ))}
       </div>
     </div>
   );
+};
+
+RateList.defaultProps = {
+  defaultValue: null,
 };
 
 export default RateList;

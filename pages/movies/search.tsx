@@ -1,7 +1,8 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/dist/client/router';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+
 import MediaCard from '../../components/mediaCard';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
@@ -38,29 +39,29 @@ const Search: NextPage = () => {
   return (
     <div>
       <Navigation />
-      <div className='lg:px-4'>
+      <div className="lg:px-4">
         {!results || isLoading ? (
-          <div className='flex h-full w-full justify-center items-center text-dark-text text-xl'>
+          <div className="flex h-full w-full justify-center items-center text-dark-text text-xl">
             <Spinner />
           </div>
         ) : (
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-            {results.map((value, key) => (
-              <MediaCard onClick={() => onSelect(value)} key={key}>
-                <div className='flex items-center'>
-                  <div className='mr-5'>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {results.map((value) => (
+              <MediaCard key={value.uuid} onClick={() => onSelect(value)}>
+                <div className="flex items-center">
+                  <div className="mr-5">
                     {value.poster && (
                       <Image
-                        className='rounded'
+                        alt={value.title}
+                        className="rounded"
+                        height={221}
                         src={value.poster}
                         width={137}
-                        height={221}
-                        alt={value.title}
                       />
                     )}
                   </div>
-                  <div className='flex flex-col'>
-                    <Typography variant='h3'>{value.title}</Typography>
+                  <div className="flex flex-col">
+                    <Typography variant="h3">{value.title}</Typography>
                     <Typography>{value.year}</Typography>
                   </div>
                 </div>

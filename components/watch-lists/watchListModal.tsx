@@ -1,6 +1,12 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { FormEvent, FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FormEvent,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from 'react';
+
 import { useAuth } from '../../context/AuthUserContext';
 import addMovie from '../../endpoints/watchlist/addMovie';
 import createWatchList from '../../endpoints/watchlist/createWatchList';
@@ -10,6 +16,7 @@ import { MovieDocument } from '../../models/firestore';
 import { IMDBMovie } from '../../models/imdb/popular';
 import { RottenMovie } from '../../models/rottenTomatoes';
 import { AddMovie, ExistMovie, WatchList } from '../../models/watchlist';
+import Logger from '../../utils/logger';
 import Button from '../button';
 import Modal from '../modal';
 import Typography from '../typography';
@@ -89,27 +96,27 @@ const WatchListModal: FunctionComponent<Props> = ({
       const authToken = await authUser.getIdToken(true);
 
       const data: AddMovie = {
-        title: rotten.title,
         description: rotten.movieSynopsis,
-        rottenId: rotten.uuid,
-        imdbId: imdbId,
+        imdbId,
         poster: `https://image.tmdb.org/t/p/w500${poster}`,
         rating: {
-          rotten: {
-            audiencescore: rotten.audiencescore,
-            audiencestate: rotten.audiencestate as any,
-            tomatometerstate: rotten.tomatometerstate as any,
-            tomatometerscore: rotten.tomatometerscore,
-          },
           imdb: {
-            score: String(imdbScore),
             metaScore: imdb?.metaScore || null,
+            score: String(imdbScore),
           },
           personal: {
             advancedScore: personal?.averagedAdvancedScore || null,
             simpleScore: personal?.simpleScore || null,
           },
+          rotten: {
+            audiencescore: rotten.audiencescore,
+            audiencestate: rotten.audiencestate,
+            tomatometerscore: rotten.tomatometerscore,
+            tomatometerstate: rotten.tomatometerstate,
+          },
         },
+        rottenId: rotten.uuid,
+        title: rotten.title,
         year,
       };
 
@@ -123,7 +130,7 @@ const WatchListModal: FunctionComponent<Props> = ({
 
       setOpen(false);
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   };
 
@@ -136,9 +143,9 @@ const WatchListModal: FunctionComponent<Props> = ({
 
       await createWatchList(
         {
-          title: watchListTitle,
           description: watchListDes,
           public: watchListPub,
+          title: watchListTitle,
         },
         authToken
       );
@@ -147,111 +154,110 @@ const WatchListModal: FunctionComponent<Props> = ({
 
       setCreateWatchList(false);
     } catch (error) {
-      console.error(error);
+      Logger.error(error);
     }
   };
 
   if (!rotten) return null;
 
-  const renderModalAddWatchList = () => {
-    return (
-      <div className='text-dark-text'>
-        <div className='flex mb-4'>
-          <div className='mr-8'>
-            <Image
-              className='rounded'
-              alt={title}
-              src={`https://image.tmdb.org/t/p/w500${poster}`}
-              objectFit='cover'
-              height={120}
-              width={80}
-            />
-          </div>
-          <div>
-            <Typography variant='h2'>Add to list</Typography>
-            <Typography variant='subtitle'>{title}</Typography>
-          </div>
+  const renderModalAddWatchList = () => (
+    <div className="text-dark-text">
+      <div className="flex mb-4">
+        <div className="mr-8">
+          <Image
+            alt={title}
+            className="rounded"
+            height={120}
+            objectFit="cover"
+            src={`https://image.tmdb.org/t/p/w500${poster}`}
+            width={80}
+          />
         </div>
-        <div className='divide-y'>
-          <div className='pb-2 space-y-2'>
-            <Button
-              onClick={() => setCreateWatchList(true)}
-              className='w-full flex items-center '>
-              <span className='material-icons-outlined mr-4'>add</span>
-              Create WatchList
-            </Button>
-            <Button
-              onClick={handleViewWatchList}
-              className='w-full flex items-center'>
-              <span className='material-icons-outlined mr-4'>view_list</span>
-              View WatchLists
-            </Button>
-          </div>
-          <div className='flex flex-col space-y-2 pt-2'>
-            {lists?.map((value) => {
-              return (
-                <Button
-                  onClick={() => handleMovieAdd(value._id)}
-                  className='w-full flex items-center'
-                  key={value._id}>
-                  <span className='material-icons-outlined mr-4'>
-                    {existMovie
-                      ? existMovie.map((movie) =>
-                          movie.listId === value._id ? 'checklist_rtl' : 'list'
-                        )
-                      : 'list'}
-                  </span>
-                  {value.title}
-                </Button>
-              );
-            })}
-          </div>
+        <div>
+          <Typography variant="h2">Add to list</Typography>
+          <Typography variant="subtitle">{title}</Typography>
         </div>
       </div>
-    );
-  };
-
-  const renderModalCreateWatchList = () => {
-    return (
-      <div className='text-dark-text'>
-        <div className='mb-3'>
-          <Typography variant='h3'>Create Watch List</Typography>
-          <Typography variant='subtitle'>
-            {`creating this list will not add ${rotten.title} to your new list`}
-          </Typography>
-        </div>
-        <form>
-          <div className='flex flex-col space-y-3 mb-3'>
-            <input
-              onChange={(e) => setWatchListTitle(e.currentTarget.value)}
-              value={watchListTitle}
-              className='p-2 bg-dark-components rounded'
-              placeholder='Title'></input>
-            <textarea
-              onChange={(e) => setWatchListDes(e.currentTarget.value)}
-              value={watchListDes}
-              className='p-2 bg-dark-components rounded'
-              placeholder='Description'></textarea>
-            <Button onClick={() => setWatchListPub(!watchListPub)}>
-              <span className='material-icons-outlined mr-2'>
-                {watchListPub ? 'check_box' : 'check_box_outline_blank'}
-              </span>
-              Make this WatchList Public
-            </Button>
-          </div>
-          <Button type='submit' onClick={(e) => handleCreateWatchList(e)}>
-            Create
+      <div className="divide-y">
+        <div className="pb-2 space-y-2">
+          <Button
+            className="w-full flex items-center "
+            onClick={() => setCreateWatchList(true)}
+          >
+            <span className="material-icons-outlined mr-4">add</span>
+            Create WatchList
           </Button>
-        </form>
+          <Button
+            className="w-full flex items-center"
+            onClick={handleViewWatchList}
+          >
+            <span className="material-icons-outlined mr-4">view_list</span>
+            View WatchLists
+          </Button>
+        </div>
+        <div className="flex flex-col space-y-2 pt-2">
+          {lists?.map((value) => (
+            <Button
+              key={value._id}
+              className="w-full flex items-center"
+              onClick={() => handleMovieAdd(value._id)}
+            >
+              <span className="material-icons-outlined mr-4">
+                {existMovie
+                  ? existMovie.map((movie) =>
+                      movie.listId === value._id ? 'checklist_rtl' : 'list'
+                    )
+                  : 'list'}
+              </span>
+              {value.title}
+            </Button>
+          ))}
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+
+  const renderModalCreateWatchList = () => (
+    <div className="text-dark-text">
+      <div className="mb-3">
+        <Typography variant="h3">Create Watch List</Typography>
+        <Typography variant="subtitle">
+          {`creating this list will not add ${rotten.title} to your new list`}
+        </Typography>
+      </div>
+      <form>
+        <div className="flex flex-col space-y-3 mb-3">
+          <input
+            className="p-2 bg-dark-components rounded"
+            placeholder="Title"
+            value={watchListTitle}
+            onChange={(e) => setWatchListTitle(e.currentTarget.value)}
+          />
+          <textarea
+            className="p-2 bg-dark-components rounded"
+            placeholder="Description"
+            value={watchListDes}
+            onChange={(e) => setWatchListDes(e.currentTarget.value)}
+          />
+          <Button onClick={() => setWatchListPub(!watchListPub)}>
+            <span className="material-icons-outlined mr-2">
+              {watchListPub ? 'check_box' : 'check_box_outline_blank'}
+            </span>
+            Make this WatchList Public
+          </Button>
+        </div>
+        <Button type="submit" onClick={(e) => handleCreateWatchList(e)}>
+          Create
+        </Button>
+      </form>
+    </div>
+  );
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className='hidden lg:block'>
-        <Typography className='flex items-center' variant='subtitle'>
-          <span className='material-icons-outlined mr-2'>
+      <Button className="hidden lg:block" onClick={() => setOpen(true)}>
+        <Typography className="flex items-center" variant="subtitle">
+          <span className="material-icons-outlined mr-2">
             {existMovie?.length ? 'check' : 'add'}
           </span>
           {existMovie?.length ? 'In Watchlist' : 'Add to Watchlist'}

@@ -1,23 +1,24 @@
-import Head from 'next/head';
-import { useRouter } from 'next/router';
-import { useEffect, useMemo, useState } from 'react';
-import Navigation from '../../../components/navigation';
-import Typography from '../../../components/typography';
-import { useAuth } from '../../../context/AuthUserContext';
-import getWatchList from '../../../endpoints/watchlist/getWatchList';
-import { CreateWatchList, WatchList } from '../../../models/watchlist';
-import Image from 'next/image';
-import dayjs from 'dayjs';
-import MoviePosterRating from '../../../components/watch-lists/moviePosterRating';
-import { User } from '../../../models/user';
-import getUserByUid from '../../../endpoints/user/getUserByUid';
-import Button from '../../../components/button';
-import { NextPage } from 'next/types';
-import Spinner from '../../../components/spinner';
-import WatchListVisibility from '../../../components/watch-lists/watchListVisibility';
-import Modal from '../../../components/modal';
 import clsx from 'clsx';
+import dayjs from 'dayjs';
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { NextPage } from 'next/types';
+import React,  { useEffect, useMemo, useState } from 'react';
+
+import Button from '../../../components/button';
+import Modal from '../../../components/modal';
+import Navigation from '../../../components/navigation';
+import Spinner from '../../../components/spinner';
+import Typography from '../../../components/typography';
+import MoviePosterRating from '../../../components/watch-lists/moviePosterRating';
+import WatchListVisibility from '../../../components/watch-lists/watchListVisibility';
+import { useAuth } from '../../../context/AuthUserContext';
+import getUserByUid from '../../../endpoints/user/getUserByUid';
+import getWatchList from '../../../endpoints/watchlist/getWatchList';
 import updateWatchList from '../../../endpoints/watchlist/updateWatchList';
+import { User } from '../../../models/user';
+import { WatchList } from '../../../models/watchlist';
 
 export const WatchListPage: NextPage = () => {
   const [watchList, setWatchLists] = useState<WatchList | null>(null);
@@ -42,6 +43,7 @@ export const WatchListPage: NextPage = () => {
     setToggle(watchList.public);
   }, [watchList]);
 
+  // eslint-disable-next-line prettier/prettier
   const userId = useMemo(() => router.query.userId as string, [router.query]);
   const watchListId = useMemo(
     () => router.query.watchlistId as string,
@@ -63,7 +65,6 @@ export const WatchListPage: NextPage = () => {
   };
 
   const submitUpdate = async () => {
-    console.log(watchList, title, description, authUser, toggle);
     if (!watchList || !authUser) return;
 
     const newArray = [...watchList.movies];
@@ -75,10 +76,10 @@ export const WatchListPage: NextPage = () => {
     });
 
     const payload: any = {
-      title,
       description,
-      public: toggle,
       movies: newArray,
+      public: toggle,
+      title,
     };
 
     const token = await authUser.getIdToken(true);
@@ -135,27 +136,26 @@ export const WatchListPage: NextPage = () => {
     setIsLoading(false);
   }, [authUser, userId, watchListId]);
 
-  const renderWatchList = () => {
-    return (
+  const renderWatchList = () => (
       <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-        {watchList?.movies.map((value) => {
-          return (
-            <button
+        {watchList?.movies.map((value) => (
+          <button
+            key={value.imdbId}
+              className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'
+              type='button'
               onClick={() =>
                 router.push(
                   `/movies/${value.title}?year=${value.year}&imdbuuid=${value.imdbId}`
                 )
-              }
-              key={value.imdbId}
-              className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'>
+              }>
               <div className='lg:mr-8 mr-0 flex w-full items-center justify-center'>
                 <Image
-                  className='rounded shadow'
                   alt={watchList.title}
-                  objectFit='cover'
+                  className='rounded shadow'
                   height='400'
-                  width='235'
+                  objectFit='cover'
                   src={value.poster}
+                  width='235'
                 />
               </div>
               <div className='flex flex-col'>
@@ -165,17 +165,15 @@ export const WatchListPage: NextPage = () => {
                   variant='h2'>
                   {value.title}
                 </Typography>
-                <MoviePosterRating user={creator} ratings={value.rating} />
+                <MoviePosterRating ratings={value.rating} user={creator} />
                 <Typography title={value.description} variant='light'>
                   {value.description}
                 </Typography>
               </div>
             </button>
-          );
-        })}
+          ))}
       </div>
     );
-  };
 
   if (isLoading) {
     return (
@@ -189,8 +187,8 @@ export const WatchListPage: NextPage = () => {
     return (
       <>
         <Head>
-          <title>{`WatchList | Private`}</title>
-          <meta name='description' content={error} />
+          <title>WatchList | Private</title>
+          <meta content={error} name='description' />
         </Head>
         <Navigation />
         <div className='text-dark-text flex justify-center items-center space-y-5 flex-col text-center'>
@@ -207,7 +205,7 @@ export const WatchListPage: NextPage = () => {
     <>
       <Head>
         <title>{`WatchList | ${watchList?.title}`}</title>
-        <meta name='description' content={watchList?.description} />
+        <meta content={watchList?.description} name='description' />
       </Head>
       <Navigation />
       <div className='mb-4 text-dark-text bg-dark-background sticky  top-16  z-30 px-2 lg:px-8 py-4 '>
@@ -215,8 +213,9 @@ export const WatchListPage: NextPage = () => {
           <Typography variant='h1'>WatchList | {watchList?.title}</Typography>
           <WatchListVisibility visible={watchList?.public} />
           <button
-            onClick={() => setOpen(true)}
-            className='flex items-center justify-center p-2 rounded-full hover:bg-dark-light'>
+            className='flex items-center justify-center p-2 rounded-full hover:bg-dark-light'
+            type='button'
+            onClick={() => setOpen(true)}>
             <span className='material-icons-outlined'>edit</span>
           </button>
         </div>
@@ -240,9 +239,9 @@ export const WatchListPage: NextPage = () => {
               Title
             </Typography>
             <input
-              onChange={(e) => setTitle(e.currentTarget.value)}
               className='p-2 rounded bg-dark-components w-3/5'
               value={title}
+              onChange={(e) => setTitle(e.currentTarget.value)}
             />
           </div>
           <div>
@@ -250,10 +249,10 @@ export const WatchListPage: NextPage = () => {
               Description
             </Typography>
             <textarea
-              onChange={(e) => setDescription(e.currentTarget.value)}
               className='p-2 rounded bg-dark-components w-3/5'
-              value={description}
               rows={4}
+              value={description}
+              onChange={(e) => setDescription(e.currentTarget.value)}
             />
           </div>
           <div>
@@ -266,23 +265,24 @@ export const WatchListPage: NextPage = () => {
                   'md:w-14 md:h-7 w-12 h-6 flex items-center rounded-full p-1',
                   !toggle ? ' bg-dark-components' : ' bg-dark-light'
                 )}
+                type='button'
                 onClick={() => {
                   setToggle(!toggle);
                 }}>
                 {/* Switch */}
                 <div
                   className={
-                    'bg-black md:w-6 md:h-6 h-5 w-5 bg-dark-background rounded-full shadow-md transform duration-300 ease-in-out' +
-                    (!toggle ? null : toggleClass)
-                  }></div>
+                    `bg-black md:w-6 md:h-6 h-5 w-5 bg-dark-background rounded-full shadow-md transform duration-300 ease-in-out${ 
+                    !toggle ? null : toggleClass}`
+                  } />
               </button>
             </div>
           </div>
           <div className='space-y-2 max-h-80 ß  overflow-auto'>
             {watchList?.movies.map((movies) => (
               <div
-                className='bg-dark-components p-2 rounded flex items-center'
-                key={movies.imdbId}>
+                key={movies.imdbId}
+                className='bg-dark-components p-2 rounded flex items-center'>
                 <Typography
                   className={clsx(
                     'flex-grow',
@@ -292,11 +292,12 @@ export const WatchListPage: NextPage = () => {
                   {movies.title}
                 </Typography>
                 <button
-                  onClick={() => handleRemoveMovies(movies.imdbId)}
                   className={clsx(
                     'flex items-center justify-center p-2 hover:bg-dark-light rounded-full',
                     'transition-all duration-100'
-                  )}>
+                  )}
+                  type='button'
+                  onClick={() => handleRemoveMovies(movies.imdbId)}>
                   <span className='material-icons-outlined '>
                     {removedWatchListItems.includes(movies.imdbId)
                       ? 'undo'
@@ -307,9 +308,9 @@ export const WatchListPage: NextPage = () => {
             ))}
           </div>
           <Button
-            onClick={submitUpdate}
             className='w-full text-center text-dark-background'
-            variant='primary'>
+            variant='primary'
+            onClick={submitUpdate}>
             <span className='material-icons-outlined mr-3'>sync_alt</span>
             <Typography variant='h4'>Update Watchlist</Typography>
           </Button>

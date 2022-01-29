@@ -1,6 +1,7 @@
-import { useMemo } from 'react';
-import { useAuth } from '../../context/AuthUserContext';
 import { useRouter } from 'next/router';
+import React, { useMemo } from 'react';
+
+import { useAuth } from '../../context/AuthUserContext';
 import deleteReviewedMovie from '../../endpoints/review/deleteReviewedMovie';
 import { MovieDocument } from '../../models/firestore';
 import Table, { Columns } from '../table';
@@ -16,13 +17,24 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
 }) => {
   const router = useRouter();
   const { authUser } = useAuth();
+
+  const handleMovieRoute = (id: number) => {
+    if (!movies) return;
+
+    const selectedMovie = movies[id];
+
+    router.push(
+      `/movies/${selectedMovie.title}?year=${selectedMovie.rotten?.info.year}&imdbuuid=${selectedMovie.imdb?.uuid}`
+    );
+  };
+
   const columns: Columns[] = [
     {
+      clickEvent: (id: number) => handleMovieRoute(id),
+      clickable: true,
       id: 1,
       name: 'Title',
       type: 'string',
-      clickable: true,
-      clickEvent: (id: number) => handleMovieRoute(id),
     },
     {
       id: 2,
@@ -53,28 +65,16 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
   const rows = useMemo(() => {
     if (!movies) return [];
 
-    return movies.map((value, index) => {
-      return {
-        id: index,
-        Title: value.title,
-        'Personal Score': value.averagedAdvancedScore || value.simpleScore,
-        'Tomato Score': value.rotten?.tomatometerscore,
-        'Audience Score': value.rotten?.audiencescore,
-        'Reviewed Date': value.createdAt.seconds * 1000,
-        Year: value.rotten?.info.year,
-      };
-    });
+    return movies.map((value, index) => ({
+      'Audience Score': value.rotten?.audiencescore,
+      'Personal Score': value.averagedAdvancedScore || value.simpleScore,
+      'Reviewed Date': value.createdAt.seconds * 1000,
+      Title: value.title,
+      'Tomato Score': value.rotten?.tomatometerscore,
+      Year: value.rotten?.info.year,
+      id: index,
+    }));
   }, [movies]);
-
-  const handleMovieRoute = (id: number) => {
-    if (!movies) return;
-
-    const selectedMovie = movies[id];
-
-    router.push(
-      `/movies/${selectedMovie.title}?year=${selectedMovie.rotten?.info.year}&imdbuuid=${selectedMovie.imdb?.uuid}`
-    );
-  };
 
   const deleteMovie = async (ids: (string | number)[]) => {
     if (!authUser || !movies) return;
@@ -91,18 +91,18 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
   };
 
   const options = {
+    delete: deleteMovie,
     rowsSelectable: true,
     search: {
       enabled: true,
       sortKey: 'Title',
     },
     title: 'Reviewed Movies',
-    delete: deleteMovie,
   };
 
   return (
-    <div className='p-5'>
-      <Table rows={rows} columns={columns} options={options} />
+    <div className="p-5">
+      <Table columns={columns} options={options} rows={rows} />
     </div>
   );
 };

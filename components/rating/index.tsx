@@ -1,18 +1,21 @@
-import { FunctionComponent, useMemo, useState } from 'react';
-import Typography from '../typography';
-import RateList from './rateList';
 import { Timestamp } from 'firebase/firestore';
+import React, { FunctionComponent, useMemo, useState } from 'react';
+
 import { useAuth } from '../../context/AuthUserContext';
-import { RottenMovie } from '../../models/rottenTomatoes';
-import { IMDBMovie } from '../../models/imdb/popular';
 import createReviewedMovie from '../../endpoints/review/createReviewMovie';
 import { AdvancedScore } from '../../models/firestore';
+import { IMDBMovie } from '../../models/imdb/popular';
+import { RottenMovie } from '../../models/rottenTomatoes';
+import Typography from '../typography';
+import RateList from './rateList';
 
 interface Props {
   advanceScore?: boolean;
+  // eslint-disable-next-line no-unused-vars
   setAdvanceScore: (value: boolean) => void;
   movie: RottenMovie | null;
   imdb: IMDBMovie | null;
+  // eslint-disable-next-line no-unused-vars
   closeModal: (value: boolean) => void;
   defaultScore?: AdvancedScore | null;
   defaultSimpleScore?: number | null;
@@ -82,18 +85,18 @@ const Rating: FunctionComponent<Props> = ({
       personalScore
     ) {
       const docData = {
-        uuid: movie?.uuid,
-        createdAt: Timestamp.fromDate(new Date()),
-        updatedAt: Timestamp.fromDate(new Date()),
-        title: movie?.title,
-        rotten: {
-          ...movie,
+        advancedScore: {
+          acting,
+          characters,
+          cinematography,
+          climax,
+          ending,
+          music,
+          personalScore,
+          plot,
+          theme,
+          visuals,
         },
-        imdb: {
-          ...imdb,
-        },
-        notes,
-        simpleScore: score,
         averagedAdvancedScore:
           (plot +
             theme +
@@ -106,18 +109,18 @@ const Rating: FunctionComponent<Props> = ({
             visuals +
             personalScore) /
           10,
-        advancedScore: {
-          plot,
-          theme,
-          climax,
-          ending,
-          acting,
-          characters,
-          music,
-          cinematography,
-          visuals,
-          personalScore,
+        createdAt: Timestamp.fromDate(new Date()),
+        imdb: {
+          ...imdb,
         },
+        notes,
+        rotten: {
+          ...movie,
+        },
+        simpleScore: score,
+        title: movie?.title,
+        updatedAt: Timestamp.fromDate(new Date()),
+        uuid: movie?.uuid,
       };
 
       const token = await authUser.getIdToken(true);
@@ -132,20 +135,20 @@ const Rating: FunctionComponent<Props> = ({
     if (!authUser) return;
 
     const docData = {
-      uuid: movie?.uuid,
+      advancedScore: null,
+      averagedAdvancedScore: null,
       createdAt: Timestamp.fromDate(new Date()),
-      updatedAt: Timestamp.fromDate(new Date()),
-      title: movie?.title,
+      imdb: {
+        ...imdb,
+      },
       notes,
       rotten: {
         ...movie,
       },
-      imdb: {
-        ...imdb,
-      },
       simpleScore: score,
-      averagedAdvancedScore: null,
-      advancedScore: null,
+      title: movie?.title,
+      updatedAt: Timestamp.fromDate(new Date()),
+      uuid: movie?.uuid,
     };
 
     const token = await authUser.getIdToken(true);
@@ -157,89 +160,95 @@ const Rating: FunctionComponent<Props> = ({
 
   if (advanceScore) {
     return (
-      <div className='space-y-4'>
+      <div className="space-y-4">
         <button
+          className="bg-dark-components py-1 px-3 rounded text-dark-text w-full"
+          type="button"
           onClick={() => setAdvanceScore(false)}
-          className='bg-dark-components py-1 px-3 rounded text-dark-text w-full'>
+        >
           <Typography>Simple Rating</Typography>
         </button>
-        <div className='flex flex-col space-y-4'>
+        <div className="flex flex-col space-y-4">
           <RateList
             defaultValue={defaultScore?.plot}
+            label="Plot"
             scale={10}
             setValue={setPlot}
-            label='Plot'
           />
           <RateList
             defaultValue={defaultScore?.theme}
+            label="Theme"
             scale={10}
             setValue={setTheme}
-            label='Theme'
           />
           <RateList
             defaultValue={defaultScore?.climax}
+            label="Climax"
             scale={10}
             setValue={setClimax}
-            label='Climax'
           />
           <RateList
             defaultValue={defaultScore?.ending}
+            label="Ending"
             scale={10}
             setValue={setEnding}
-            label='Ending'
           />
           <RateList
             defaultValue={defaultScore?.acting}
+            label="Acting"
             scale={10}
             setValue={setActing}
-            label='Acting'
           />
           <RateList
             defaultValue={defaultScore?.characters}
+            label="Characters"
             scale={10}
             setValue={setCharacters}
-            label='Characters'
           />
           <RateList
             defaultValue={defaultScore?.music}
+            label="Music"
             scale={10}
             setValue={setMusic}
-            label='Music'
           />
           <RateList
             defaultValue={defaultScore?.cinematography}
+            label="Cinematography"
             scale={10}
             setValue={setCinematography}
-            label='Cinematography'
           />
           <RateList
             defaultValue={defaultScore?.visuals}
+            label="Visuals"
             scale={10}
             setValue={setVisuals}
-            label='Visuals'
           />
           <RateList
             defaultValue={defaultScore?.personalScore}
+            label="Personal Score"
             scale={10}
             setValue={setPersonalScore}
-            label='Personal Score'
           />
           {openNotes && (
             <textarea
-              className='bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2'
-              onChange={(e) => setNotes(e.currentTarget.value)}
+              className="bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2"
               rows={4}
+              onChange={(e) => setNotes(e.currentTarget.value)}
             />
           )}
           <button
+            className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
             onClick={() => setOpenNotes(!openNotes)}
-            className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'>
+          >
             <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
           </button>
           <button
+            className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={buttonDisabled}
+            type="button"
             onClick={submitAdvanceScore}
-            className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'
-            disabled={buttonDisabled}>
+          >
             <Typography>Rate Movie</Typography>
           </button>
         </div>
@@ -248,35 +257,41 @@ const Rating: FunctionComponent<Props> = ({
   }
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       <button
+        className="bg-dark-components py-1 px-3 rounded text-dark-text w-full"
+        type="button"
         onClick={() => setAdvanceScore(true)}
-        className='bg-dark-components py-1 px-3 rounded text-dark-text w-full'>
+      >
         <Typography>Advanced Rating</Typography>
       </button>
-      <div className='flex flex-col space-y-4'>
+      <div className="flex flex-col space-y-4">
         <RateList
           defaultValue={defaultSimpleScore}
+          label="Score"
           scale={10}
           setValue={setScore}
-          label='Score'
         />
         {openNotes && (
           <textarea
-            className='bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2'
-            onChange={(e) => setNotes(e.currentTarget.value)}
+            className="bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2"
             rows={4}
+            onChange={(e) => setNotes(e.currentTarget.value)}
           />
         )}
         <button
+          className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"
+          type="button"
           onClick={() => setOpenNotes(!openNotes)}
-          className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'>
+        >
           <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
         </button>
         <button
+          className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!score}
+          type="button"
           onClick={submitSimpleScore}
-          className='bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed'
-          disabled={!score}>
+        >
           <Typography>Rate Movie</Typography>
         </button>
       </div>
@@ -286,6 +301,8 @@ const Rating: FunctionComponent<Props> = ({
 
 Rating.defaultProps = {
   advanceScore: false,
+  defaultScore: null,
+  defaultSimpleScore: null,
 };
 
 export default Rating;

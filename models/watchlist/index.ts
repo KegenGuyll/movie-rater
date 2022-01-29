@@ -1,5 +1,3 @@
-import { AdvancedScore } from '../firestore';
-
 export interface WatchList {
   _id: string;
   title: string;
@@ -21,35 +19,35 @@ export interface AddMovie {
 }
 
 type Movies = {
-  rottenId: string;
-  imdbId: string;
-  title: string;
-  poster: string;
-  description: string;
-  rating: Rating;
-  year: number;
+  rottenId: string,
+  imdbId: string,
+  title: string,
+  poster: string,
+  description: string,
+  rating: Rating,
+  year: number,
 };
 
 export type Rating = {
   rotten: {
-    audiencestate: 'spilled' | 'upright' | '';
-    tomatometerstate: 'certified-fresh' | 'rotten' | 'fresh' | '';
-    tomatometerscore: string;
-    audiencescore: string;
-  };
+    audiencestate: 'spilled' | 'upright' | '' | undefined,
+    tomatometerstate: 'certified-fresh' | 'rotten' | 'fresh' | '' | undefined,
+    tomatometerscore: string,
+    audiencescore: string,
+  },
   imdb: {
-    score: string | null;
-    metaScore: string | null;
-  };
+    score: string | null,
+    metaScore: string | null,
+  },
   personal: {
-    advancedScore: number | null;
-    simpleScore: number | null;
-  };
+    advancedScore: number | null,
+    simpleScore: number | null,
+  },
 };
 
 type TimeStamp = {
-  _seconds: number;
-  _nanoseconds: number;
+  _seconds: number,
+  _nanoseconds: number,
 };
 
 export interface ExistMovie {

@@ -1,5 +1,6 @@
 import clsx from 'clsx';
-import { Dispatch, FunctionComponent, SetStateAction } from 'react';
+import React, { Dispatch, FunctionComponent, SetStateAction } from 'react';
+
 import Typography from '../typography';
 
 interface Props {
@@ -12,19 +13,19 @@ const RateItem: FunctionComponent<Props> = ({
   value,
   selected,
   setClicked,
-}: Props) => {
-  return (
-    <div>
-      <button
-        className={clsx(
-          'rounded-full p-1 px-3',
-          selected && 'border-2 border-dark-text'
-        )}
-        onClick={(e) => setClicked(value)}>
-        <Typography>{value}</Typography>
-      </button>
-    </div>
-  );
-};
+}: Props) => (
+  <div>
+    <button
+      className={clsx(
+        'rounded-full p-1 px-3',
+        selected && 'border-2 border-dark-text'
+      )}
+      type="button"
+      onClick={() => setClicked(value)}
+    >
+      <Typography>{value}</Typography>
+    </button>
+  </div>
+);
 
 export default RateItem;

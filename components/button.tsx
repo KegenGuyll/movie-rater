@@ -1,5 +1,10 @@
 import clsx from 'clsx';
-import { FunctionComponent, HTMLAttributes, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  HTMLAttributes,
+  useEffect,
+  useState,
+} from 'react';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   variant?: 'text' | 'default' | 'primary';
@@ -27,11 +32,19 @@ const Button: FunctionComponent<Props> = ({
         setBg('bg-cta');
         setColor('text-black');
         setHoverBg('hover:bg-ctaLight');
+        break;
+      default:
+        setBg('bg-dark-components');
+        setColor('text-dark-text');
+        setHoverBg('hover:bg-dark-light');
+        break;
     }
   }, [variant]);
 
   return (
     <button
+      type="button"
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       className={clsx(
         className,
@@ -41,15 +54,16 @@ const Button: FunctionComponent<Props> = ({
         hoverBg,
         bg,
         color
-      )}>
+      )}
+    >
       {children}
     </button>
   );
 };
 
 Button.defaultProps = {
-  variant: 'default',
   type: 'button',
+  variant: 'default',
 };
 
 export default Button;
