@@ -1,4 +1,5 @@
-import MultiSearch, { Person, TV } from "./multiSearch";
+import MovieVideos, { Video } from './movieVideos';
+import MultiSearch, { Person, TV } from './multiSearch';
 
 interface Popular {
   page: number;
@@ -10,23 +11,23 @@ interface Trending {
   results: Movie[];
 }
 
-type MediaType = "all" | "movie" | "tv" | "person";
+type MediaType = 'all' | 'movie' | 'tv' | 'person';
 
-type TimeWindow = "day" | "week";
+type TimeWindow = 'day' | 'week';
 
 type Cast = {
-  adult: boolean;
-  gender: number;
-  id: number;
-  known_for_department: string;
-  name: string;
-  original_name: string;
-  popularity: number;
-  profile_path?: string;
-  cast_id: number;
-  character: string;
-  credit_id: string;
-  order: number;
+  adult: boolean,
+  gender: number,
+  id: number,
+  known_for_department: string,
+  name: string,
+  original_name: string,
+  popularity: number,
+  profile_path?: string,
+  cast_id: number,
+  character: string,
+  credit_id: string,
+  order: number,
 };
 
 interface SearchSource {
@@ -111,42 +112,42 @@ interface SpokenLanguage {
 }
 
 type KnownFor = {
-  backdrop_path: string;
-  first_air_date?: Date;
-  genre_ids: number[];
-  id: number;
-  media_type: string;
-  name?: string;
-  origin_country?: string[];
-  original_language: string;
-  original_name?: string;
-  overview: string;
-  poster_path: string;
-  vote_average: number;
-  vote_count: number;
-  adult?: boolean;
-  original_title?: string;
-  release_date?: string;
-  title?: string;
-  video?: boolean;
+  backdrop_path: string,
+  first_air_date?: Date,
+  genre_ids: number[],
+  id: number,
+  media_type: string,
+  name?: string,
+  origin_country?: string[],
+  original_language: string,
+  original_name?: string,
+  overview: string,
+  poster_path: string,
+  vote_average: number,
+  vote_count: number,
+  adult?: boolean,
+  original_title?: string,
+  release_date?: string,
+  title?: string,
+  video?: boolean,
 };
 
 type Movie = {
-  poster_path: string | null;
-  adult: boolean;
-  overview: string;
-  release_date: string;
-  original_title: string;
-  genre_ids: number[];
-  id: number;
-  media_type: "movie";
-  original_language: string;
-  title: string;
-  backdrop_path: string | null;
-  popularity: number;
-  vote_count: number;
-  video: boolean;
-  vote_average: number;
+  poster_path: string | null,
+  adult: boolean,
+  overview: string,
+  release_date: string,
+  original_title: string,
+  genre_ids: number[],
+  id: number,
+  media_type: 'movie',
+  original_language: string,
+  title: string,
+  backdrop_path: string | null,
+  popularity: number,
+  vote_count: number,
+  video: boolean,
+  vote_average: number,
 };
 
 export type {
@@ -155,6 +156,7 @@ export type {
   Movie,
   MovieCast,
   MovieDetails,
+  MovieVideos,
   MultiSearch,
   Person,
   Popular,
@@ -163,4 +165,5 @@ export type {
   TimeWindow,
   Trending,
   TV,
+  Video,
 };

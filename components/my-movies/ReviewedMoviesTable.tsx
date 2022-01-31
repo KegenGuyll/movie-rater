@@ -24,7 +24,7 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
     const selectedMovie = movies[id];
 
     router.push(
-      `/movies/${selectedMovie.title}?year=${selectedMovie.rotten?.info.year}&imdbuuid=${selectedMovie.imdb?.uuid}`
+      `/movie/${selectedMovie.title}?year=${selectedMovie.rotten?.info.year}&imdbuuid=${selectedMovie.imdb?.uuid}`
     );
   };
 

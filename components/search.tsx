@@ -44,7 +44,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    router.push(`/movies/search?search=${query}`)
+    router.push(`/movie/search?search=${query}`)
   }
 
   const handleFetch = async (q: string) => {
@@ -131,7 +131,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                   <li key={value.id}>
                     <Link
                       passHref
-                      href={`/movies/${value.title.replace(/\s/g, "-")}?year=${
+                      href={`/movie/${value.title.replace(/\s/g, "-")}?year=${
                         value.release_date && value.release_date.split("-")[0]
                       }&id=${value.id}`}
                     >

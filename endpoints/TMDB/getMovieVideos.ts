@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { MovieDetails } from '../../models/TMDB';
+import { MovieVideos } from '../../models/TMDB';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
-  data: MovieDetails;
+  data: MovieVideos;
 }
 
 interface IResolvedPopular {
@@ -12,10 +12,10 @@ interface IResolvedPopular {
   err: Error | null;
 }
 
-export default function getMovieDetails(
-  movieId: string
+export default function getMovieVideos(
+  movieId: number
 ): Promise<IResolvedPopular> {
   return resolve({
-    url: `https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    url: `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`,
   });
 }

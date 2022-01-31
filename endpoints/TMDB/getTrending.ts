@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { Trending, MediaType, TimeWindow } from '../../models/TMDB';
 
+import { MediaType, TimeWindow, Trending } from '../../models/TMDB';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
