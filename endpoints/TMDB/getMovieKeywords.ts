@@ -1,10 +1,10 @@
 import { AxiosResponse } from 'axios';
 
-import { MovieCast } from '../../models/TMDB';
+import { KeywordsResponse } from '../../models/TMDB';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
-  data: MovieCast;
+  data: KeywordsResponse;
 }
 
 interface IResolvedPopular {
@@ -12,10 +12,10 @@ interface IResolvedPopular {
   err: Error | null;
 }
 
-export default function getMovieCast(
+export default function getMovieKeywords(
   movieId: string
 ): Promise<IResolvedPopular> {
   return resolve({
-    url: `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
+    url: `https://api.themoviedb.org/3/movie/${movieId}/keywords?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}`,
   });
 }

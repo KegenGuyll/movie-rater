@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { WatchList } from '../../models/watchlist';
 
+import { WatchList } from '../../models/watchlist';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {

@@ -1,152 +1,215 @@
 import clsx from 'clsx';
+import ISO6391 from 'iso-639-1';
 import { NextPage } from 'next';
+import dynamic from 'next/dynamic';
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
-import MediaCard from '../../components/mediaCard';
 import Modal from '../../components/modal';
-import CastCard from '../../components/movies/castCard';
-import MovieRating from '../../components/movies/rating';
-import ReviewCard from '../../components/movies/reviewCard';
+// import RadialBarChart from '../../components/charts/radialbarChart';
+import Poster from '../../components/movies/poster';
 import Navigation from '../../components/navigation';
-import PirateWhereToWatch from '../../components/pirateWhereToWatch';
 import Rating from '../../components/rating';
-import Spinner from '../../components/spinner';
 import Typography from '../../components/typography';
 import WatchListModal from '../../components/watch-lists/watchListModal';
-import WhereToWatch from '../../components/whereToWatch';
 import { useAuth } from '../../context/AuthUserContext';
-import getIMDBMovie from '../../endpoints/imdb/getImdbMovie';
 import getReviewedMovie from '../../endpoints/review/getReviewMovie';
-import getRottenMovie from '../../endpoints/rotten/getRottenTomatoesMovie';
-import getRottenTomatoesSearch from '../../endpoints/rotten/getRottenTomatoesSearch';
 import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
 import getMovieDetails from '../../endpoints/TMDB/getMovie';
 import getMovieCast from '../../endpoints/TMDB/getMovieCast';
+import getMovieImages from '../../endpoints/TMDB/getMovieImages';
+import getMovieKeywords from '../../endpoints/TMDB/getMovieKeywords';
+import getMovieVideos from '../../endpoints/TMDB/getMovieVideos';
+import getSimilarMovies from '../../endpoints/TMDB/getSimilarMovies';
 import { MovieDocument } from '../../models/firestore';
-import { IMDBMovie } from '../../models/imdb/popular';
-import { RottenMovie } from '../../models/rottenTomatoes';
-import { MovieCast, MovieDetails } from '../../models/TMDB';
-import { capitalizeFirstLetter } from '../../utils/capitalizeFirstLetter';
+import {
+  Backdrops,
+  Cast,
+  Keyword,
+  Movie as MovieType,
+  MovieDetails,
+  Poster as PosterType,
+  Video,
+} from '../../models/TMDB';
+import formatTitleUrl from '../../utils/formatTitleUrl';
+import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
+
+const RadialBarChart = dynamic(
+  () => import('../../components/charts/radialbarChart'),
+  { ssr: false }
+);
 
 interface Props {
   details: MovieDetails | null;
-  cast: MovieCast | null;
+  casts: Cast[] | null;
+  similarMovies: MovieType[] | null;
+  keywords: Keyword[] | null;
 }
 
-const Movie: NextPage<Props> = ({ details, cast }: Props) => {
-  const router = useRouter();
+type MediaType = 'videos' | 'backdrops' | 'posters' | '';
 
-  const [movie, setMovie] = useState<RottenMovie | null>(null);
-  const [imdb, setImdb] = useState<IMDBMovie | null>(null);
-  const query = useMemo(() => router.query, [router.query]);
+type CombineMedia = PosterType | Backdrops;
+
+const Movie: NextPage<Props> = ({
+  details,
+  casts,
+  similarMovies,
+  keywords,
+}: Props) => {
+  const [advancedScoring, setAdvancedScoring] = useState<boolean>(true);
   const [movieReview, setMovieReview] = useState<boolean>(false);
-  const [advancedScoring, setAdvancedScoring] = useState<boolean>(false);
-  const [documentMovie, setDocumentMovie] = useState<MovieDocument | null>(
-    null
-  );
+  const [userData, setUserData] = useState<MovieDocument>();
+  const [posters, setPosters] = useState<PosterType[]>([]);
+  const [backdrops, setBackdrops] = useState<Backdrops[]>([]);
+  const [videos, setVideos] = useState<Video[]>();
+  const [activeMedia, setActiveMedia] = useState<MediaType>('');
+  const router = useRouter();
   const { authUser } = useAuth();
 
-  useEffect(() => {
-  
-    getRottenTomatoesSearch(
-      // eslint-disable-next-line prettier/prettier
-      query.title as string,
-      'm',
-      query.year as string
-    ).then(({ res }) => {
+  const sortVotes = (a: CombineMedia, b: CombineMedia) =>
+    b.vote_average - a.vote_average;
+
+  const handleShallowRoute = (media: MediaType) => {
+    if (details) {
+      router.push(
+        `/movie/${formatTitleUrl(details.title, details.id)}?${media}=true`,
+        undefined,
+        {
+          shallow: true,
+        }
+      );
+      setActiveMedia(media);
+    }
+  };
+
+  const fetchUserData = async () => {
+    if (authUser && details) {
+      const authToken = await authUser.getIdToken();
+
+      const { res, err } = await getReviewedMovie(details.id, authToken);
+
       if (res) {
-        getRottenMovie(res.data[0].type, res.data[0].uuid).then(
-          ({ res: rotten }) => {
-            if (rotten) {
-              setMovie(rotten.data);
-            }
-            if (query.imdbuuid) {
-              getIMDBMovie('title', query.imdbuuid as string).then(
-                ({ res: imdbRes }) => {
-                  if (imdbRes) {
-                    setImdb(imdbRes.data);
-                  }
-                }
-              );
-            }
-          }
-        );
+        setUserData(res.data);
       }
-    });
- 
-  }, [query]);
+
+      if (err) {
+        Logger.error(err);
+      }
+    }
+  };
+
+  const fetchImages = async (movieId: number) => {
+    const { res, err } = await getMovieImages(movieId);
+
+    if (res) {
+      setPosters(res.data.posters.sort(sortVotes));
+      setBackdrops(res.data.backdrops.sort(sortVotes));
+    }
+
+    if (err) {
+      Logger.error(err);
+    }
+  };
+
+  const fetchVideos = async (movieId: number) => {
+    const { res, err } = await getMovieVideos(movieId);
+
+    if (res) {
+      setVideos(res.data.results);
+    }
+
+    if (err) {
+      Logger.error(err);
+    }
+  };
 
   useEffect(() => {
-    if (movie && authUser && movie.uuid) {
-      authUser.getIdToken(true).then((token) => {
-        getReviewedMovie(movie.uuid, token).then((value) => {
-          if (value.res) {
-            setDocumentMovie(value.res.data);
-          }
-        });
-      });
+    fetchUserData();
+  }, [router.query.title, details, authUser]);
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { backdrops, posters, title, videos } = router.query;
+    if ((backdrops || posters) && title && typeof title === 'string') {
+      fetchImages(Number(title.split('-')[0]));
+      if (backdrops) {
+        setActiveMedia('backdrops');
+      } else if (posters) {
+        setActiveMedia('posters');
+      }
     }
-  }, [movie, authUser, movieReview]);
+    if (videos && title && typeof title === 'string') {
+      fetchVideos(Number(title.split('-')[0]));
+      setActiveMedia('videos');
+    }
+  }, [router.query]);
 
   if (!details) {
     return (
-      <div className='h-screen w-full justify-center text-dark-text text-xl relative'>
-        <div className='absolute bottom-1/2 top-1/2 m-auto right-1/2'>
-          <Spinner />
-        </div>
+      <div className="h-screen w-screen flex justify-start items-center">
+        <Typography className="text-white" variant="h1">
+          404 Movie could not be found
+        </Typography>
       </div>
     );
   }
 
-  return (
-    <>
-      <Head>
-        <title>{`${details.title} | ${
-          details.release_date.split('-')[0]
-        }`}</title>
-        <meta content={details.overview} name='description' />
-      </Head>
-      <Navigation />
+  const renderCoverImage = () => (
+    <div
+      className={clsx(
+        'relative w-full overflow-hidden',
+        'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+      )}
+    >
+      <Image
+        priority
+        alt={`${details.title} backdrop`}
+        layout="fill"
+        objectFit="cover"
+        objectPosition="center"
+        src={`${imageUrl(100, false)}${details.backdrop_path}`}
+      />
       <div
         className={clsx(
-          'flex flex-col  m-8 lg:px-4  items-center',
-          'lg:flex-row lg:items-start'
-        )}>
-        <div className='flex flex-col px-4 space-y-3'>
-          <div className='h-96 w-56  lg:h-[500px] lg:w-[340px] rounded relative'>
-            <Image
-              priority
-              alt={details.title}
-              className='rounded'
-              layout='fill'
-              objectFit='cover'
-              src={`https://image.tmdb.org/t/p/w500${details.poster_path}`}
-            />
-          </div>
+          ' w-full bg-dark-background bg-opacity-70 absolute top-0',
+          'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+        )}
+      />
+      <div className={clsx('flex p-8 xl:p-32')}>
+        <div
+          className={clsx(
+            'relative flex flex-col',
+            'h-[175px] w-[115px] md:h-[250px] md:w-[160px] lg:h-[400px] lg:w-[250px]  xl:h-[500px] xl:w-[331px]'
+          )}
+        >
+          <Image
+            alt={`${details.title} poster`}
+            className="rounded"
+            layout="fill"
+            objectFit="cover"
+            objectPosition={0}
+            src={`${imageUrl(500)}${details.poster_path}`}
+          />
           {authUser && (
             <WatchListModal
-              imdb={imdb}
-              imdbId={details.imdb_id}
-              imdbScore={details.vote_average}
-              personal={documentMovie}
-              poster={details.poster_path}
-              rotten={movie}
-              title={details.title}
-              year={Number(query.year)}
+              className="hidden lg:block absolute w-full -bottom-12"
+              movie={details}
+              personal={null}
             />
           )}
           {authUser && (
             <Button
-              className='hidden lg:block'
-              variant='primary'
-              onClick={() => setMovieReview(true)}>
-              <Typography className='flex items-center' variant='h4'>
-                <span className='material-icons-outlined mr-2'>
+              className="hidden lg:block  absolute -bottom-24 w-full"
+              variant="primary"
+              onClick={() => setMovieReview(true)}
+            >
+              <Typography className="flex items-center" variant="subtitle">
+                <span className="material-icons-outlined mr-2">
                   rate_review
                 </span>
                 Add Review
@@ -154,202 +217,570 @@ const Movie: NextPage<Props> = ({ details, cast }: Props) => {
             </Button>
           )}
         </div>
-
-        <div className='grid grid-cols-2 gap-2 w-full'>
-          <MediaCard
-            className={clsx(
-              'flex col-span-2 flex-col items-center justify-center',
-              'lg:justify-start lg:items-start'
-            )}>
-            <div
-              className={clsx(
-                'flex flex-row space-y-0 space-x-5 items-center',
-                'lg:hidden'
-              )}>
-              <MovieRating rating={movie?.rating} />
-              <Typography variant='h2'>{details.title}</Typography>
-              <Typography variant='legal'>
-                {details.release_date.split('-')[0]}
+        <div className="hidden lg:flex flex-col relative h-max flex-grow space-y-10 text-white ml-16">
+          <div className="flex items-center space-x-4 ">
+            <Typography className="max-w-md xl:max-w-xl" variant="h1">
+              {details.title}
+            </Typography>
+            {details.release_date && (
+              <Typography variant="h3">
+                {`(${details.release_date.split('-')[0]})`}
               </Typography>
+            )}
+          </div>
+          <div className="flex items-center">
+            <div className="w-16 h-16 bg-dark-components p-1 rounded-full mr-3">
+              {userData && userData.averagedAdvancedScore ? (
+                <RadialBarChart score={userData.averagedAdvancedScore * 10} />
+              ) : (
+                <RadialBarChart score={details.vote_average * 10} />
+              )}
             </div>
-            <div className='block lg:grid lg:grid-rows-1 lg:grid-flow-col-dense lg:gap-3'>
-              <div className={clsx('hidden', 'lg:flex lg:h-full')}>
-                <div className='flex flex-col'>
-                  <Typography variant='h2'>{details.title}</Typography>
-                  <div className='flex mt-2 items-center space-x-3'>
-                    <MovieRating rating={movie?.rating} />
-                    <Typography>
-                      {details.release_date.split('-')[0]}
+            <Typography className="w-16 mr-9" variant="h3">
+              {userData ? 'User Score' : 'Audience Score'}
+            </Typography>
+            <div className="flex items-center space-x-3">
+              <span className="material-icons-outlined text-3xl">
+                play_circle_filled
+              </span>
+              <Typography variant="subtitle">Play Trailer</Typography>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Typography variant="h3">Overview</Typography>
+            <Typography className="max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl">
+              {details.overview}
+            </Typography>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderMobileView = () => (
+    <div className="block lg:hidden">
+      <div className="flex flex-col lg:hidden text-white p-10 bg-dark-components">
+        <div className="flex text-center w-full items-center justify-center space-x-3">
+          <Typography variant="h2">{details.title}</Typography>
+          {details.release_date && (
+            <Typography variant="subtitle">
+              {`(${details.release_date.split('-')[0]})`}
+            </Typography>
+          )}
+        </div>
+        <div className="flex mt-8 items-center justify-center">
+          {authUser && <WatchListModal movie={details} personal={null} />}
+          {authUser && (
+            <Button
+              className="text-dark-background"
+              variant="primary"
+              onClick={() => setMovieReview(true)}
+            >
+              <Typography className="flex items-center" variant="h4">
+                <span className="material-icons-outlined mr-2">
+                  rate_review
+                </span>
+                Add Review
+              </Typography>
+            </Button>
+          )}
+        </div>
+        <div className="text-left mt-8 space-y-3">
+          <Typography variant="h3">Overview</Typography>
+          <Typography>{details.overview}</Typography>
+        </div>
+      </div>
+      {casts && !!casts.length && (
+        <div className="mt-8 space-y-3 lg:p-16 p-4  text-dark-text">
+          <Typography variant="h3">Cast</Typography>
+          <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll">
+            {casts.map((cast) => (
+              <div key={cast.id} className="bg-dark-components rounded w-52">
+                <div className="relative h-[180px] w-full">
+                  <Image
+                    alt={cast.name}
+                    className="rounded-t"
+                    layout="fill"
+                    objectFit="cover"
+                    src={`${imageUrl(200)}${cast.profile_path}`}
+                  />
+                </div>
+                <div className="p-2">
+                  <Typography variant="h4">{cast.name}</Typography>
+                  <Typography variant="subtitle">{`${cast.character}`}</Typography>
+                  <Typography variant="light">
+                    {`(${cast.known_for_department})`}
+                  </Typography>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      <div className="mt-8 space-y-3 lg:p-16 p-4  text-dark-text">
+        <div className="flex items-center">
+          <Typography variant="h3">Media</Typography>
+          <div className="flex space-x-4 pl-4">
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'videos' && 'underline'
+              )}
+              type="button"
+              onClick={() => handleShallowRoute('videos')}
+            >
+              <Typography>Videos</Typography>
+            </button>
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'backdrops' && 'underline'
+              )}
+              type="button"
+              onClick={() => handleShallowRoute('backdrops')}
+            >
+              <Typography>Backdrops</Typography>
+            </button>
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'posters' && 'underline'
+              )}
+              type="button"
+              onClick={() => handleShallowRoute('posters')}
+            >
+              <Typography>Posters</Typography>
+            </button>
+          </div>
+        </div>
+        <div>
+          {activeMedia === 'videos' && videos && (
+            <div className="grid gap-2">
+              {videos.slice(0, 2).map((video) => (
+                <div
+                  key={video.id}
+                  className="h-[200px] md:h-[400px] relative w-full"
+                >
+                  <iframe
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    className="rounded"
+                    frameBorder="0"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${video.key}`}
+                    title={video.name}
+                    width="100%"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+          {activeMedia === 'backdrops' && (
+            <div className="grid gap-2">
+              {backdrops.slice(0, 2).map((backdrop) => (
+                <Link
+                  key={backdrop.file_path}
+                  passHref
+                  href={`${imageUrl(100, false)}${backdrop.file_path}`}
+                >
+                  <a>
+                    <div className="h-[200px] md:h-[400px] relative w-full">
+                      <Image
+                        alt="backdrops"
+                        className="rounded"
+                        layout="fill"
+                        objectFit="cover"
+                        src={`${imageUrl(500)}${backdrop.file_path}`}
+                      />
+                    </div>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          )}
+          {activeMedia === 'posters' && (
+            <div className="grid grid-cols-3 gap-2">
+              {posters.slice(0, 5).map((poster) => (
+                <Link
+                  key={poster.file_path}
+                  passHref
+                  href={`${imageUrl(100, false)}${poster.file_path}`}
+                >
+                  <a id={poster.file_path}>
+                    <div className="h-40 md:h-[320px] md:w-[224px] relative w-28">
+                      <Image
+                        alt="poster"
+                        className="rounded"
+                        layout="fill"
+                        objectFit="cover"
+                        src={`${imageUrl(200)}${poster.file_path}`}
+                      />
+                    </div>
+                  </a>
+                </Link>
+              ))}
+              <div className="flex items-center md:h-[320px] md:w-[224px] justify-center rounded text-dark-text h-40 relative w-28 bg-dark-components">
+                <Typography> View all Posters </Typography>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      {similarMovies && (
+        <div className="mt-8 space-y-3 lg:p-16 p-4  text-dark-text">
+          <Typography variant="h3">Similar Movies</Typography>
+          <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll">
+            {similarMovies.map((movie) => (
+              <Link
+                key={movie.id}
+                passHref
+                href={`/movie/${formatTitleUrl(
+                  movie.title,
+                  movie.id
+                )}&videos=true`}
+              >
+                <a id={movie.original_title}>
+                  <div className=" h-48 md:h-[320px] md:w-[224px] relative w-28">
+                    <Image
+                      alt="poster"
+                      className="rounded"
+                      layout="fill"
+                      objectFit="cover"
+                      src={`${imageUrl(200)}${movie.poster_path}`}
+                    />
+                  </div>
+                </a>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderWebView = () => (
+    <div className="hidden lg:grid grid-cols-4 gap-4 px-8">
+      <div className="col-span-3 h-screen">
+        {casts && !!casts.length && (
+          <div className="mt-8 text-dark-text">
+            <Typography variant="h3">Top Billed Cast</Typography>
+            <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll py-3">
+              {casts.slice(0, 9).map((cast) => (
+                <div key={cast.id} className="bg-dark-components rounded w-40">
+                  <div className="relative h-[180px] w-full">
+                    <Image
+                      alt={cast.name}
+                      className="rounded-t"
+                      layout="fill"
+                      objectFit="cover"
+                      src={`${imageUrl(200)}${cast.profile_path}`}
+                    />
+                  </div>
+                  <div className="p-2">
+                    <Typography variant="h4">{cast.name}</Typography>
+                    <Typography variant="subtitle">{`${cast.character}`}</Typography>
+                    <Typography variant="light">
+                      {`(${cast.known_for_department})`}
                     </Typography>
                   </div>
                 </div>
-              </div>
-              <div className='h-full w-full flex  items-center'>
-                <div className='hidden lg:block 2xl:mx-4 lg:mx-2 border border-r border-dark-text h-24 w-0' />
-              </div>
-              <div
-                className={clsx(
-                  'flex flex-wrap mt-5 items-center',
-                  'lg:mt-0 lg:items-start lg:grid lg:gap-1 lg:grid-cols-2 xl:grid-cols-3'
-                )}>
-                {details.genres.map((value) => (
-                    <div
-                      key={value.id}
-                      className='border mx-3 my-2 truncate border-dark-text py-1 px-3 rounded-3xl'
-                      title={value.name}>
-                      <Typography variant='light'>{value.name}</Typography>
-                    </div>
-                  ))}
+              ))}
+              <div className="flex items-center justify-center h-[290px] w-[160px] bg-dark-components rounded">
+                {/* TODO: Create Cast and Crew Page */}
+                <Link passHref href="/">
+                  <a className="hover:underline" id="View full Cast and Crew">
+                    <Typography>View full Cast and Crew</Typography>
+                  </a>
+                </Link>
               </div>
             </div>
-          </MediaCard>
-          {!documentMovie && authUser && (
-            <MediaCard className='block lg:hidden col-span-1'>
-              <button
-                className='flex items-center text-center border rounded border-dark-text border-dashed p-11'
-                type='button'
-                onClick={() => setMovieReview(true)}>
-                <Typography>Rate this movie</Typography>
-              </button>
-            </MediaCard>
-          )}
-          <ReviewCard
-            details={details}
-            documentMovie={documentMovie}
-            movie={movie}
-            setMovieReview={setMovieReview}
-          />
-          {movie && !!movie.whereToWatch.length && (
-            <MediaCard
-              className={clsx(
-                documentMovie ? 'col-span-1' : 'col-span-2 lg:col-span-1'
-              )}
-              title='Where To Watch'>
-              <div
-                className={clsx(
-                  'grid grid-cols-1  xs:grid-cols-2  xs:gap-1 lg:gap-8',
-                  documentMovie ? 'lg:grid-cols-2' : 'lg:grid-cols-3'
-                )}>
-                {movie.whereToWatch.map((value, key) => (
-                    <WhereToWatch
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={key}
-                      availability={value.availability}
-                      provider={value.provider as any}
-                    />
-                  ))}
-              </div>
-              <PirateWhereToWatch title={details.title} />
-            </MediaCard>
-          )}
-          <MediaCard
-            className={clsx('col-span-2', 'lg:col-auto')}
-            title='Synopsis'>
-            <Typography>{details.overview}</Typography>
-          </MediaCard>
-          {documentMovie && documentMovie.notes && (
-            <MediaCard title='Personal Notes'>
-              <Typography>{documentMovie.notes}</Typography>
-            </MediaCard>
-          )}
-          {movie && (
-            <MediaCard className='col-span-1' title='Movie Info'>
-              {movie && movie.movieInfo && (
-                <div>
-                  {Object.keys(movie.movieInfo).map((value) => {
-                    if (value === 'rating' || value === 'genre') {
-                      return null;
-                    }
-                    return (
-                      <div key={value} className='my-5'>
-                        <Typography variant='h4'>
-                          {capitalizeFirstLetter(value).replace('-', ' ')} -{' '}
-                        </Typography>
-                        {(typeof (movie.movieInfo as any)[value] as any) ===
-                        'string' ? (
-                          <Typography className='pl-3' variant='light'>
-                            {(movie.movieInfo as any)[value]}
-                          </Typography>
-                        ) : (
-                          <ul>
-                            {((movie.movieInfo as any)[value] as string[]).map(
-                              (info: string, index) => (
-                                  // eslint-disable-next-line react/no-array-index-key
-                                  <li key={index}>
-                                    <Typography
-                                      className='pl-3'
-                                      variant='light'>
-                                      {info}
-                                    </Typography>
-                                  </li>
-                                )
-                            )}
-                          </ul>
-                        )}
-                      </div>
-                    );
-                  })}
+          </div>
+        )}
+        {userData && authUser && userData.notes && (
+          <div className="mt-8 text-dark-text space-y-3">
+            <Typography variant="h3">Social</Typography>
+            <div className=" bg-dark-components rounded p-4">
+              <div className="flex items-center space-x-3 my-3">
+                <Image
+                  className="rounded-full"
+                  height={64}
+                  src={
+                    authUser.photoURL ||
+                    `https://avatars.dicebear.com/api/initials/${
+                      authUser.displayName || authUser.email
+                    }.svg`
+                  }
+                  width={64}
+                />
+                <Typography variant="h3">
+                  {authUser.displayName || authUser.email}
+                </Typography>
+                <div className=" py-1 px-2 rounded bg-cta text-dark-background">
+                  <Typography variant="subtitle">
+                    {userData.averagedAdvancedScore}
+                  </Typography>
                 </div>
+              </div>
+              <Typography>{userData.notes}</Typography>
+            </div>
+          </div>
+        )}
+        <div className=" mt-8 text-dark-text">
+          <div className="flex space-x-4">
+            <Typography variant="h3">Media</Typography>
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'videos' && 'underline'
               )}
-            </MediaCard>
+              type="button"
+              onClick={() => handleShallowRoute('videos')}
+            >
+              <Typography variant="subtitle">Videos</Typography>
+            </button>
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'backdrops' && 'underline'
+              )}
+              type="button"
+              onClick={() => handleShallowRoute('backdrops')}
+            >
+              <Typography variant="subtitle">Backdrops</Typography>
+            </button>
+            <button
+              className={clsx(
+                'hover:underline decoration-cta',
+                activeMedia === 'posters' && 'underline'
+              )}
+              type="button"
+              onClick={() => handleShallowRoute('posters')}
+            >
+              <Typography variant="subtitle">Posters</Typography>
+            </button>
+          </div>
+          <div>
+            {activeMedia === 'videos' && videos && (
+              <div className="grid grid-rows-1 grid-flow-col overflow-scroll  gap-2 py-3">
+                {videos.slice(0, 2).map((video) => (
+                  <div
+                    key={video.id}
+                    className="h-[200px] md:h-[400px] relative w-full"
+                  >
+                    <iframe
+                      allowFullScreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      className="rounded"
+                      frameBorder="0"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${video.key}`}
+                      title={video.name}
+                      width="100%"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+            {activeMedia === 'backdrops' && (
+              <div className="grid grid-rows-1 grid-flow-col overflow-scroll  gap-2 py-3">
+                {backdrops.slice(0, 2).map((backdrop) => (
+                  <Link
+                    key={backdrop.file_path}
+                    passHref
+                    href={`${imageUrl(100, false)}${backdrop.file_path}`}
+                  >
+                    <a>
+                      <div className="h-[200px] md:h-[400px] relative w-full">
+                        <Image
+                          alt="backdrops"
+                          className="rounded"
+                          layout="fill"
+                          objectFit="cover"
+                          src={`${imageUrl(500, false)}${backdrop.file_path}`}
+                        />
+                      </div>
+                    </a>
+                  </Link>
+                ))}
+              </div>
+            )}
+            {activeMedia === 'posters' && (
+              <div className="grid grid-rows-1 grid-flow-col overflow-scroll  gap-2">
+                {posters.slice(0, 9).map((poster) => (
+                  <Link
+                    key={poster.file_path}
+                    passHref
+                    href={`${imageUrl(100, false)}${poster.file_path}`}
+                  >
+                    <a className="py-3" id={poster.file_path}>
+                      <div className="h-40 md:h-[320px] md:w-[224px] relative w-28">
+                        <Image
+                          alt="poster"
+                          className="rounded"
+                          layout="fill"
+                          objectFit="cover"
+                          src={`${imageUrl(200)}${poster.file_path}`}
+                        />
+                      </div>
+                    </a>
+                  </Link>
+                ))}
+                <div className="flex  mt-3 items-center md:h-[320px] md:w-[224px] justify-center rounded text-dark-text h-40 relative w-28 bg-dark-components">
+                  <Link passHref href="/">
+                    <a className="hover:underline" id="View all Posters">
+                      <Typography> View all Posters </Typography>
+                    </a>
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {similarMovies && (
+          <div className="mt-8 text-dark-text">
+            <Typography variant="h3">Similar Movies</Typography>
+            <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll py-3">
+              {similarMovies.map((value) => (
+                <Poster key={value.id} media={value} />
+              ))}
+              <div className="flex items-center justify-center h-[320px] w-[192px] bg-dark-components rounded">
+                <Link passHref href="/">
+                  <a id="View more similar Movies">
+                    <Typography>View more similar Movies</Typography>
+                  </a>
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+      <div>
+        <div className="mt-8 space-y-3 p-4 h-screen text-dark-text bg-dark-components rounded overflow-scroll">
+          <div>
+            <Typography variant="h3">Status</Typography>
+            <Typography>{details.status}</Typography>
+          </div>
+          <div>
+            <Typography variant="h3">Release Date</Typography>
+            <Typography>{details.release_date}</Typography>
+          </div>
+          <div>
+            <Typography variant="h3">Original Language</Typography>
+            <Typography>
+              {ISO6391.getName(details.original_language)}
+            </Typography>
+          </div>
+          <div>
+            <Typography variant="h3">Budget</Typography>
+            <Typography>
+              {new Intl.NumberFormat('en', {
+                currency: 'USD',
+                maximumSignificantDigits: 3,
+                style: 'currency',
+              }).format(details.budget)}
+            </Typography>
+          </div>
+          <div>
+            <Typography variant="h3">Revenue</Typography>
+            <Typography>
+              {new Intl.NumberFormat('en', {
+                currency: 'USD',
+                maximumSignificantDigits: 3,
+                style: 'currency',
+              }).format(details.revenue) || '-'}
+            </Typography>
+          </div>
+          {keywords && (
+            <div>
+              <Typography variant="h3">Keywords</Typography>
+              <div className="flex flex-wrap">
+                {/* TODO: Create Search page for keywords */}
+                {keywords.map((keyword) => (
+                  <Link key={keyword.id} passHref href="/">
+                    <a id={keyword.name}>
+                      <div className="border w-max hover:bg-white hover:bg-opacity-10 border-dark-text rounded p-1 m-1">
+                        <Typography>{keyword.name}</Typography>
+                      </div>
+                    </a>
+                  </Link>
+                ))}
+              </div>
+            </div>
           )}
-
-          <CastCard cast={cast} />
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div>
+      <Head>
+        <title>
+          {`${details.title} |
+          ${details.release_date && details.release_date.split('-')[0]}`}
+        </title>
+      </Head>
+      <Navigation />
+      {renderCoverImage()}
+      {renderMobileView()}
+      {renderWebView()}
       <Modal open={movieReview} setOpen={setMovieReview}>
         <div>
           <Rating
             advanceScore={advancedScoring}
             closeModal={setMovieReview}
-            defaultScore={documentMovie?.advancedScore}
-            defaultSimpleScore={documentMovie?.simpleScore}
-            imdb={imdb}
-            movie={movie}
+            defaultScore={null}
+            defaultSimpleScore={null}
+            movie={details}
             setAdvanceScore={setAdvancedScoring}
           />
         </div>
       </Modal>
-    </>
+    </div>
   );
 };
 
 Movie.getInitialProps = async (context) => {
   try {
-    const { id, imdbuuid } = context.query;
+    const { imdbuuid, title } = context.query;
     let existingId = '';
 
-    if (imdbuuid) {
-      const { res } = await getFindExternalId(imdbuuid as string, 'imdb_id');
+    if (!title || typeof title !== 'string') {
+      throw new Error(`title broken: ${title}`);
+    }
+
+    const titleId = title.split('-')[0];
+
+    if (imdbuuid && typeof imdbuuid === 'string') {
+      const { res } = await getFindExternalId(imdbuuid, 'imdb_id');
       if (res) {
         existingId = String(res.data.movie_results[0].id);
       }
     }
 
     const { res: movieDetailsData } = await getMovieDetails(
-      existingId || (id as string)
+      titleId || existingId
     );
-    const { res: movieCastData } = await getMovieCast(
-      existingId || (id as string)
+    const { res: movieCastData } = await getMovieCast(titleId || existingId);
+    const { res: movieSimilar } = await getSimilarMovies(titleId || existingId);
+    const { res: movieKeywords } = await getMovieKeywords(
+      titleId || existingId
     );
-
-    if (movieCastData && movieDetailsData) {
-      return {
-        cast: movieCastData.data,
-        details: movieDetailsData.data,
-      };
-    } 
-      return {
-        cast: null,
-        details: null,
-      };
-    
-  } catch (error) {
-     Logger.error(error);
 
     return {
-      cast: null,
+      casts: movieCastData && movieCastData.data.cast,
+      details: movieDetailsData && movieDetailsData.data,
+      keywords: movieKeywords && movieKeywords.data.keywords,
+      similarMovies: movieSimilar && movieSimilar.data.results,
+    };
+  } catch (error) {
+    Logger.error(error);
+
+    return {
+      casts: null,
       details: null,
+      keywords: null,
+      similarMovies: null,
     };
   }
 };

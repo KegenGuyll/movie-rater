@@ -104,9 +104,8 @@ const TrendingMedia: FunctionComponent<Props> = ({
               'grid grid-flow-col overflow-auto'
             )}
           >
-            {trendingMovies.results.map((value, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <Poster key={index} media={value} />
+            {trendingMovies.results.map((value) => (
+              <Poster key={value.id} media={value} />
             ))}
           </div>
         </div>

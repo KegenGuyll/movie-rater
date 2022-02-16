@@ -4,8 +4,7 @@ import React, { FunctionComponent, useMemo, useState } from 'react';
 import { useAuth } from '../../context/AuthUserContext';
 import createReviewedMovie from '../../endpoints/review/createReviewMovie';
 import { AdvancedScore } from '../../models/firestore';
-import { IMDBMovie } from '../../models/imdb/popular';
-import { RottenMovie } from '../../models/rottenTomatoes';
+import { MovieDetails } from '../../models/TMDB';
 import Typography from '../typography';
 import RateList from './rateList';
 
@@ -13,8 +12,7 @@ interface Props {
   advanceScore?: boolean;
   // eslint-disable-next-line no-unused-vars
   setAdvanceScore: (value: boolean) => void;
-  movie: RottenMovie | null;
-  imdb: IMDBMovie | null;
+  movie: MovieDetails;
   // eslint-disable-next-line no-unused-vars
   closeModal: (value: boolean) => void;
   defaultScore?: AdvancedScore | null;
@@ -25,7 +23,6 @@ const Rating: FunctionComponent<Props> = ({
   advanceScore,
   setAdvanceScore,
   movie,
-  imdb,
   closeModal,
   defaultScore,
   defaultSimpleScore,
@@ -110,17 +107,12 @@ const Rating: FunctionComponent<Props> = ({
             personalScore) /
           10,
         createdAt: Timestamp.fromDate(new Date()),
-        imdb: {
-          ...imdb,
-        },
         notes,
-        rotten: {
-          ...movie,
-        },
+        release_date: movie.release_date,
         simpleScore: score,
-        title: movie?.title,
+        title: movie.title,
+        tmdbID: movie.id,
         updatedAt: Timestamp.fromDate(new Date()),
-        uuid: movie?.uuid,
       };
 
       const token = await authUser.getIdToken(true);
@@ -138,17 +130,12 @@ const Rating: FunctionComponent<Props> = ({
       advancedScore: null,
       averagedAdvancedScore: null,
       createdAt: Timestamp.fromDate(new Date()),
-      imdb: {
-        ...imdb,
-      },
       notes,
-      rotten: {
-        ...movie,
-      },
+      release_date: movie.release_date,
       simpleScore: score,
-      title: movie?.title,
+      title: movie.title,
+      tmdbID: movie.id,
       updatedAt: Timestamp.fromDate(new Date()),
-      uuid: movie?.uuid,
     };
 
     const token = await authUser.getIdToken(true);

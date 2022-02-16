@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { MovieDocument } from '../../models/firestore';
 
+import { MovieDocument } from '../../models/firestore';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
@@ -13,7 +13,7 @@ interface IResolvedPopular {
 }
 
 export default function getReviewedMovie(
-  rottenUuid: string,
+  tmdbID: string | number,
   authToken: string
 ): Promise<IResolvedPopular> {
   return resolve(
@@ -21,7 +21,7 @@ export default function getReviewedMovie(
       headers: {
         Authorization: authToken,
       },
-      url: `/movie/${rottenUuid}`,
+      url: `/movie/${tmdbID}`,
     },
     true
   );

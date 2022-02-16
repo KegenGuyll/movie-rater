@@ -1,3 +1,4 @@
+import MovieImages, { Backdrops, Poster } from './movieImages';
 import MovieVideos, { Video } from './movieVideos';
 import MultiSearch, { Person, TV } from './multiSearch';
 
@@ -88,6 +89,11 @@ interface BelongsToCollection {
   backdrop_path: string;
 }
 
+interface KeywordsResponse {
+  id: number;
+  keywords: Keyword[];
+}
+
 interface Genre {
   id: number;
   name: string;
@@ -150,17 +156,28 @@ type Movie = {
   vote_average: number,
 };
 
+type Keyword = {
+  id: number,
+  name: string,
+};
+
 export type {
+  Backdrops,
+  Cast,
+  Keyword,
+  KeywordsResponse,
   KnownFor,
   MediaType,
   Movie,
   MovieCast,
   MovieDetails,
+  MovieImages,
   MovieVideos,
   MultiSearch,
   Person,
   Popular,
   PopularPerson,
+  Poster,
   SearchSource,
   TimeWindow,
   Trending,

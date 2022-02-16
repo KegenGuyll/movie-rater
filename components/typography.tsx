@@ -24,7 +24,7 @@ const variantsMapping = {
   h5: 'h5',
   legal: 'p',
   light: 'p',
-  subtitle: 'h4',
+  subtitle: 'p',
 };
 
 const Typography: React.FunctionComponent<Props> = ({

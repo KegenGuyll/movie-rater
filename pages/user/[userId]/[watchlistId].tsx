@@ -11,14 +11,17 @@ import Modal from '../../../components/modal';
 import Navigation from '../../../components/navigation';
 import Spinner from '../../../components/spinner';
 import Typography from '../../../components/typography';
-import MoviePosterRating from '../../../components/watch-lists/moviePosterRating';
 import WatchListVisibility from '../../../components/watch-lists/watchListVisibility';
 import { useAuth } from '../../../context/AuthUserContext';
+import getMovieDetails from '../../../endpoints/TMDB/getMovie';
 import getUserByUid from '../../../endpoints/user/getUserByUid';
 import getWatchList from '../../../endpoints/watchlist/getWatchList';
 import updateWatchList from '../../../endpoints/watchlist/updateWatchList';
+import {  MovieDetails } from '../../../models/TMDB';
 import { User } from '../../../models/user';
 import { WatchList } from '../../../models/watchlist';
+import formatTitleUrl from '../../../utils/formatTitleUrl';
+import imageUrl from '../../../utils/imageUrl';
 
 export const WatchListPage: NextPage = () => {
   const [watchList, setWatchLists] = useState<WatchList | null>(null);
@@ -33,6 +36,7 @@ export const WatchListPage: NextPage = () => {
   const [removedWatchListItems, setRemovedWatchListItems] = useState<string[]>(
     []
   );
+  const [list, setList] = useState<MovieDetails[]>([])
   const [title, setTitle] = useState(watchList?.title || '');
   const [description, setDescription] = useState(watchList?.description || '');
 
@@ -67,10 +71,10 @@ export const WatchListPage: NextPage = () => {
   const submitUpdate = async () => {
     if (!watchList || !authUser) return;
 
-    const newArray = [...watchList.movies];
+    const newArray = [...list];
 
     removedWatchListItems.forEach((id) => {
-      const index = newArray.findIndex((movie) => movie.imdbId === id);
+      const index = newArray.findIndex((movie) => movie.id.toString() === id);
 
       newArray.splice(index, 1);
     });
@@ -105,6 +109,23 @@ export const WatchListPage: NextPage = () => {
     });
   }, [userId]);
 
+  const handleFetchMovies = async () => {
+    if (watchList) {
+      watchList.movies.forEach(async (id) => {
+        const { res } = await getMovieDetails(id.toString())
+        if (res) {
+          setList((prevState) => [...prevState, res.data])
+        }
+      })
+    }
+  }
+
+  useEffect(() => {
+    if (!watchList) return
+    if(watchList.movies.length <= list.length) return
+    handleFetchMovies()
+  }, [watchList])
+
   useEffect(() => {
     if (!userId || !watchListId) return;
     setIsLoading(true);
@@ -138,23 +159,23 @@ export const WatchListPage: NextPage = () => {
 
   const renderWatchList = () => (
       <div className='grid grid-cols-2 lg:grid-cols-3 gap-4'>
-        {watchList?.movies.map((value) => (
+        {list.map((value) => (
           <button
-            key={value.imdbId}
+            key={value.id}
               className='flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded'
               type='button'
               onClick={() =>
                 router.push(
-                  `/movies/${value.title}?year=${value.year}&imdbuuid=${value.imdbId}`
+                  `/movie/${formatTitleUrl(value.title, value.id)}`
                 )
               }>
-              <div className='lg:mr-8 mr-0 flex w-full items-center justify-center'>
+              <div className='lg:mr-8 mr-0 flex-grow flex w-full items-center justify-center'>
                 <Image
-                  alt={watchList.title}
+                  alt={value.title}
                   className='rounded shadow'
                   height='400'
                   objectFit='cover'
-                  src={value.poster}
+                  src={`${imageUrl(300)}${value.poster_path}`}
                   width='235'
                 />
               </div>
@@ -165,9 +186,9 @@ export const WatchListPage: NextPage = () => {
                   variant='h2'>
                   {value.title}
                 </Typography>
-                <MoviePosterRating ratings={value.rating} user={creator} />
-                <Typography title={value.description} variant='light'>
-                  {value.description}
+                
+                <Typography title={value.overview} variant='light'>
+                  {value.overview}
                 </Typography>
               </div>
             </button>
@@ -278,18 +299,18 @@ export const WatchListPage: NextPage = () => {
               </button>
             </div>
           </div>
-          <div className='space-y-2 max-h-80 ß  overflow-auto'>
-            {watchList?.movies.map((movies) => (
+          <div className='space-y-2 max-h-80 overflow-auto'>
+            {list.map((movie) => (
               <div
-                key={movies.imdbId}
+                key={movie.id}
                 className='bg-dark-components p-2 rounded flex items-center'>
                 <Typography
                   className={clsx(
                     'flex-grow',
-                    removedWatchListItems.includes(movies.imdbId) &&
+                    removedWatchListItems.includes(movie.id.toString()) &&
                       'line-through'
                   )}>
-                  {movies.title}
+                  {movie.title}
                 </Typography>
                 <button
                   className={clsx(
@@ -297,9 +318,9 @@ export const WatchListPage: NextPage = () => {
                     'transition-all duration-100'
                   )}
                   type='button'
-                  onClick={() => handleRemoveMovies(movies.imdbId)}>
+                  onClick={() => handleRemoveMovies(movie.id.toString())}>
                   <span className='material-icons-outlined '>
-                    {removedWatchListItems.includes(movies.imdbId)
+                    {removedWatchListItems.includes(movie.id.toString())
                       ? 'undo'
                       : 'delete'}
                   </span>

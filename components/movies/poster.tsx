@@ -1,8 +1,10 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from 'react';
 
 import { Movie, Person, TV } from '../../models/TMDB';
+import formatTitleUrl from '../../utils/formatTitleUrl';
 
 interface Props {
   media: Movie | TV | Person;
@@ -19,37 +21,34 @@ const Poster: FunctionComponent<Props> = ({ media, clickable }) => {
 
   if (!display) return null;
 
-  const onClick = (onClickTitle: string, year: string) => {
-    router.push(
-      `/${media.media_type}/${onClickTitle}?year=${year}&id=${media.id}`
-    );
+  const onClick = (onClickTitle: string, id: string | number) => {
+    router.push(`/${media.media_type}/${formatTitleUrl(onClickTitle, id)}`);
   };
 
-  const renderMovie = ({ title, release_date, poster_path }: Movie) => (
-    <button
-      className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative"
-      disabled={!clickable}
-      type="button"
-      onClick={() => onClick(title, release_date.split('-')[0])}
-    >
-      <Image
-        alt={title}
-        blurDataURL={`https://image.tmdb.org/t/p/w100${poster_path}`}
-        className="rounded object-fill select-none"
-        layout="fill"
-        objectFit="fill"
-        src={`https://image.tmdb.org/t/p/w500${poster_path}`}
-        onError={imgNotFound}
-      />
-    </button>
+  const renderMovie = ({ title, poster_path, id }: Movie) => (
+    <Link href={`/movie/${formatTitleUrl(title, id)}?videos=true`}>
+      <a>
+        <div className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative">
+          <Image
+            alt={title}
+            blurDataURL={`https://image.tmdb.org/t/p/w100${poster_path}`}
+            className="rounded object-fill select-none"
+            layout="fill"
+            objectFit="fill"
+            src={`https://image.tmdb.org/t/p/w500${poster_path}`}
+            onError={imgNotFound}
+          />
+        </div>
+      </a>
+    </Link>
   );
 
-  const renderTV = ({ name, poster_path, first_air_date }: TV) => (
+  const renderTV = ({ name, poster_path, id }: TV) => (
     <button
       className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative"
       disabled={!clickable}
       type="button"
-      onClick={() => onClick(name, first_air_date.split('-')[0])}
+      onClick={() => onClick(name, id)}
     >
       <Image
         alt={name}
@@ -69,6 +68,7 @@ const Poster: FunctionComponent<Props> = ({ media, clickable }) => {
     <>
       {media.media_type === 'movie' && renderMovie(media)}
       {media.media_type === 'tv' && renderTV(media)}
+      {media.media_type === undefined && renderMovie(media)}
     </>
   );
 };

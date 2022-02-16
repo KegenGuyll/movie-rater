@@ -14,7 +14,7 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
   <div className="flex flex-wrap my-2  justify-evenly items-center">
     {ratings && (
       <>
-        {ratings.rotten.tomatometerscore && (
+        {ratings.rotten && ratings.rotten.tomatometerscore && (
           <div className="flex items-center">
             <Image
               priority
@@ -30,7 +30,7 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
             </Typography>
           </div>
         )}
-        {ratings.rotten.audiencescore && (
+        {ratings.rotten && ratings.rotten.audiencescore && (
           <div className="flex items-center">
             <Image
               priority
@@ -46,7 +46,7 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
             </Typography>
           </div>
         )}
-        {ratings.imdb.score && (
+        {ratings.imdb && ratings.imdb.score && (
           <div className="flex items-center">
             <Image
               priority

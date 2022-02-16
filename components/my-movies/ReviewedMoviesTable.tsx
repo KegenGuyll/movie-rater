@@ -1,9 +1,11 @@
+/* eslint-disable no-underscore-dangle */
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 
 import { useAuth } from '../../context/AuthUserContext';
 import deleteReviewedMovie from '../../endpoints/review/deleteReviewedMovie';
 import { MovieDocument } from '../../models/firestore';
+import formatTitleUrl from '../../utils/formatTitleUrl';
 import Table, { Columns } from '../table';
 
 interface Props {
@@ -24,7 +26,7 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
     const selectedMovie = movies[id];
 
     router.push(
-      `/movie/${selectedMovie.title}?year=${selectedMovie.rotten?.info.year}&imdbuuid=${selectedMovie.imdb?.uuid}`
+      `/movie/${formatTitleUrl(selectedMovie.title, selectedMovie.tmdbID)}`
     );
   };
 
@@ -42,36 +44,24 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
       type: 'number',
     },
     {
-      id: 4,
-      name: 'Tomato Score',
-      type: 'number',
-    },
-    {
-      id: 5,
-      name: 'Audience Score',
-      type: 'number',
-    },
-    {
       id: 3,
       name: 'Reviewed Date',
       type: 'date',
     },
     {
       id: 6,
-      name: 'Year',
-      type: 'number',
+      name: 'Release Date',
+      type: 'date',
     },
   ];
   const rows = useMemo(() => {
     if (!movies) return [];
 
     return movies.map((value, index) => ({
-      'Audience Score': value.rotten?.audiencescore,
       'Personal Score': value.averagedAdvancedScore || value.simpleScore,
+      'Release Date': value.release_date,
       'Reviewed Date': value.createdAt.seconds * 1000,
       Title: value.title,
-      'Tomato Score': value.rotten?.tomatometerscore,
-      Year: value.rotten?.info.year,
       id: index,
     }));
   }, [movies]);

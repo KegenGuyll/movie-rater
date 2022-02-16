@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { MovieDocument } from '../../models/firestore';
 
+import { MovieDocument } from '../../models/firestore';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
@@ -18,10 +18,10 @@ export default function createReviewedMovie(
 ): Promise<IResolvedPopular> {
   return resolve(
     {
+      data,
       headers: {
         Authorization: authToken,
       },
-      data,
       method: 'POST',
       url: `/movie/`,
     },

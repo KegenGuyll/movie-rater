@@ -25,11 +25,11 @@
   </url>
 
   <url>
-    <loc>https://movielot.vercel.app/movies/[title]</loc>
+    <loc>https://movielot.vercel.app/movie/[title]</loc>
   </url>
 
   <url>
-    <loc>https://movielot.vercel.app/movies/search</loc>
+    <loc>https://movielot.vercel.app/movie/search</loc>
   </url>
 
   <url>

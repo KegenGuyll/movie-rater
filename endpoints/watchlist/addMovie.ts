@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import { AddMovie } from '../../models/watchlist';
 
 import resolve from '../resolver';
 
@@ -13,16 +12,18 @@ interface IResolvedPopular {
 }
 
 export default function addMovie(
-  data: AddMovie,
+  data: number,
   authToken: string,
   listId: string
 ): Promise<IResolvedPopular> {
   return resolve(
     {
+      data: {
+        id: data,
+      },
       headers: {
         Authorization: authToken,
       },
-      data,
       method: 'POST',
       url: `/watch-list/${listId}`,
     },

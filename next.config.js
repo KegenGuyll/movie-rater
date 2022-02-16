@@ -1,13 +1,5 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      require('./scripts/generate-sitemap.js');
-    }
-
-    return config;
-  },
-  reactStrictMode: true,
   images: {
     domains: [
       'm.media-amazon.com',
@@ -21,5 +13,15 @@ module.exports = {
       'image.tmdb.org',
     ],
   },
+  optimizeFonts: true,
+  reactStrictMode: true,
   swcMinify: true,
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // eslint-disable-next-line global-require
+      require('./scripts/generate-sitemap.js');
+    }
+
+    return config;
+  },
 };

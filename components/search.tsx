@@ -14,6 +14,7 @@ import React, {
 
 import getMovieSearch from "../endpoints/TMDB/getMovieSearch";
 import { Movie, Person, TV } from "../models/TMDB";
+import formatTitleUrl from "../utils/formatTitleUrl";
 import Logger from "../utils/logger";
 import Typography from "./typography";
 
@@ -131,9 +132,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                   <li key={value.id}>
                     <Link
                       passHref
-                      href={`/movie/${value.title.replace(/\s/g, "-")}?year=${
-                        value.release_date && value.release_date.split("-")[0]
-                      }&id=${value.id}`}
+                      href={`/movie/${formatTitleUrl(value.title, value.id)}`}
                     >
                       <button
                         className="text-left w-full hover:bg-dark-light p-2 rounded"
@@ -178,15 +177,14 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                 </span>
               </button>
               {!collapseTv &&
-                tv.map((value) => (
-                  <li key={value.id}>
+                tv.map((value) => {
+
+                  if(!value.first_air_date) return null
+
+                  return <li key={value.id}>
                     <Link
                       passHref
-                      href={`/tv/${value.name.replace(/\s/g, "-")}?year=${
-                        value.first_air_date
-                          ? value.first_air_date.split("-")[0]
-                          : null
-                      }&id=${value.id}`}
+                      href={`/tv/${formatTitleUrl(value.name, value.id)}`}
                     >
                       <button
                         className="text-left w-full hover:bg-dark-light p-2 rounded"
@@ -214,7 +212,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                       </button>
                     </Link>
                   </li>
-                ))}
+                })}
             </div>
             <div>
               <button
@@ -234,9 +232,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                   <li key={value.id}>
                     <Link
                       passHref
-                      href={`/people/${value.name.replace(/\s/g, "-")}?id=${
-                        value.id
-                      }`}
+                      href={`/people/${formatTitleUrl(value.name, value.id)}`}
                     >
                       <button
                         className="text-left w-full hover:bg-dark-light p-2 rounded"

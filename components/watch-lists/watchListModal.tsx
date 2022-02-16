@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React, {
   FormEvent,
   FunctionComponent,
+  HTMLAttributes,
   useEffect,
   useState,
 } from 'react';
@@ -13,34 +14,21 @@ import createWatchList from '../../endpoints/watchlist/createWatchList';
 import getAllWatchLists from '../../endpoints/watchlist/getAllWatchLists';
 import getMovieExist from '../../endpoints/watchlist/getMovieExist';
 import { MovieDocument } from '../../models/firestore';
-import { IMDBMovie } from '../../models/imdb/popular';
-import { RottenMovie } from '../../models/rottenTomatoes';
-import { AddMovie, ExistMovie, WatchList } from '../../models/watchlist';
+import { MovieDetails } from '../../models/TMDB';
+import { ExistMovie, WatchList } from '../../models/watchlist';
 import Logger from '../../utils/logger';
 import Button from '../button';
 import Modal from '../modal';
 import Typography from '../typography';
 
-interface Props {
-  title: string;
-  poster: string;
-  rotten: RottenMovie | undefined | null;
-  imdb: IMDBMovie | null;
+interface Props extends HTMLAttributes<HTMLButtonElement> {
+  movie: MovieDetails;
   personal: MovieDocument | null;
-  imdbScore: number;
-  year: number;
-  imdbId: string;
 }
 
 const WatchListModal: FunctionComponent<Props> = ({
-  title,
-  poster,
-  rotten,
-  imdb,
-  personal,
-  imdbScore,
-  year,
-  imdbId,
+  movie,
+  ...props
 }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
   const [watchListTitle, setWatchListTitle] = useState<string>('');
@@ -53,11 +41,11 @@ const WatchListModal: FunctionComponent<Props> = ({
   const router = useRouter();
 
   const handleExistMovie = async () => {
-    if (!imdbId || !authUser) return;
+    if (!authUser) return;
 
     const authToken = await authUser.getIdToken();
 
-    getMovieExist(authToken, imdbId).then(({ res }) => {
+    getMovieExist(authToken, movie.id).then(({ res }) => {
       if (res) {
         setExistMovie(res.data);
       }
@@ -83,44 +71,19 @@ const WatchListModal: FunctionComponent<Props> = ({
 
   useEffect(() => {
     handleExistMovie();
-  }, [imdb, authUser, imdbId]);
+  }, [authUser]);
 
   useEffect(() => {
     handleGetLists();
   }, [authUser]);
 
   const handleMovieAdd = async (listId: string) => {
-    if (!authUser || !rotten) return;
+    if (!authUser) return;
 
     try {
       const authToken = await authUser.getIdToken(true);
 
-      const data: AddMovie = {
-        description: rotten.movieSynopsis,
-        imdbId,
-        poster: `https://image.tmdb.org/t/p/w500${poster}`,
-        rating: {
-          imdb: {
-            metaScore: imdb?.metaScore || null,
-            score: String(imdbScore),
-          },
-          personal: {
-            advancedScore: personal?.averagedAdvancedScore || null,
-            simpleScore: personal?.simpleScore || null,
-          },
-          rotten: {
-            audiencescore: rotten.audiencescore,
-            audiencestate: rotten.audiencestate,
-            tomatometerscore: rotten.tomatometerscore,
-            tomatometerstate: rotten.tomatometerstate,
-          },
-        },
-        rottenId: rotten.uuid,
-        title: rotten.title,
-        year,
-      };
-
-      const { err } = await addMovie(data, authToken, listId);
+      const { err } = await addMovie(movie.id, authToken, listId);
 
       if (err) {
         throw err;
@@ -146,6 +109,7 @@ const WatchListModal: FunctionComponent<Props> = ({
           description: watchListDes,
           public: watchListPub,
           title: watchListTitle,
+          userId: authUser.uid,
         },
         authToken
       );
@@ -158,24 +122,22 @@ const WatchListModal: FunctionComponent<Props> = ({
     }
   };
 
-  if (!rotten) return null;
-
   const renderModalAddWatchList = () => (
     <div className="text-dark-text">
       <div className="flex mb-4">
         <div className="mr-8">
           <Image
-            alt={title}
+            alt={movie.title}
             className="rounded"
             height={120}
             objectFit="cover"
-            src={`https://image.tmdb.org/t/p/w500${poster}`}
+            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
             width={80}
           />
         </div>
         <div>
           <Typography variant="h2">Add to list</Typography>
-          <Typography variant="subtitle">{title}</Typography>
+          <Typography variant="subtitle">{movie.title}</Typography>
         </div>
       </div>
       <div className="divide-y">
@@ -204,8 +166,8 @@ const WatchListModal: FunctionComponent<Props> = ({
             >
               <span className="material-icons-outlined mr-4">
                 {existMovie
-                  ? existMovie.map((movie) =>
-                      movie.listId === value._id ? 'checklist_rtl' : 'list'
+                  ? existMovie.map((movieValue) =>
+                      movieValue.listId === value._id ? 'checklist_rtl' : 'list'
                     )
                   : 'list'}
               </span>
@@ -222,7 +184,7 @@ const WatchListModal: FunctionComponent<Props> = ({
       <div className="mb-3">
         <Typography variant="h3">Create Watch List</Typography>
         <Typography variant="subtitle">
-          {`creating this list will not add ${rotten.title} to your new list`}
+          {`creating this list will not add ${movie.title} to your new list`}
         </Typography>
       </div>
       <form>
@@ -255,7 +217,11 @@ const WatchListModal: FunctionComponent<Props> = ({
 
   return (
     <>
-      <Button className="hidden lg:block" onClick={() => setOpen(true)}>
+      <Button
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        onClick={() => setOpen(true)}
+      >
         <Typography className="flex items-center" variant="subtitle">
           <span className="material-icons-outlined mr-2">
             {existMovie?.length ? 'check' : 'add'}

@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { ExistMovie } from '../../models/watchlist';
 
+import { ExistMovie } from '../../models/watchlist';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
@@ -14,7 +14,7 @@ interface IResolvedPopular {
 
 export default function getMovieExist(
   authToken: string,
-  imdbId: string
+  imdbId: string | number
 ): Promise<IResolvedPopular> {
   return resolve(
     {

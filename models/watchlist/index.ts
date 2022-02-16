@@ -1,22 +1,14 @@
-export interface WatchList {
+interface WatchList {
   _id: string;
   title: string;
   description: string;
   public: boolean;
-  movies: Movies[];
+  movies: number[];
   created_at: TimeStamp;
   updated_at: TimeStamp;
 }
 
-export interface AddMovie {
-  rottenId: string;
-  imdbId: string | null;
-  title: string;
-  poster: string;
-  description: string;
-  rating: Rating;
-  year: number;
-}
+type AddMovie = number;
 
 type Movies = {
   rottenId: string,
@@ -26,16 +18,17 @@ type Movies = {
   description: string,
   rating: Rating,
   year: number,
+  tmdbID: number,
 };
 
-export type Rating = {
-  rotten: {
+type Rating = {
+  rotten?: {
     audiencestate: 'spilled' | 'upright' | '' | undefined,
     tomatometerstate: 'certified-fresh' | 'rotten' | 'fresh' | '' | undefined,
     tomatometerscore: string,
     audiencescore: string,
   },
-  imdb: {
+  imdb?: {
     score: string | null,
     metaScore: string | null,
   },
@@ -50,7 +43,7 @@ type TimeStamp = {
   _nanoseconds: number,
 };
 
-export interface ExistMovie {
+interface ExistMovie {
   listTitle: string;
   listId: string;
   title: string;
@@ -59,8 +52,19 @@ export interface ExistMovie {
   year: number;
 }
 
-export interface CreateWatchList {
+interface CreateWatchList {
   title: string;
   description: string;
   public: boolean;
+  userId: string;
 }
+
+export type {
+  AddMovie,
+  CreateWatchList,
+  ExistMovie,
+  Movies,
+  Rating,
+  TimeStamp,
+  WatchList,
+};
