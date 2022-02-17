@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { CreateWatchList } from '../../models/watchlist';
 
+import { CreateWatchList } from '../../models/watchlist';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
@@ -19,10 +19,10 @@ export default function updateWatchList(
 ): Promise<IResolvedPopular> {
   return resolve(
     {
+      data,
       headers: {
         Authorization: authToken,
       },
-      data,
       method: 'PUT',
       url: `/watch-list/${id}`,
     },

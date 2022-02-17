@@ -68,6 +68,17 @@ export const WatchListPage: NextPage = () => {
     }
   };
 
+    const handleFetchMovies = async () => {
+    if (watchList) {
+      watchList.movies.forEach(async (id) => {
+        const { res } = await getMovieDetails(id.toString())
+        if (res) {
+          setList((prevState) => [...prevState, res.data])
+        }
+      })
+    }
+  }
+
   const submitUpdate = async () => {
     if (!watchList || !authUser) return;
 
@@ -79,24 +90,24 @@ export const WatchListPage: NextPage = () => {
       newArray.splice(index, 1);
     });
 
-    const payload: any = {
+    const payload = {
       description,
-      movies: newArray,
-      public: toggle,
+      movies: newArray.map(movie => movie.id),
+      public: toggle || false,
       title,
+      userId: authUser.uid
     };
+
 
     const token = await authUser.getIdToken(true);
 
-    await updateWatchList(payload, token, watchList._id);
-
-    const { res } = await getWatchList(watchList._id, token);
+    const { res } = await updateWatchList(payload, token, watchList._id);
 
     if (res) {
-      setWatchLists(res.data);
+      setWatchLists(res.data)
+      setOpen(false)
     }
-
-    setOpen(false);
+    
   };
 
   useEffect(() => {
@@ -109,16 +120,7 @@ export const WatchListPage: NextPage = () => {
     });
   }, [userId]);
 
-  const handleFetchMovies = async () => {
-    if (watchList) {
-      watchList.movies.forEach(async (id) => {
-        const { res } = await getMovieDetails(id.toString())
-        if (res) {
-          setList((prevState) => [...prevState, res.data])
-        }
-      })
-    }
-  }
+
 
   useEffect(() => {
     if (!watchList) return
