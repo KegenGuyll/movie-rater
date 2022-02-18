@@ -81,6 +81,7 @@ interface MovieDetails {
   video: boolean;
   vote_average: number;
   vote_count: number;
+  media_type: 'movie';
 }
 interface BelongsToCollection {
   id: number;

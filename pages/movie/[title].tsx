@@ -295,24 +295,28 @@ const Movie: NextPage<Props> = ({
           <Typography variant="h3">Cast</Typography>
           <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll">
             {casts.map((cast) => (
-              <div key={cast.id} className="bg-dark-components rounded w-52">
-                <div className="relative h-[180px] w-full">
-                  <Image
-                    alt={cast.name}
-                    className="rounded-t"
-                    layout="fill"
-                    objectFit="cover"
-                    src={`${imageUrl(200)}${cast.profile_path}`}
-                  />
-                </div>
-                <div className="p-2">
-                  <Typography variant="h4">{cast.name}</Typography>
-                  <Typography variant="subtitle">{`${cast.character}`}</Typography>
-                  <Typography variant="light">
-                    {`(${cast.known_for_department})`}
-                  </Typography>
-                </div>
-              </div>
+              <Link key={cast.id} passHref href="/">
+                <a>
+                  <div className="bg-dark-components rounded w-52">
+                    <div className="relative h-[180px] w-full">
+                      <Image
+                        alt={cast.name}
+                        className="rounded-t"
+                        layout="fill"
+                        objectFit="cover"
+                        src={`${imageUrl(200)}${cast.profile_path}`}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <Typography variant="h4">{cast.name}</Typography>
+                      <Typography variant="subtitle">{`${cast.character}`}</Typography>
+                      <Typography variant="light">
+                        {`(${cast.known_for_department})`}
+                      </Typography>
+                    </div>
+                  </div>
+                </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -466,24 +470,30 @@ const Movie: NextPage<Props> = ({
             <Typography variant="h3">Top Billed Cast</Typography>
             <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll py-3">
               {casts.slice(0, 9).map((cast) => (
-                <div key={cast.id} className="bg-dark-components rounded w-40">
-                  <div className="relative h-[180px] w-full">
-                    <Image
-                      alt={cast.name}
-                      className="rounded-t"
-                      layout="fill"
-                      objectFit="cover"
-                      src={`${imageUrl(200)}${cast.profile_path}`}
-                    />
-                  </div>
-                  <div className="p-2">
-                    <Typography variant="h4">{cast.name}</Typography>
-                    <Typography variant="subtitle">{`${cast.character}`}</Typography>
-                    <Typography variant="light">
-                      {`(${cast.known_for_department})`}
-                    </Typography>
-                  </div>
-                </div>
+                <Link
+                  key={cast.id}
+                  passHref
+                  href={`/person/${formatTitleUrl(cast.name, cast.id)}`}
+                >
+                  <a className="h-full bg-dark-components  rounded w-52">
+                    <div className="relative h-[180px] w-full">
+                      <Image
+                        alt={cast.name}
+                        className="rounded-t"
+                        layout="fill"
+                        objectFit="cover"
+                        src={`${imageUrl(200)}${cast.profile_path}`}
+                      />
+                    </div>
+                    <div className="p-2">
+                      <Typography variant="h4">{cast.name}</Typography>
+                      <Typography variant="subtitle">{`${cast.character}`}</Typography>
+                      <Typography variant="light">
+                        {`(${cast.known_for_department})`}
+                      </Typography>
+                    </div>
+                  </a>
+                </Link>
               ))}
               <div className="flex items-center justify-center h-[290px] w-[160px] bg-dark-components rounded">
                 {/* TODO: Create Cast and Crew Page */}

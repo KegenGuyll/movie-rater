@@ -232,7 +232,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
                   <li key={value.id}>
                     <Link
                       passHref
-                      href={`/people/${formatTitleUrl(value.name, value.id)}`}
+                      href={`/person/${formatTitleUrl(value.name, value.id)}`}
                     >
                       <button
                         className="text-left w-full hover:bg-dark-light p-2 rounded"
