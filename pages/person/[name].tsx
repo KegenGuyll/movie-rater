@@ -1,10 +1,13 @@
+import dayjs from 'dayjs';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import Navigation from '../../components/navigation';
+import Table, { Columns } from '../../components/table';
 import Typography from '../../components/typography';
 import getMovieDetails from '../../endpoints/TMDB/getMovie';
 import getPersonCombinedCredits from '../../endpoints/TMDB/person/getPersonCombinedCredits';
@@ -17,7 +20,7 @@ import {
   PersonDetails,
 } from '../../models/TMDB/person';
 import { TVDetails } from '../../models/TMDB/tv';
-import { findGender, parseYear } from '../../utils/common';
+import { birthday, findGender, parseYear } from '../../utils/common';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
@@ -31,25 +34,180 @@ type AllVotes = {
   id: number,
   media_type: 'movie' | 'tv',
   score: number,
+  scoreCount: number,
 };
 
 const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
   const [topRated, setTopRated] = useState<MovieDetails | TVDetails>();
   const [lowestRated, setLowestRated] = useState<MovieDetails | TVDetails>();
   const [sortedCredits, setSortedCredits] = useState<Cast[]>();
+  const router = useRouter();
 
   if (!details || !combinedCredits) return null;
+
+  const handleRoute = (id: number) => {
+    if (!combinedCredits) return;
+
+    const index = combinedCredits.cast.findIndex((value) => value.id === id);
+
+    const selectedMovie = combinedCredits.cast[index];
+
+    if (selectedMovie.media_type === 'tv') {
+      router.push(
+        `/${selectedMovie.media_type}/${formatTitleUrl(
+          selectedMovie.name,
+          selectedMovie.id
+        )}`
+      );
+    } else if (selectedMovie.media_type === 'movie') {
+      router.push(
+        `/${selectedMovie.media_type}/${formatTitleUrl(
+          selectedMovie.title,
+          selectedMovie.id
+        )}`
+      );
+    }
+  };
+
+  const movieCreditColumns: Columns[] = useMemo(
+    () => [
+      {
+        clickEvent: (id: number) => handleRoute(id),
+        clickable: true,
+        id: 1,
+        name: 'Title',
+        type: 'string',
+      },
+      {
+        id: 2,
+        name: 'Score',
+        type: 'number',
+      },
+      {
+        id: 3,
+        name: 'Year',
+        type: 'number',
+      },
+    ],
+    [combinedCredits]
+  );
+
+  const tvCreditColumns: Columns[] = useMemo(
+    () => [
+      {
+        clickEvent: (id: number) => handleRoute(id),
+        clickable: true,
+        id: 1,
+        name: 'Title',
+        type: 'string',
+      },
+      {
+        id: 2,
+        name: 'Score',
+        type: 'number',
+      },
+      {
+        id: 3,
+        name: 'Year',
+        type: 'number',
+      },
+    ],
+    [combinedCredits]
+  );
+
+  const movieCreditRows = useMemo(() => {
+    if (!combinedCredits) return [];
+    const rows: any[] = [];
+
+    combinedCredits.cast.forEach((cast) => {
+      if (
+        cast.media_type === 'movie' &&
+        cast.vote_count > 100 &&
+        cast.vote_average
+      ) {
+        rows.push({
+          Score: cast.vote_average || '-',
+          Title: `${cast.title} as ${cast.character}`,
+          Year: parseYear(cast.release_date),
+          id: cast.id,
+        });
+      }
+    });
+
+    return rows.filter(
+      (value, index, array) =>
+        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
+        index
+    );
+  }, [combinedCredits]);
+
+  const productionCreditRows = useMemo(() => {
+    if (!combinedCredits) return [];
+    const rows: any[] = [];
+
+    combinedCredits.crew.forEach((crew) => {
+      if (crew.media_type === 'movie') {
+        rows.push({
+          Score: crew.vote_average || '-',
+          Title: `${crew.title} ... ${crew.job}`,
+          Year: parseYear(crew.release_date),
+          id: crew.id,
+        });
+      }
+      if (crew.media_type === 'tv') {
+        rows.push({
+          Score: crew.vote_average || '-',
+          Title: `${crew.name} ... ${crew.job}`,
+          Year: parseYear(crew.first_air_date),
+          id: crew.id,
+        });
+      }
+    });
+
+    return rows.filter(
+      (value, index, array) =>
+        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
+        index
+    );
+  }, [combinedCredits]);
+
+  const tvCreditRows = useMemo(() => {
+    if (!combinedCredits) return [];
+    const rows: any[] = [];
+
+    combinedCredits.cast.forEach((cast) => {
+      if (
+        cast.media_type === 'tv' &&
+        cast.vote_count > 100 &&
+        cast.vote_average
+      ) {
+        rows.push({
+          Score: cast.vote_average || '-',
+          Title: `${cast.name} as ${cast.character}`,
+          Year: parseYear(cast.first_air_date),
+          id: cast.id,
+        });
+      }
+    });
+
+    return rows.filter(
+      (value, index, array) =>
+        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
+        index
+    );
+  }, [combinedCredits]);
 
   const findRated = async () => {
     const all = [...combinedCredits.cast];
     const allVotes: AllVotes[] = [];
 
     all.forEach((value) => {
-      if (value.vote_average) {
+      if (value.vote_average && value.vote_count >= 300) {
         allVotes.push({
           id: value.id,
           media_type: value.media_type,
           score: value.vote_average,
+          scoreCount: value.vote_count,
         });
       }
     });
@@ -96,7 +254,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
 
   useEffect(() => {
     if (combinedCredits) {
-      const sorted = combinedCredits.cast.sort((a, b) => {
+      const sorted: any[] = combinedCredits.cast.sort((a, b) => {
         if (a.popularity > b.popularity) {
           return -1;
         }
@@ -164,7 +322,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
       )}
       {lowestRated && lowestRated.media_type === 'tv' && (
         <span className="flex items-center space-x-2">
-          <Typography variant="subtitle">Highest Rated</Typography>
+          <Typography variant="subtitle">Lowest Rated</Typography>
           <Typography variant="h4">{lowestRated.vote_average}</Typography>
           <Link
             passHref
@@ -190,7 +348,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
         <meta content={details.biography} name="description" />
       </Head>
       <Navigation />
-      <div className=" grid grid-cols-4 px-14 text-dark-text">
+      <div className="md:grid gap-4 grid-cols-4 px-14 text-dark-text">
         <div>
           <div>
             <Image
@@ -201,7 +359,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
               width={282}
             />
           </div>
-          <div className="space-y-6 mt-6">
+          <div className="hidden md:block space-y-6 mt-6">
             <Typography variant="h2">Person Info</Typography>
             <div>
               <Typography variant="h3">Known For</Typography>
@@ -221,10 +379,15 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
                 {findGender(details.gender)}
               </Typography>
             </div>
-            <div>
-              <Typography variant="h3">Birthday</Typography>
-              <Typography variant="subtitle">{details.birthday}</Typography>
-            </div>
+            {details.birthday && (
+              <div>
+                <Typography variant="h3">Birthday</Typography>
+                <Typography variant="subtitle">
+                  {dayjs(details.birthday).format('MMMM DD, YYYY')} (
+                  {birthday(new Date(details.birthday))} years old)
+                </Typography>
+              </div>
+            )}
             <div>
               <Typography variant="h3">Place of birth</Typography>
               <Typography variant="subtitle">
@@ -259,6 +422,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
                         <div className="h-full text-center">
                           <div className=" w-32 h-48 relative py-2">
                             <Image
+                              alt={cast.title}
                               className="rounded"
                               layout="fill"
                               objectFit="contain"
@@ -273,6 +437,36 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
                 })}
             </div>
           </div>
+          {!!movieCreditRows.length && (
+            <div className="space-y-6">
+              <Typography variant="h2">
+                Top Movie Credits ({movieCreditRows.length})
+              </Typography>
+              <div className=" max-h-96 overflow-auto">
+                <Table columns={movieCreditColumns} rows={movieCreditRows} />
+              </div>
+            </div>
+          )}
+          {!!tvCreditRows.length && (
+            <div className="space-y-6">
+              <Typography variant="h2">
+                Top Tv Credits ({tvCreditRows.length})
+              </Typography>
+              <div className=" max-h-96 overflow-auto">
+                <Table columns={tvCreditColumns} rows={tvCreditRows} />
+              </div>
+            </div>
+          )}
+          {!!productionCreditRows.length && (
+            <div className="space-y-6">
+              <Typography variant="h2">
+                Productions ({productionCreditRows.length})
+              </Typography>
+              <div className=" max-h-96 overflow-auto">
+                <Table columns={tvCreditColumns} rows={productionCreditRows} />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

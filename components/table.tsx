@@ -148,7 +148,7 @@ const Table: React.FC<Props> = ({
           </div>
         )}
       </div>
-      <div className=' overflow-x-auto'>
+      <div className='overflow-x-auto'>
         <table ref={ref} className='table-auto text-white  min-w-full'>
           <thead className='p-3 h-10  bg-dark-components'>
             <tr>
@@ -189,7 +189,7 @@ const Table: React.FC<Props> = ({
               ))}
             </tr>
           </thead>
-          <tbody className='max-h-10 rounded overflow-y-scroll bg-dark-components'>
+          <tbody className=' table-auto h-48 overflow-hidden bg-dark-components'>
             {!!items.length &&
               filteredRows.map((row: any) => (
                 <tr

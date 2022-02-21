@@ -26,8 +26,8 @@ interface PersonTVCredits {
 }
 
 interface PersonCombinedCredits {
-  cast: Cast[];
-  crew: Crew[];
+  cast: CastMovie[] | CastTV[];
+  crew: CrewMovie[] | CrewTV[];
   id: number;
 }
 
@@ -48,6 +48,7 @@ type CastMovie = {
   backdrop_path: string | null,
   overview: string,
   poster_path: string | null,
+  media_type: 'movie',
 };
 
 type CrewMovie = {
@@ -68,6 +69,7 @@ type CrewMovie = {
   backdrop_path: string | null,
   overview: string,
   poster_path: string | null,
+  media_type: 'movie',
 };
 
 type CastTV = {
@@ -87,6 +89,7 @@ type CastTV = {
   backdrop_path: string,
   overview: string,
   origin_country: string[],
+  media_type: 'tv',
 };
 
 type CrewTV = {
@@ -107,6 +110,7 @@ type CrewTV = {
   vote_average: number,
   poster_path: string,
   credit_id: string,
+  media_type: 'tv',
 };
 
 export type Cast = {
@@ -121,34 +125,12 @@ export type Cast = {
   vote_count: number,
   vote_average: number,
   popularity: number,
-  episode_count: number,
   original_language: string,
-  first_air_date: string,
   backdrop_path: string,
   overview: string,
   origin_country: string[],
   media_type: 'movie' | 'tv',
-};
-
-type Crew = {
-  id: number,
-  department: string,
-  original_language: string,
-  episode_count: number,
-  job: string,
-  overview: string,
-  origin_country: string[],
-  original_name: string,
-  genre_ids: number[],
-  name: string,
-  first_air_date: string,
-  backdrop_path: string,
-  popularity: number,
-  vote_count: number,
-  vote_average: number,
-  poster_path: string,
-  credit_id: string,
-  media_type: 'movie' | 'tv',
+  release_date: string,
 };
 
 export type {

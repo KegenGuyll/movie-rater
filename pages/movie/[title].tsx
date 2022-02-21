@@ -295,7 +295,11 @@ const Movie: NextPage<Props> = ({
           <Typography variant="h3">Cast</Typography>
           <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll">
             {casts.map((cast) => (
-              <Link key={cast.id} passHref href="/">
+              <Link
+                key={cast.id}
+                passHref
+                href={`/person/${formatTitleUrl(cast.name, cast.id)}`}
+              >
                 <a>
                   <div className="bg-dark-components rounded w-52">
                     <div className="relative h-[180px] w-full">

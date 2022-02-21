@@ -94,6 +94,7 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
     >
       <form className="w-full" onSubmit={handleSubmit}>
         <input
+          aria-label="search box"
           className={clsx(
             "py-[7px] px-3 w-full bg-dark-background rounded",
             "focus:border focus:border-cta transition-colors duration-300 focus:outline-none"

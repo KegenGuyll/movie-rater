@@ -12,5 +12,15 @@ export function findGender(gender: 0 | 1 | 2 | 3) {
 }
 
 export function parseYear(release_date: string) {
+  if (!release_date) return '-';
+
   return dayjs(release_date).format('YYYY');
+}
+
+export function birthday(date: Date | null) {
+  if (!date) return null;
+
+  const currentDate = new Date();
+  const diff = currentDate.getTime() - date.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
 }
