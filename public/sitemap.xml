@@ -25,11 +25,19 @@
   </url>
 
   <url>
+    <loc>https://movielot.vercel.app/person/[name]</loc>
+  </url>
+
+  <url>
     <loc>https://movielot.vercel.app/movie/[title]</loc>
   </url>
 
   <url>
     <loc>https://movielot.vercel.app/movie/search</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/tv/[name]</loc>
   </url>
 
   <url>

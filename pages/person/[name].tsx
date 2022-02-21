@@ -224,7 +224,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
         setTopRated(res.data);
       }
     } else {
-      const { res } = await getTVDetails(max.id.toString());
+      const { res } = await getTVDetails(max.id);
 
       if (res) {
         res.data.media_type = 'tv';
@@ -239,7 +239,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
         setLowestRated(res.data);
       }
     } else {
-      const { res } = await getTVDetails(min.id.toString());
+      const { res } = await getTVDetails(min.id);
 
       if (res) {
         res.data.media_type = 'tv';
