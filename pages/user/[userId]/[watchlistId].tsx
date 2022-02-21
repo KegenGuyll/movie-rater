@@ -14,10 +14,12 @@ import Typography from '../../../components/typography';
 import WatchListVisibility from '../../../components/watch-lists/watchListVisibility';
 import { useAuth } from '../../../context/AuthUserContext';
 import getMovieDetails from '../../../endpoints/TMDB/getMovie';
+import getTVDetails from '../../../endpoints/TMDB/tv/getTvDetails';
 import getUserByUid from '../../../endpoints/user/getUserByUid';
 import getWatchList from '../../../endpoints/watchlist/getWatchList';
 import updateWatchList from '../../../endpoints/watchlist/updateWatchList';
 import {  MovieDetails } from '../../../models/TMDB';
+import { TVDetails } from '../../../models/TMDB/tv';
 import { User } from '../../../models/user';
 import { WatchList } from '../../../models/watchlist';
 import formatTitleUrl from '../../../utils/formatTitleUrl';
@@ -36,7 +38,7 @@ export const WatchListPage: NextPage = () => {
   const [removedWatchListItems, setRemovedWatchListItems] = useState<string[]>(
     []
   );
-  const [list, setList] = useState<MovieDetails[]>([])
+  const [list, setList] = useState<(MovieDetails | TVDetails)[]>([])
   const [title, setTitle] = useState(watchList?.title || '');
   const [description, setDescription] = useState(watchList?.description || '');
 
@@ -71,9 +73,17 @@ export const WatchListPage: NextPage = () => {
     const handleFetchMovies = async () => {
     if (watchList) {
       watchList.movies.forEach(async (id) => {
-        const { res } = await getMovieDetails(id.toString())
+        const { res, err } = await getMovieDetails(id.toString())
         if (res) {
+          res.data.media_type = 'movie'
           setList((prevState) => [...prevState, res.data])
+        }
+        if (err) {
+          const { res: tvDetails } = await getTVDetails(id)
+          if (tvDetails) {
+            tvDetails.data.media_type = 'tv'
+            setList((prevState) => [...prevState, tvDetails.data])
+          }
         }
       })
     }
@@ -168,12 +178,12 @@ export const WatchListPage: NextPage = () => {
               type='button'
               onClick={() =>
                 router.push(
-                  `/movie/${formatTitleUrl(value.title, value.id)}`
+                  `/${value.media_type}/${formatTitleUrl(value.media_type === 'movie' ? value.title : value.name, value.id)}`
                 )
               }>
               <div className='lg:mr-8 mr-0 flex-grow flex w-full items-center justify-center'>
                 <Image
-                  alt={value.title}
+                  alt={value.media_type === 'movie' ? value.title : value.name}
                   className='rounded shadow'
                   height='400'
                   objectFit='cover'
@@ -184,9 +194,9 @@ export const WatchListPage: NextPage = () => {
               <div className='flex flex-col'>
                 <Typography
                   className=' text-left md:text-center'
-                  title={value.title}
+                  title={value.media_type === 'movie' ? value.title : value.name}
                   variant='h2'>
-                  {value.title}
+                  {value.media_type === 'movie' ? value.title : value.name}
                 </Typography>
                 
                 <Typography title={value.overview} variant='light'>
@@ -302,17 +312,17 @@ export const WatchListPage: NextPage = () => {
             </div>
           </div>
           <div className='space-y-2 max-h-80 overflow-auto'>
-            {list.map((movie) => (
+            {list.map((media) => (
               <div
-                key={movie.id}
+                key={media.id}
                 className='bg-dark-components p-2 rounded flex items-center'>
                 <Typography
                   className={clsx(
                     'flex-grow',
-                    removedWatchListItems.includes(movie.id.toString()) &&
+                    removedWatchListItems.includes(media.id.toString()) &&
                       'line-through'
                   )}>
-                  {movie.title}
+                  {media.media_type === 'movie' ? media.title : media.name}
                 </Typography>
                 <button
                   className={clsx(
@@ -320,9 +330,9 @@ export const WatchListPage: NextPage = () => {
                     'transition-all duration-100'
                   )}
                   type='button'
-                  onClick={() => handleRemoveMovies(movie.id.toString())}>
+                  onClick={() => handleRemoveMovies(media.id.toString())}>
                   <span className='material-icons-outlined '>
-                    {removedWatchListItems.includes(movie.id.toString())
+                    {removedWatchListItems.includes(media.id.toString())
                       ? 'undo'
                       : 'delete'}
                   </span>

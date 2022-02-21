@@ -15,6 +15,7 @@ import getAllWatchLists from '../../endpoints/watchlist/getAllWatchLists';
 import getMovieExist from '../../endpoints/watchlist/getMovieExist';
 import { MovieDocument } from '../../models/firestore';
 import { MovieDetails } from '../../models/TMDB';
+import { TVDetails } from '../../models/TMDB/tv';
 import { ExistMovie, WatchList } from '../../models/watchlist';
 import Logger from '../../utils/logger';
 import Button from '../button';
@@ -22,12 +23,12 @@ import Modal from '../modal';
 import Typography from '../typography';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
-  movie: MovieDetails;
+  media: MovieDetails | TVDetails;
   personal: MovieDocument | null;
 }
 
 const WatchListModal: FunctionComponent<Props> = ({
-  movie,
+  media,
   ...props
 }: Props) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -45,7 +46,7 @@ const WatchListModal: FunctionComponent<Props> = ({
 
     const authToken = await authUser.getIdToken();
 
-    getMovieExist(authToken, movie.id).then(({ res }) => {
+    getMovieExist(authToken, media.id).then(({ res }) => {
       if (res) {
         setExistMovie(res.data);
       }
@@ -83,7 +84,7 @@ const WatchListModal: FunctionComponent<Props> = ({
     try {
       const authToken = await authUser.getIdToken(true);
 
-      const { err } = await addMovie(movie.id, authToken, listId);
+      const { err } = await addMovie(media.id, authToken, listId);
 
       if (err) {
         throw err;
@@ -127,17 +128,23 @@ const WatchListModal: FunctionComponent<Props> = ({
       <div className="flex mb-4">
         <div className="mr-8">
           <Image
-            alt={movie.title}
+            alt={media.media_type === 'movie' ? media.title : media.name}
             className="rounded"
             height={120}
             objectFit="cover"
-            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+            src={`https://image.tmdb.org/t/p/w500${
+              media.media_type === 'movie'
+                ? media.poster_path
+                : media.poster_path
+            }`}
             width={80}
           />
         </div>
         <div>
           <Typography variant="h2">Add to list</Typography>
-          <Typography variant="subtitle">{movie.title}</Typography>
+          <Typography variant="subtitle">
+            {media.media_type === 'movie' ? media.title : media.name}
+          </Typography>
         </div>
       </div>
       <div className="divide-y">
@@ -184,7 +191,9 @@ const WatchListModal: FunctionComponent<Props> = ({
       <div className="mb-3">
         <Typography variant="h3">Create Watch List</Typography>
         <Typography variant="subtitle">
-          {`creating this list will not add ${movie.title} to your new list`}
+          {`creating this list will not add ${
+            media.media_type === 'movie' ? media.title : media.name
+          } to your new list`}
         </Typography>
       </div>
       <form>

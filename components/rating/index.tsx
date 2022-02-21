@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthUserContext';
 import createReviewedMovie from '../../endpoints/review/createReviewMovie';
 import { AdvancedScore } from '../../models/firestore';
 import { MovieDetails } from '../../models/TMDB';
+import { TVDetails } from '../../models/TMDB/tv';
 import Typography from '../typography';
 import RateList from './rateList';
 
@@ -12,7 +13,7 @@ interface Props {
   advanceScore?: boolean;
   // eslint-disable-next-line no-unused-vars
   setAdvanceScore: (value: boolean) => void;
-  movie: MovieDetails;
+  media: MovieDetails | TVDetails;
   // eslint-disable-next-line no-unused-vars
   closeModal: (value: boolean) => void;
   defaultScore?: AdvancedScore | null;
@@ -22,7 +23,7 @@ interface Props {
 const Rating: FunctionComponent<Props> = ({
   advanceScore,
   setAdvanceScore,
-  movie,
+  media,
   closeModal,
   defaultScore,
   defaultSimpleScore,
@@ -108,10 +109,13 @@ const Rating: FunctionComponent<Props> = ({
           10,
         createdAt: Timestamp.fromDate(new Date()),
         notes,
-        release_date: movie.release_date,
+        release_date:
+          media.media_type === 'movie'
+            ? media.release_date
+            : media.first_air_date,
         simpleScore: score,
-        title: movie.title,
-        tmdbID: movie.id,
+        title: media.media_type === 'movie' ? media.title : media.name,
+        tmdbID: media.id,
         updatedAt: Timestamp.fromDate(new Date()),
       };
 
@@ -131,10 +135,13 @@ const Rating: FunctionComponent<Props> = ({
       averagedAdvancedScore: null,
       createdAt: Timestamp.fromDate(new Date()),
       notes,
-      release_date: movie.release_date,
+      release_date:
+        media.media_type === 'movie'
+          ? media.release_date
+          : media.first_air_date,
       simpleScore: score,
-      title: movie.title,
-      tmdbID: movie.id,
+      title: media.media_type === 'movie' ? media.title : media.name,
+      tmdbID: media.id,
       updatedAt: Timestamp.fromDate(new Date()),
     };
 

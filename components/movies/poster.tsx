@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from 'react';
 
-import { Movie, Person, TV } from '../../models/TMDB';
+import { Movie, Person } from '../../models/TMDB';
+import { TVshow } from '../../models/TMDB/tv';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 
 interface Props {
-  media: Movie | TV | Person;
+  media: Movie | TVshow | Person;
   clickable?: boolean;
 }
 
@@ -43,7 +44,7 @@ const Poster: FunctionComponent<Props> = ({ media, clickable }) => {
     </Link>
   );
 
-  const renderTV = ({ name, poster_path, id }: TV) => (
+  const renderTV = ({ name, poster_path, id }: TVshow) => (
     <button
       className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative"
       disabled={!clickable}

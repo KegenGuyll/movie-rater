@@ -10,7 +10,6 @@ import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
 import Modal from '../../components/modal';
-// import RadialBarChart from '../../components/charts/radialbarChart';
 import Poster from '../../components/movies/poster';
 import Navigation from '../../components/navigation';
 import Rating from '../../components/rating';
@@ -18,23 +17,22 @@ import Typography from '../../components/typography';
 import WatchListModal from '../../components/watch-lists/watchListModal';
 import { useAuth } from '../../context/AuthUserContext';
 import getReviewedMovie from '../../endpoints/review/getReviewMovie';
-import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
-import getMovieDetails from '../../endpoints/TMDB/getMovie';
-import getMovieCast from '../../endpoints/TMDB/getMovieCast';
-import getMovieImages from '../../endpoints/TMDB/getMovieImages';
-import getMovieKeywords from '../../endpoints/TMDB/getMovieKeywords';
-import getMovieVideos from '../../endpoints/TMDB/getMovieVideos';
-import getSimilarMovies from '../../endpoints/TMDB/getSimilarMovies';
+import getTVCast from '../../endpoints/TMDB/tv/getTvCast';
+import getTVDetails from '../../endpoints/TMDB/tv/getTvDetails';
+import getTVImages from '../../endpoints/TMDB/tv/getTvImages';
+import getTVKeywords from '../../endpoints/TMDB/tv/getTvKeywords';
+import getTVSimilar from '../../endpoints/TMDB/tv/getTvSimilar';
+import getTVvideos from '../../endpoints/TMDB/tv/getTvVideos';
 import { MovieDocument } from '../../models/firestore';
 import {
   Backdrops,
   Cast,
   Keyword,
-  Movie as MovieType,
-  MovieDetails,
   Poster as PosterType,
   Video,
 } from '../../models/TMDB';
+import { TVDetails, TvSimilar } from '../../models/TMDB/tv';
+import { parseYear } from '../../utils/common';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
@@ -45,9 +43,9 @@ const RadialBarChart = dynamic(
 );
 
 interface Props {
-  details: MovieDetails | null;
+  details: TVDetails | null;
   casts: Cast[] | null;
-  similarMovies: MovieType[] | null;
+  similarTv: TvSimilar | null;
   keywords: Keyword[] | null;
 }
 
@@ -55,10 +53,10 @@ type MediaType = 'videos' | 'backdrops' | 'posters' | '';
 
 type CombineMedia = PosterType | Backdrops;
 
-const Movie: NextPage<Props> = ({
+const TVshow: NextPage<Props> = ({
   details,
   casts,
-  similarMovies,
+  similarTv,
   keywords,
 }: Props) => {
   const [advancedScoring, setAdvancedScoring] = useState<boolean>(true);
@@ -77,7 +75,7 @@ const Movie: NextPage<Props> = ({
   const handleShallowRoute = (media: MediaType) => {
     if (details) {
       router.push(
-        `/movie/${formatTitleUrl(details.title, details.id)}?${media}=true`,
+        `/tv/${formatTitleUrl(details.name, details.id)}?${media}=true`,
         undefined,
         {
           shallow: true,
@@ -103,8 +101,8 @@ const Movie: NextPage<Props> = ({
     }
   };
 
-  const fetchImages = async (movieId: number) => {
-    const { res, err } = await getMovieImages(movieId);
+  const fetchImages = async (tvId: number) => {
+    const { res, err } = await getTVImages(tvId);
 
     if (res) {
       setPosters(res.data.posters.sort(sortVotes));
@@ -116,8 +114,8 @@ const Movie: NextPage<Props> = ({
     }
   };
 
-  const fetchVideos = async (movieId: number) => {
-    const { res, err } = await getMovieVideos(movieId);
+  const fetchVideos = async (tvId: number) => {
+    const { res, err } = await getTVvideos(tvId);
 
     if (res) {
       setVideos(res.data.results);
@@ -168,7 +166,7 @@ const Movie: NextPage<Props> = ({
     >
       <Image
         priority
-        alt={`${details.title} backdrop`}
+        alt={`${details.name} backdrop`}
         layout="fill"
         objectFit="cover"
         objectPosition="center"
@@ -188,7 +186,7 @@ const Movie: NextPage<Props> = ({
           )}
         >
           <Image
-            alt={`${details.title} poster`}
+            alt={`${details.name} poster`}
             className="rounded"
             layout="fill"
             objectFit="cover"
@@ -220,13 +218,11 @@ const Movie: NextPage<Props> = ({
         <div className="hidden lg:flex flex-col relative h-max flex-grow space-y-10 text-white ml-16">
           <div className="flex items-center space-x-4 ">
             <Typography className="max-w-md xl:max-w-xl" variant="h1">
-              {details.title}
+              {details.name}
             </Typography>
-            {details.release_date && (
-              <Typography variant="h3">
-                {`(${details.release_date.split('-')[0]})`}
-              </Typography>
-            )}
+            <Typography variant="h3">
+              {`${parseYear(details.first_air_date)}`}
+            </Typography>
           </div>
           <div className="flex items-center">
             <div className="w-16 h-16 bg-dark-components p-1 rounded-full mr-3">
@@ -261,12 +257,10 @@ const Movie: NextPage<Props> = ({
     <div className="block lg:hidden">
       <div className="flex flex-col lg:hidden text-white p-10 bg-dark-components">
         <div className="flex text-center w-full items-center justify-center space-x-3">
-          <Typography variant="h2">{details.title}</Typography>
-          {details.release_date && (
-            <Typography variant="subtitle">
-              {`(${details.release_date.split('-')[0]})`}
-            </Typography>
-          )}
+          <Typography variant="h2">{details.name}</Typography>
+          <Typography variant="subtitle">
+            {`(${parseYear(details.first_air_date)})`}
+          </Typography>
         </div>
         <div className="flex mt-8 items-center justify-center">
           {authUser && <WatchListModal media={details} personal={null} />}
@@ -434,27 +428,24 @@ const Movie: NextPage<Props> = ({
           )}
         </div>
       </div>
-      {similarMovies && (
+      {similarTv && (
         <div className="mt-8 space-y-3 lg:p-16 p-4  text-dark-text">
           <Typography variant="h3">Similar Movies</Typography>
           <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll">
-            {similarMovies.map((movie) => (
+            {similarTv.results.map((tv) => (
               <Link
-                key={movie.id}
+                key={tv.id}
                 passHref
-                href={`/movie/${formatTitleUrl(
-                  movie.title,
-                  movie.id
-                )}&videos=true`}
+                href={`/tv/${formatTitleUrl(tv.name, tv.id)}&videos=true`}
               >
-                <a id={movie.original_title}>
+                <a id={tv.original_name}>
                   <div className=" h-48 md:h-[320px] md:w-[224px] relative w-28">
                     <Image
                       alt="poster"
                       className="rounded"
                       layout="fill"
                       objectFit="cover"
-                      src={`${imageUrl(200)}${movie.poster_path}`}
+                      src={`${imageUrl(200)}${tv.poster_path}`}
                     />
                   </div>
                 </a>
@@ -650,11 +641,11 @@ const Movie: NextPage<Props> = ({
             )}
           </div>
         </div>
-        {similarMovies && (
+        {similarTv && (
           <div className="mt-8 text-dark-text">
             <Typography variant="h3">Similar Movies</Typography>
             <div className="grid grid-rows-1 gap-2 grid-flow-col overflow-scroll py-3">
-              {similarMovies.map((value) => (
+              {similarTv.results.map((value) => (
                 <Poster key={value.id} media={value} />
               ))}
               <div className="flex items-center justify-center h-[320px] w-[192px] bg-dark-components rounded">
@@ -676,32 +667,12 @@ const Movie: NextPage<Props> = ({
           </div>
           <div>
             <Typography variant="h3">Release Date</Typography>
-            <Typography>{details.release_date}</Typography>
+            <Typography>{details.first_air_date}</Typography>
           </div>
           <div>
             <Typography variant="h3">Original Language</Typography>
             <Typography>
               {ISO6391.getName(details.original_language)}
-            </Typography>
-          </div>
-          <div>
-            <Typography variant="h3">Budget</Typography>
-            <Typography>
-              {new Intl.NumberFormat('en', {
-                currency: 'USD',
-                maximumSignificantDigits: 3,
-                style: 'currency',
-              }).format(details.budget)}
-            </Typography>
-          </div>
-          <div>
-            <Typography variant="h3">Revenue</Typography>
-            <Typography>
-              {new Intl.NumberFormat('en', {
-                currency: 'USD',
-                maximumSignificantDigits: 3,
-                style: 'currency',
-              }).format(details.revenue) || '-'}
             </Typography>
           </div>
           {keywords && (
@@ -730,8 +701,8 @@ const Movie: NextPage<Props> = ({
     <div>
       <Head>
         <title>
-          {`${details.title} |
-          ${details.release_date && details.release_date.split('-')[0]}`}
+          {`${details.name} |
+          ${details.first_air_date && parseYear(details.first_air_date)}`}
         </title>
       </Head>
       <Navigation />
@@ -754,46 +725,34 @@ const Movie: NextPage<Props> = ({
   );
 };
 
-Movie.getInitialProps = async (context) => {
+TVshow.getInitialProps = async (context) => {
   try {
-    const { imdbuuid, title } = context.query;
-    let existingId = '';
+    const { name } = context.query;
 
-    if (!title || typeof title !== 'string') {
-      throw new Error(`title broken: ${title}`);
+    if (!name || typeof name !== 'string') {
+      throw new Error(`name broken: ${name}`);
     }
 
-    const titleId = title.split('-')[0];
+    const id = name.split('-')[0];
 
-    if (imdbuuid && typeof imdbuuid === 'string') {
-      const { res } = await getFindExternalId(imdbuuid, 'imdb_id');
-      if (res) {
-        existingId = String(res.data.movie_results[0].id);
-      }
-    }
+    const { res: tvDetails } = await getTVDetails(Number(id));
+    const updatedTv = tvDetails?.data;
 
-    const { res: movieDetailsData } = await getMovieDetails(
-      titleId || existingId
-    );
-    const updatedMovie = movieDetailsData?.data;
+    if (updatedTv) updatedTv.media_type = 'tv';
 
-    if (updatedMovie) updatedMovie.media_type = 'movie';
-
-    const { res: movieCastData } = await getMovieCast(titleId || existingId);
-    const { res: movieSimilar } = await getSimilarMovies(titleId || existingId);
-    movieSimilar?.data.results.forEach((movie) => {
+    const { res: tvCastData } = await getTVCast(id);
+    const { res: tvSimilar } = await getTVSimilar(id);
+    tvSimilar?.data.results.forEach((tv) => {
       // eslint-disable-next-line no-param-reassign
-      movie.media_type = 'movie';
+      tv.media_type = 'tv';
     });
-    const { res: movieKeywords } = await getMovieKeywords(
-      titleId || existingId
-    );
+    const { res: tvKeywords } = await getTVKeywords(id);
 
     return {
-      casts: movieCastData && movieCastData.data.cast,
-      details: updatedMovie || null,
-      keywords: movieKeywords && movieKeywords.data.keywords,
-      similarMovies: movieSimilar && movieSimilar.data.results,
+      casts: tvCastData && tvCastData.data.cast,
+      details: updatedTv || null,
+      keywords: tvKeywords && tvKeywords.data.keywords,
+      similarTv: tvSimilar && tvSimilar.data,
     };
   } catch (error) {
     Logger.error(error);
@@ -802,9 +761,9 @@ Movie.getInitialProps = async (context) => {
       casts: null,
       details: null,
       keywords: null,
-      similarMovies: null,
+      similarTv: null,
     };
   }
 };
 
-export default Movie;
+export default TVshow;
