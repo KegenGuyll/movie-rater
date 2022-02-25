@@ -743,8 +743,8 @@ const Movie: NextPage<Props> = ({
           <Rating
             advanceScore={advancedScoring}
             closeModal={setMovieReview}
-            defaultScore={null}
-            defaultSimpleScore={null}
+            defaultScore={userData?.advancedScore}
+            defaultSimpleScore={userData?.simpleScore}
             media={details}
             setAdvanceScore={setAdvancedScoring}
           />
