@@ -12,15 +12,12 @@ interface IResolvedPopular {
   err: Error | null;
 }
 
-export default function getAllReviewedMovies(
-  authToken: string
+export default function getAllMovieReviews(
+  tmdbID: number
 ): Promise<IResolvedPopular> {
   return resolve(
     {
-      headers: {
-        Authorization: authToken,
-      },
-      url: `/movie/all`,
+      url: `/movie/all/${tmdbID}`,
     },
     true
   );

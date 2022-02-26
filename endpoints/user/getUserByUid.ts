@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios';
-import { User } from '../../models/user';
 
+import { User } from '../../models/user';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {

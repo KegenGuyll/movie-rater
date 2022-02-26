@@ -12,11 +12,13 @@ import Button from '../../components/button';
 import Modal from '../../components/modal';
 // import RadialBarChart from '../../components/charts/radialbarChart';
 import Poster from '../../components/movies/poster';
+import SocialRatingCard from '../../components/movies/socialRatingCard';
 import Navigation from '../../components/navigation';
 import Rating from '../../components/rating';
 import Typography from '../../components/typography';
 import WatchListModal from '../../components/watch-lists/watchListModal';
 import { useAuth } from '../../context/AuthUserContext';
+import getAllMovieReviews from '../../endpoints/review/getAllMovieReview';
 import getReviewedMovie from '../../endpoints/review/getReviewMovie';
 import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
 import getMovieDetails from '../../endpoints/TMDB/getMovie';
@@ -63,6 +65,8 @@ const Movie: NextPage<Props> = ({
 }: Props) => {
   const [advancedScoring, setAdvancedScoring] = useState<boolean>(true);
   const [movieReview, setMovieReview] = useState<boolean>(false);
+  const [publicMovieReviews, setPublicMovieReviews] =
+    useState<MovieDocument[]>();
   const [userData, setUserData] = useState<MovieDocument>();
   const [posters, setPosters] = useState<PosterType[]>([]);
   const [backdrops, setBackdrops] = useState<Backdrops[]>([]);
@@ -102,6 +106,28 @@ const Movie: NextPage<Props> = ({
       }
     }
   };
+
+  const fetchAllReviews = async () => {
+    if (!details) return;
+
+    try {
+      const { res, err } = await getAllMovieReviews(details.id);
+
+      if (res) {
+        setPublicMovieReviews(res.data);
+      }
+
+      if (err) {
+        throw err;
+      }
+    } catch (error) {
+      Logger.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllReviews();
+  }, [details]);
 
   const fetchImages = async (movieId: number) => {
     const { res, err } = await getMovieImages(movieId);
@@ -510,33 +536,13 @@ const Movie: NextPage<Props> = ({
             </div>
           </div>
         )}
-        {userData && authUser && userData.notes && (
+
+        {publicMovieReviews && (
           <div className="mt-8 text-dark-text space-y-3">
             <Typography variant="h3">Social</Typography>
-            <div className=" bg-dark-components rounded p-4">
-              <div className="flex items-center space-x-3 my-3">
-                <Image
-                  className="rounded-full"
-                  height={64}
-                  src={
-                    authUser.photoURL ||
-                    `https://avatars.dicebear.com/api/initials/${
-                      authUser.displayName || authUser.email
-                    }.svg`
-                  }
-                  width={64}
-                />
-                <Typography variant="h3">
-                  {authUser.displayName || authUser.email}
-                </Typography>
-                <div className=" py-1 px-2 rounded bg-cta text-dark-background">
-                  <Typography variant="subtitle">
-                    {userData.averagedAdvancedScore}
-                  </Typography>
-                </div>
-              </div>
-              <Typography>{userData.notes}</Typography>
-            </div>
+            {publicMovieReviews.map((media) => (
+              <SocialRatingCard key={media._id} media={media} />
+            ))}
           </div>
         )}
         <div className=" mt-8 text-dark-text">

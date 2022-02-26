@@ -9,8 +9,9 @@ export interface MovieDocument {
   title: string;
   release_date: string;
   updatedAt: Timestamp;
-  notes?: string;
+  notes: string | null;
   tmdbID: number;
+  userId: string;
 }
 
 export type AdvancedScore = {
