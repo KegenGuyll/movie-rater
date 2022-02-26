@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import ISO6391 from 'iso-639-1';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
+import MetaTags from '../../components/metaTags';
 import Modal from '../../components/modal';
 import Poster from '../../components/movies/poster';
 import Navigation from '../../components/navigation';
@@ -32,7 +32,7 @@ import {
   Video,
 } from '../../models/TMDB';
 import { TVDetails, TvSimilar } from '../../models/TMDB/tv';
-import { parseYear } from '../../utils/common';
+import { formatTitle, parseYear } from '../../utils/common';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
@@ -699,12 +699,13 @@ const TVshow: NextPage<Props> = ({
 
   return (
     <div>
-      <Head>
-        <title>
-          {`${details.name} |
-          ${details.first_air_date && parseYear(details.first_air_date)}`}
-        </title>
-      </Head>
+      <MetaTags
+        description={details.overview}
+        image={`${imageUrl(300, false)}${details.poster_path}`}
+        largeImage={`${imageUrl(300, false)}${details.backdrop_path}`}
+        title={formatTitle(details.name, details.first_air_date)}
+        url={router.asPath}
+      />
       <Navigation />
       {renderCoverImage()}
       {renderMobileView()}

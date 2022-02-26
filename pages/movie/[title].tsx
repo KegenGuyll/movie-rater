@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import ISO6391 from 'iso-639-1';
 import { NextPage } from 'next';
 import dynamic from 'next/dynamic';
-import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
+import MetaTags from '../../components/metaTags';
 import Modal from '../../components/modal';
 // import RadialBarChart from '../../components/charts/radialbarChart';
 import Poster from '../../components/movies/poster';
@@ -37,6 +37,7 @@ import {
   Poster as PosterType,
   Video,
 } from '../../models/TMDB';
+import { formatTitle } from '../../utils/common';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
@@ -734,12 +735,13 @@ const Movie: NextPage<Props> = ({
 
   return (
     <div>
-      <Head>
-        <title>
-          {`${details.title} |
-          ${details.release_date && details.release_date.split('-')[0]}`}
-        </title>
-      </Head>
+      <MetaTags
+        description={details.overview}
+        image={`${imageUrl(300, false)}${details.poster_path}`}
+        largeImage={`${imageUrl(300, false)}${details.backdrop_path}`}
+        title={formatTitle(details.title, details.release_date)}
+        url={router.asPath}
+      />
       <Navigation />
       {renderCoverImage()}
       {renderMobileView()}

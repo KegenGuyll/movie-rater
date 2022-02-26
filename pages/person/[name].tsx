@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import { NextPage } from 'next';
-import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import MetaTags from '../../components/metaTags';
 import Navigation from '../../components/navigation';
 import Table, { Columns } from '../../components/table';
 import Typography from '../../components/typography';
@@ -20,7 +20,12 @@ import {
   PersonDetails,
 } from '../../models/TMDB/person';
 import { TVDetails } from '../../models/TMDB/tv';
-import { birthday, findGender, parseYear } from '../../utils/common';
+import {
+  birthday,
+  findGender,
+  formatTitle,
+  parseYear,
+} from '../../utils/common';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
@@ -343,10 +348,13 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
 
   return (
     <>
-      <Head>
-        <title>{details.name}</title>
-        <meta content={details.biography} name="description" />
-      </Head>
+      <MetaTags
+        description={details.biography}
+        image={`${imageUrl(300, false)}${details.profile_path}`}
+        largeImage={`${imageUrl(300, false)}${details.profile_path}`}
+        title={formatTitle(details.name, details.birthday)}
+        url={router.asPath}
+      />
       <Navigation />
       <div className="md:grid gap-4 grid-cols-4 px-14 text-dark-text">
         <div>
