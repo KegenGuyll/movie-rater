@@ -537,7 +537,7 @@ const Movie: NextPage<Props> = ({
           </div>
         )}
 
-        {publicMovieReviews && (
+        {publicMovieReviews && !!publicMovieReviews.length && (
           <div className="mt-8 text-dark-text space-y-3">
             <Typography variant="h3">Social</Typography>
             {publicMovieReviews.map((media) => (

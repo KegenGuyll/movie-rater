@@ -6,6 +6,7 @@ import createReviewedMovie from '../../endpoints/review/createReviewMovie';
 import { AdvancedScore } from '../../models/firestore';
 import { MovieDetails } from '../../models/TMDB';
 import { TVDetails } from '../../models/TMDB/tv';
+import Button from '../button';
 import Typography from '../typography';
 import RateList from './rateList';
 
@@ -28,6 +29,7 @@ const Rating: FunctionComponent<Props> = ({
   defaultScore,
   defaultSimpleScore,
 }: Props) => {
+  const [publicStatus, setPublic] = useState<boolean>(true);
   const [plot, setPlot] = useState<number | null>(null);
   const [theme, setTheme] = useState<number | null>(null);
   const [climax, setClimax] = useState<number | null>(null);
@@ -109,6 +111,7 @@ const Rating: FunctionComponent<Props> = ({
           10,
         createdAt: Timestamp.fromDate(new Date()),
         notes,
+        public: publicStatus,
         release_date:
           media.media_type === 'movie'
             ? media.release_date
@@ -117,6 +120,7 @@ const Rating: FunctionComponent<Props> = ({
         title: media.media_type === 'movie' ? media.title : media.name,
         tmdbID: media.id,
         updatedAt: Timestamp.fromDate(new Date()),
+        userId: authUser.uid,
       };
 
       const token = await authUser.getIdToken(true);
@@ -135,6 +139,7 @@ const Rating: FunctionComponent<Props> = ({
       averagedAdvancedScore: null,
       createdAt: Timestamp.fromDate(new Date()),
       notes,
+      public: publicStatus,
       release_date:
         media.media_type === 'movie'
           ? media.release_date
@@ -143,6 +148,7 @@ const Rating: FunctionComponent<Props> = ({
       title: media.media_type === 'movie' ? media.title : media.name,
       tmdbID: media.id,
       updatedAt: Timestamp.fromDate(new Date()),
+      userId: authUser.uid,
     };
 
     const token = await authUser.getIdToken(true);
@@ -223,6 +229,12 @@ const Rating: FunctionComponent<Props> = ({
             scale={10}
             setValue={setPersonalScore}
           />
+          <Button onClick={() => setPublic(!publicStatus)}>
+            <span className="material-icons-outlined mr-2">
+              {publicStatus ? 'check_box' : 'check_box_outline_blank'}
+            </span>
+            Make this Review Public
+          </Button>
           {openNotes && (
             <textarea
               className="bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2"
@@ -266,6 +278,12 @@ const Rating: FunctionComponent<Props> = ({
           scale={10}
           setValue={setScore}
         />
+        <Button onClick={() => setPublic(!publicStatus)}>
+          <span className="material-icons-outlined mr-2">
+            {publicStatus ? 'check_box' : 'check_box_outline_blank'}
+          </span>
+          Make this Review Public
+        </Button>
         {openNotes && (
           <textarea
             className="bg-dark-components rounded focus:border focus:border-cta transition-colors duration-300 focus:outline-none text-dark-text p-2"
