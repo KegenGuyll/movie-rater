@@ -17,7 +17,7 @@ const MetaTags: FunctionComponent<Props> = ({
   url,
 }: Props) => (
   <Head>
-    <title>Restless | 2022</title>
+    <title>{title}</title>
     <meta content={title} name="title" />
     <meta content={description} name="description" />
 
