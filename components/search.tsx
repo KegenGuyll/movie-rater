@@ -45,7 +45,22 @@ const Search: FunctionComponent<Props> = ({ className, ...props }: Props) => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    router.push(`/movie/search?search=${query}`)
+    const newArray = [...movies, ...tv, ...people];
+    const topResult = newArray[0]
+
+    switch (topResult.media_type) {
+      case 'movie':
+        router.push(`/movie/${formatTitleUrl(topResult.title, topResult.id)}`)
+        break;
+      case 'person':
+        router.push(`/person/${formatTitleUrl(topResult.name, topResult.id)}`)
+        break;
+      default:
+         router.push(`/tv/${formatTitleUrl(topResult.name, topResult.id)}`)
+    }
+
+
+   
   }
 
   const handleFetch = async (q: string) => {

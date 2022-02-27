@@ -9,12 +9,14 @@ import React, {
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   variant?: 'text' | 'default' | 'primary';
   type?: 'button' | 'submit' | 'reset' | undefined;
+  disabled?: boolean;
 }
 
 const Button: FunctionComponent<Props> = ({
   children,
   className,
   variant,
+  disabled,
   ...props
 }) => {
   const [bg, setBg] = useState('bg-dark-components');
@@ -51,10 +53,13 @@ const Button: FunctionComponent<Props> = ({
         'py-2 px-4 rounded',
         'focus:border focus:border-cta transition-colors duration-300 focus:outline-none',
         'flex justify-start',
-        hoverBg,
+        'disabled:bg-opacity-25',
+        !disabled && hoverBg,
+        disabled && 'cursor-not-allowed',
         bg,
         color
       )}
+      disabled={disabled}
     >
       {children}
     </button>
@@ -62,6 +67,7 @@ const Button: FunctionComponent<Props> = ({
 };
 
 Button.defaultProps = {
+  disabled: false,
   type: 'button',
   variant: 'default',
 };

@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, {
-  FormEvent,
   FunctionComponent,
   HTMLAttributes,
   useEffect,
@@ -21,6 +20,7 @@ import Logger from '../../utils/logger';
 import Button from '../button';
 import Modal from '../modal';
 import Typography from '../typography';
+import TagInput from './tagInput';
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   media: MovieDetails | TVDetails;
@@ -35,6 +35,7 @@ const WatchListModal: FunctionComponent<Props> = ({
   const [watchListTitle, setWatchListTitle] = useState<string>('');
   const [watchListDes, setWatchListDes] = useState<string>('');
   const [watchListPub, setWatchListPub] = useState<boolean>(true);
+  const [tags, setTags] = useState<string[]>([]);
   const [createWatchListBoolean, setCreateWatchList] = useState<boolean>(false);
   const [existMovie, setExistMovie] = useState<ExistMovie[] | null>(null);
   const [lists, setLists] = useState<WatchList[] | null>(null);
@@ -98,8 +99,7 @@ const WatchListModal: FunctionComponent<Props> = ({
     }
   };
 
-  const handleCreateWatchList = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleCreateWatchList = async () => {
     if (!authUser) return;
 
     try {
@@ -109,6 +109,7 @@ const WatchListModal: FunctionComponent<Props> = ({
         {
           description: watchListDes,
           public: watchListPub,
+          tags,
           title: watchListTitle,
           userId: authUser.uid,
         },
@@ -210,6 +211,7 @@ const WatchListModal: FunctionComponent<Props> = ({
             value={watchListDes}
             onChange={(e) => setWatchListDes(e.currentTarget.value)}
           />
+          <TagInput setTags={setTags} tags={tags} />
           <Button onClick={() => setWatchListPub(!watchListPub)}>
             <span className="material-icons-outlined mr-2">
               {watchListPub ? 'check_box' : 'check_box_outline_blank'}
@@ -217,7 +219,11 @@ const WatchListModal: FunctionComponent<Props> = ({
             Make this WatchList Public
           </Button>
         </div>
-        <Button type="submit" onClick={(e) => handleCreateWatchList(e)}>
+        <Button
+          disabled={!watchListTitle}
+          type="button"
+          onClick={handleCreateWatchList}
+        >
           Create
         </Button>
       </form>

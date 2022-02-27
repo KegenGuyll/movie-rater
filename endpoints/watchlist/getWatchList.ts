@@ -9,7 +9,7 @@ interface IResponse extends AxiosResponse {
 
 interface IResolvedPopular {
   res: IResponse | null;
-  err: Error | null;
+  err: any;
 }
 
 export default function getWatchList(
@@ -17,12 +17,16 @@ export default function getWatchList(
   authToken?: string,
   user?: string
 ): Promise<IResolvedPopular> {
+  const url = user
+    ? `/watch-list/${watchListId}?user=${user}`
+    : `/watch-list/${watchListId}`;
+
   return resolve(
     {
       headers: {
         Authorization: authToken || '',
       },
-      url: `/watch-list/${watchListId}?user=${user || ''}`,
+      url,
     },
     true
   );

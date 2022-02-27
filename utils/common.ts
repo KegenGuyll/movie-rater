@@ -28,3 +28,23 @@ export function birthday(date: Date | null) {
 export function formatTitle(title: string, release_date: string | null) {
   return `${title} | ${parseYear(release_date)}`;
 }
+
+export function copyToClipboard(
+  text: string,
+  successfulCallback?: Function,
+  // eslint-disable-next-line no-unused-vars
+  errCallBack?: Function
+) {
+  navigator.clipboard.writeText(text).then(
+    () => {
+      if (successfulCallback) {
+        successfulCallback();
+      }
+    },
+    (err) => {
+      if (errCallBack) {
+        errCallBack(err);
+      }
+    }
+  );
+}

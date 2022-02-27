@@ -6,15 +6,14 @@ interface WatchList {
   movies: number[];
   created_at: TimeStamp;
   updated_at: TimeStamp;
+  userId: string;
+  tags: string[];
 }
 
 type AddMovie = number;
 
 type Movies = {
-  rottenId: string,
-  imdbId: string,
   title: string,
-  poster: string,
   description: string,
   rating: Rating,
   year: number,
@@ -57,6 +56,7 @@ interface CreateWatchList {
   description: string;
   public: boolean;
   userId: string;
+  tags: string[];
 }
 
 export type {

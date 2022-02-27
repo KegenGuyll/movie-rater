@@ -1,27 +1,18 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import Image from 'next/image';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import React, { FunctionComponent, HTMLAttributes } from 'react';
 
-import { useAuth } from '../../context/AuthUserContext';
-import { WatchList } from '../../models/watchlist';
 import Typography from '../typography';
 
-interface Props extends HTMLAttributes<HTMLButtonElement> {
-  watchList: WatchList;
+interface Props extends HTMLAttributes<HTMLAnchorElement> {
+  watchList: any;
 }
 
-const PreviewPoster: FunctionComponent<Props> = ({ watchList, ...props }) => {
-  const router = useRouter();
-  const { authUser } = useAuth();
-
-  if (authUser) {
-    return (
-      <button
-        type="button"
-        onClick={() => router.push(`/user/${authUser.uid}/${watchList._id}`)}
-        // eslint-disable-next-line react/jsx-props-no-spreading
-        {...props}
-      >
+const PreviewPoster: FunctionComponent<Props> = ({ watchList, ...props }) => (
+  <Link passHref href={`/watch-list/${watchList._id}`}>
+    <a {...props}>
+      <div>
         <div className="flex flex-col items-center justify-center text-left hover:bg-dark-light bg-dark-components w-64 overflow-hidden p-4 rounded text-dark-text">
           <div className="my-4 shadow">
             <Image
@@ -50,11 +41,9 @@ const PreviewPoster: FunctionComponent<Props> = ({ watchList, ...props }) => {
             </Typography>
           </div>
         </div>
-      </button>
-    );
-  }
-
-  return null;
-};
+      </div>
+    </a>
+  </Link>
+);
 
 export default PreviewPoster;

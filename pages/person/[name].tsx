@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import CopyLink from '../../components/copyLink';
 import MetaTags from '../../components/metaTags';
 import Navigation from '../../components/navigation';
 import Table, { Columns } from '../../components/table';
@@ -405,7 +406,10 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           </div>
         </div>
         <div className="flex flex-col justify-start w-full col-span-3 space-y-6">
-          <Typography variant="h1">{details.name}</Typography>
+          <div className="flex space-x-2 items-center">
+            <Typography variant="h1">{details.name}</Typography>
+            <CopyLink link={router.asPath} />
+          </div>
           {renderMinMaxRating()}
           {details.biography && (
             <div className="space-y-3">

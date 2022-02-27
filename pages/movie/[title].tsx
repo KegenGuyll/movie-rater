@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
+import CopyLink from '../../components/copyLink';
 import MetaTags from '../../components/metaTags';
 import Modal from '../../components/modal';
 // import RadialBarChart from '../../components/charts/radialbarChart';
@@ -254,6 +255,7 @@ const Movie: NextPage<Props> = ({
                 {`(${details.release_date.split('-')[0]})`}
               </Typography>
             )}
+            <CopyLink link={router.asPath} />
           </div>
           <div className="flex items-center">
             <div className="w-16 h-16 bg-dark-components p-1 rounded-full mr-3">
@@ -294,6 +296,7 @@ const Movie: NextPage<Props> = ({
               {`(${details.release_date.split('-')[0]})`}
             </Typography>
           )}
+          <CopyLink link={router.asPath} />
         </div>
         <div className="flex mt-8 items-center justify-center">
           {authUser && <WatchListModal media={details} personal={null} />}
@@ -350,6 +353,16 @@ const Movie: NextPage<Props> = ({
               </Link>
             ))}
           </div>
+        </div>
+      )}
+      {publicMovieReviews && !!publicMovieReviews.length && (
+        <div className="mt-8 text-dark-text space-y-3">
+          <Typography className="mx-4 lg:mx-0" variant="h3">
+            Social
+          </Typography>
+          {publicMovieReviews.map((media) => (
+            <SocialRatingCard key={media._id} media={media} />
+          ))}
         </div>
       )}
       <div className="mt-8 space-y-3 lg:p-16 p-4  text-dark-text">
@@ -537,7 +550,6 @@ const Movie: NextPage<Props> = ({
             </div>
           </div>
         )}
-
         {publicMovieReviews && !!publicMovieReviews.length && (
           <div className="mt-8 text-dark-text space-y-3">
             <Typography variant="h3">Social</Typography>

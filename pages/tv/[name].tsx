@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
 import Button from '../../components/button';
+import CopyLink from '../../components/copyLink';
 import MetaTags from '../../components/metaTags';
 import Modal from '../../components/modal';
 import Poster from '../../components/movies/poster';
@@ -223,6 +224,7 @@ const TVshow: NextPage<Props> = ({
             <Typography variant="h3">
               {`${parseYear(details.first_air_date)}`}
             </Typography>
+            <CopyLink link={router.asPath} />
           </div>
           <div className="flex items-center">
             <div className="w-16 h-16 bg-dark-components p-1 rounded-full mr-3">
@@ -261,6 +263,7 @@ const TVshow: NextPage<Props> = ({
           <Typography variant="subtitle">
             {`(${parseYear(details.first_air_date)})`}
           </Typography>
+          <CopyLink link={router.asPath} />
         </div>
         <div className="flex mt-8 items-center justify-center">
           {authUser && <WatchListModal media={details} personal={null} />}

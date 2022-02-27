@@ -39,7 +39,7 @@ const SocialRatingCard: FunctionComponent<Props> = ({ media }: Props) => {
   if (!user) return null;
 
   return (
-    <div className=" bg-dark-components rounded p-4">
+    <div className=" bg-dark-components rounded p-4 mx-4 lg:mx-0">
       <div className="flex items-center space-x-3 my-3">
         <Image
           className="rounded-full"
