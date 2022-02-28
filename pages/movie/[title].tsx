@@ -16,10 +16,14 @@ import Poster from '../../components/movies/poster';
 import SocialRatingCard from '../../components/movies/socialRatingCard';
 import Navigation from '../../components/navigation';
 import Rating from '../../components/rating';
+import DetailedScoreView from '../../components/rating/detailedScoreView';
 import Typography from '../../components/typography';
 import WatchListModal from '../../components/watch-lists/watchListModal';
 import { useAuth } from '../../context/AuthUserContext';
 import getAllMovieReviews from '../../endpoints/review/getAllMovieReview';
+import getAvgMovieReview, {
+  MovieScore,
+} from '../../endpoints/review/getAvgMovieReview';
 import getReviewedMovie from '../../endpoints/review/getReviewMovie';
 import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
 import getMovieDetails from '../../endpoints/TMDB/getMovie';
@@ -69,6 +73,8 @@ const Movie: NextPage<Props> = ({
   const [movieReview, setMovieReview] = useState<boolean>(false);
   const [publicMovieReviews, setPublicMovieReviews] =
     useState<MovieDocument[]>();
+  const [avgScore, setAvgScore] = useState<MovieScore[]>([]);
+  const [viewDetailedScore, setViewDetailedScore] = useState<boolean>(false);
   const [userData, setUserData] = useState<MovieDocument>();
   const [posters, setPosters] = useState<PosterType[]>([]);
   const [backdrops, setBackdrops] = useState<Backdrops[]>([]);
@@ -90,6 +96,20 @@ const Movie: NextPage<Props> = ({
         }
       );
       setActiveMedia(media);
+    }
+  };
+
+  const fetchAvgScore = async () => {
+    if (details) {
+      const { res, err } = await getAvgMovieReview(details.id);
+
+      if (res) {
+        setAvgScore(res.data);
+      }
+
+      if (err) {
+        Logger.error(err);
+      }
     }
   };
 
@@ -158,6 +178,7 @@ const Movie: NextPage<Props> = ({
 
   useEffect(() => {
     fetchUserData();
+    fetchAvgScore();
   }, [router.query.title, details, authUser]);
 
   useEffect(() => {
@@ -259,15 +280,37 @@ const Movie: NextPage<Props> = ({
           </div>
           <div className="flex items-center">
             <div className="w-16 h-16 bg-dark-components p-1 rounded-full mr-3">
-              {userData && userData.averagedAdvancedScore ? (
-                <RadialBarChart score={userData.averagedAdvancedScore * 10} />
-              ) : (
+              {avgScore && !!avgScore.length && (
+                <RadialBarChart score={avgScore[0].totalScore * 10} />
+              )}
+              {userData &&
+                userData.averagedAdvancedScore &&
+                !avgScore.length && (
+                  <RadialBarChart score={userData.averagedAdvancedScore * 10} />
+                )}
+              {!userData && !avgScore.length && (
                 <RadialBarChart score={details.vote_average * 10} />
               )}
             </div>
+
             <Typography className="w-16 mr-9" variant="h3">
-              {userData ? 'User Score' : 'Audience Score'}
+              {avgScore && !!avgScore.length && 'MovieLot Score'}
+              {userData &&
+                userData.averagedAdvancedScore &&
+                !avgScore.length &&
+                'User Score'}
+              {!userData && !avgScore.length && 'Audience Score'}
             </Typography>
+            {avgScore && !!avgScore.length && (
+              <button
+                className="w-16 mr-9 flex items-center"
+                type="button"
+                onClick={() => setViewDetailedScore(!viewDetailedScore)}
+              >
+                <Typography variant="subtitle">Advance Score</Typography>
+                <span className="material-icons-outlined">expand_more</span>
+              </button>
+            )}
             <div className="flex items-center space-x-3">
               <span className="material-icons-outlined text-3xl">
                 play_circle_filled
@@ -275,6 +318,7 @@ const Movie: NextPage<Props> = ({
               <Typography variant="subtitle">Play Trailer</Typography>
             </div>
           </div>
+          {viewDetailedScore && <DetailedScoreView score={avgScore[0]} />}
           <div className="space-y-2">
             <Typography variant="h3">Overview</Typography>
             <Typography className="max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl">

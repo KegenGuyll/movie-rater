@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import ReviewedMoviesTable from '../components/my-movies/ReviewedMoviesTable';
 import Navigation from '../components/navigation';
 import { useAuth } from '../context/AuthUserContext';
-import getAllReviewedMovies from '../endpoints/review/getAllReviewsMovie';
+import getAllUserReviews from '../endpoints/review/getAllUserReviews';
 import { MovieDocument } from '../models/firestore';
 
 const MyMovie: NextPage = () => {
@@ -16,7 +16,7 @@ const MyMovie: NextPage = () => {
 
     const token = await authUser.getIdToken();
 
-    const { res } = await getAllReviewedMovies(token);
+    const { res } = await getAllUserReviews(token);
 
     if (res) {
       setMovies(res.data);

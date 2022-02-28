@@ -41,7 +41,7 @@ const RadialBarChart: FunctionComponent<Props> = ({ score }) => {
         className="absolute flex items-center right-0 left-0 mx-auto w-max"
         variant="h4"
       >
-        {score / 10}
+        {Math.round(score) / 10}
       </Typography>
     </div>
   );

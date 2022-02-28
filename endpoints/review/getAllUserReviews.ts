@@ -12,7 +12,7 @@ interface IResolvedPopular {
   err: Error | null;
 }
 
-export default function getAllReviewedMovies(
+export default function getAllUserReviews(
   authToken: string
 ): Promise<IResolvedPopular> {
   return resolve(
