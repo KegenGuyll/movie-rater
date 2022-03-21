@@ -2,6 +2,7 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 
+import UserLeaderboard from '../components/leaderboard/userLeaderboardGrid';
 import TrailerCarousel from '../components/movies/trailerCarousel';
 import TrailerPlayer from '../components/movies/trailerPlayer';
 import Navigation from '../components/navigation';
@@ -40,6 +41,7 @@ const Home: NextPage = () => {
       <TrailerPlayer />
       <TrendingMedia mediaType="movie" timeWindow="day" />
       <TrendingMedia mediaType="tv" timeWindow="week" />
+      <UserLeaderboard />
     </>
   );
 };

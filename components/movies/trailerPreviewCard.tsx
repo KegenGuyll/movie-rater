@@ -1,9 +1,9 @@
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import getMovieVideos from '../../endpoints/TMDB/getMovieVideos';
-import { Movie, Video } from '../../models/TMDB';
+import { Movie } from '../../models/TMDB';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
 import Typography from '../typography';
@@ -13,8 +13,6 @@ interface Props {
 }
 
 const TrailerPreviewCard: FunctionComponent<Props> = ({ movie }: Props) => {
-  const [data, setData] = useState<Video[]>([]);
-
   const router = useRouter();
 
   const handleFetch = async (id: number) => {
@@ -26,7 +24,7 @@ const TrailerPreviewCard: FunctionComponent<Props> = ({ movie }: Props) => {
           value.type === 'Trailer' && value.official && value.site === 'YouTube'
       );
 
-      setData(trailers);
+      router.push(`?key=${trailers[0].key}`, undefined, { shallow: true });
     }
 
     if (err) {
@@ -34,18 +32,15 @@ const TrailerPreviewCard: FunctionComponent<Props> = ({ movie }: Props) => {
     }
   };
 
-  useEffect(() => {
-    if (!movie) return;
-    handleFetch(movie.id);
-  }, [movie]);
-
   return (
     <button
       className="flex justify-center items-center text-left w-full"
       type="button"
-      onClick={() =>
-        router.push(`?key=${data[0].key}`, undefined, { shallow: true })
-      }
+      onClick={() => {
+        if (movie.id) {
+          handleFetch(movie.id);
+        }
+      }}
     >
       <div className="flex justify-center items-center relative">
         <Image
