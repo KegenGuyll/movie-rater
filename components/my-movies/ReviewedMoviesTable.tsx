@@ -60,7 +60,7 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
     return movies.map((value, index) => ({
       'Personal Score': value.averagedAdvancedScore || value.simpleScore,
       'Release Date': value.release_date,
-      'Reviewed Date': value.createdAt.seconds * 1000,
+      'Reviewed Date': value.reviewedDate || value.createdAt.seconds * 1000,
       Title: value.title,
       id: index,
     }));

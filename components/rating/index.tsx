@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { Timestamp } from 'firebase/firestore';
 import React, { FunctionComponent, useMemo, useState } from 'react';
 
@@ -29,6 +30,7 @@ const Rating: FunctionComponent<Props> = ({
   defaultScore,
   defaultSimpleScore,
 }: Props) => {
+  const [date, setDate] = useState<string>();
   const [publicStatus, setPublic] = useState<boolean>(true);
   const [plot, setPlot] = useState<number | null>(null);
   const [theme, setTheme] = useState<number | null>(null);
@@ -116,6 +118,7 @@ const Rating: FunctionComponent<Props> = ({
           media.media_type === 'movie'
             ? media.release_date
             : media.first_air_date,
+        reviewedDate: date || dayjs().format('YYYY-MM-DD'),
         simpleScore: score,
         title: media.media_type === 'movie' ? media.title : media.name,
         tmdbID: media.id,
@@ -144,6 +147,7 @@ const Rating: FunctionComponent<Props> = ({
         media.media_type === 'movie'
           ? media.release_date
           : media.first_air_date,
+      reviewedDate: date || dayjs().format('YYYY-MM-DD'),
       simpleScore: score,
       title: media.media_type === 'movie' ? media.title : media.name,
       tmdbID: media.id,
@@ -229,6 +233,17 @@ const Rating: FunctionComponent<Props> = ({
             scale={10}
             setValue={setPersonalScore}
           />
+          <div className="w-full text-dark-text">
+            <Typography className="mb-2" variant="h3">
+              Reviewed Date
+            </Typography>
+            <input
+              className="p-2 w-full rounded bg-dark-components"
+              placeholder={dayjs().format('MM/DD/YYYY')}
+              type="date"
+              onChange={(e) => setDate(e.currentTarget.value)}
+            />
+          </div>
           <Button onClick={() => setPublic(!publicStatus)}>
             <span className="material-icons-outlined mr-2">
               {publicStatus ? 'check_box' : 'check_box_outline_blank'}

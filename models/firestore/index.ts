@@ -12,6 +12,7 @@ export interface MovieDocument {
   notes: string | null;
   tmdbID: number;
   userId: string;
+  reviewedDate: undefined | string;
 }
 
 export type AdvancedScore = {
