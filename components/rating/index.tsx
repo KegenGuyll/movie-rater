@@ -16,6 +16,7 @@ interface Props {
   // eslint-disable-next-line no-unused-vars
   setAdvanceScore: (value: boolean) => void;
   media: MovieDetails | TVDetails;
+  refreshData: () => void;
   // eslint-disable-next-line no-unused-vars
   closeModal: (value: boolean) => void;
   defaultScore?: AdvancedScore | null;
@@ -29,6 +30,7 @@ const Rating: FunctionComponent<Props> = ({
   closeModal,
   defaultScore,
   defaultSimpleScore,
+  refreshData,
 }: Props) => {
   const [date, setDate] = useState<string>();
   const [publicStatus, setPublic] = useState<boolean>(true);
@@ -129,6 +131,8 @@ const Rating: FunctionComponent<Props> = ({
       const token = await authUser.getIdToken(true);
 
       await createReviewedMovie(docData, token);
+
+      refreshData();
 
       closeModal(false);
     }

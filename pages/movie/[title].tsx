@@ -147,6 +147,12 @@ const Movie: NextPage<Props> = ({
     }
   };
 
+  const refreshData = () => {
+    fetchAllReviews();
+    fetchAvgScore();
+    fetchUserData();
+  };
+
   useEffect(() => {
     fetchAllReviews();
   }, [details]);
@@ -810,6 +816,7 @@ const Movie: NextPage<Props> = ({
             defaultScore={userData?.advancedScore}
             defaultSimpleScore={userData?.simpleScore}
             media={details}
+            refreshData={refreshData}
             setAdvanceScore={setAdvancedScoring}
           />
         </div>
