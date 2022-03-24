@@ -131,6 +131,10 @@ const TVshow: NextPage<Props> = ({
     fetchUserData();
   }, [router.query.title, details, authUser]);
 
+  const refreshData = () => {
+    fetchUserData();
+  };
+
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
     const { backdrops, posters, title, videos } = router.query;
@@ -721,6 +725,7 @@ const TVshow: NextPage<Props> = ({
             defaultScore={userData?.advancedScore}
             defaultSimpleScore={userData?.simpleScore}
             media={details}
+            refreshData={refreshData}
             setAdvanceScore={setAdvancedScoring}
           />
         </div>
