@@ -73,11 +73,11 @@ const WatchListModal: FunctionComponent<Props> = ({
 
   useEffect(() => {
     handleExistMovie();
-  }, [authUser]);
+  }, [authUser, media]);
 
   useEffect(() => {
     handleGetLists();
-  }, [authUser]);
+  }, [authUser, media]);
 
   const handleMovieAdd = async (listId: string) => {
     if (!authUser) return;
