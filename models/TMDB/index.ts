@@ -9,7 +9,7 @@ interface Popular {
 
 interface Trending {
   page: number;
-  results: Movie[];
+  results: MovieDetails[];
 }
 
 type MediaType = 'all' | 'movie' | 'tv' | 'person';

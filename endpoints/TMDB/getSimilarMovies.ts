@@ -1,12 +1,12 @@
 import { AxiosResponse } from 'axios';
 
-import { Movie } from '../../models/TMDB';
+import { MovieDetails } from '../../models/TMDB';
 import resolve from '../resolver';
 
 interface IResponse extends AxiosResponse {
   data: {
     page: number,
-    results: Movie[],
+    results: MovieDetails[],
   };
 }
 

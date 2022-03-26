@@ -52,7 +52,7 @@ export type TVshow = {
 
 export interface TvSimilar {
   page: number;
-  results: TVshow[];
+  results: TVDetails[];
   total_pages: number;
   total_results: number;
 }

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import getUserByUid from '../../endpoints/user/getUserByUid';
@@ -40,26 +41,30 @@ const SocialRatingCard: FunctionComponent<Props> = ({ media }: Props) => {
 
   return (
     <div className=" bg-dark-components rounded p-4 mx-4 lg:mx-0">
-      <div className="flex items-center space-x-3 my-3">
-        <Image
-          className="rounded-full"
-          height={64}
-          src={
-            user.photoUrl ||
-            `https://avatars.dicebear.com/api/initials/${
-              user.displayName || user.email
-            }.svg`
-          }
-          width={64}
-        />
-        <Typography variant="h3">
-          {user.displayName || user.email.split('@')[0]}
-        </Typography>
-        <div className=" py-1 px-2 rounded bg-cta text-dark-background">
-          <Typography variant="subtitle">
-            {media.averagedAdvancedScore || media.simpleScore}
-          </Typography>
-        </div>
+      <div>
+        <Link passHref href={`/user/${media.userId}`}>
+          <a className="flex items-center space-x-3 my-3">
+            <Image
+              className="rounded-full"
+              height={64}
+              src={
+                user.photoUrl ||
+                `https://avatars.dicebear.com/api/initials/${
+                  user.displayName || user.email
+                }.svg`
+              }
+              width={64}
+            />
+            <Typography variant="h3">
+              {user.displayName || user.email.split('@')[0]}
+            </Typography>
+            <div className=" py-1 px-2 rounded bg-cta text-dark-background">
+              <Typography variant="subtitle">
+                {media.averagedAdvancedScore || media.simpleScore}
+              </Typography>
+            </div>
+          </a>
+        </Link>
       </div>
       <Typography>{media.notes}</Typography>
     </div>

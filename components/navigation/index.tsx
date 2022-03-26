@@ -4,6 +4,7 @@ import React, { FunctionComponent, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 
 import { useAuth } from '../../context/AuthUserContext';
+import Button from '../button';
 import Search from '../search';
 import Typography from '../typography';
 import NavItem from './navItem';
@@ -34,8 +35,8 @@ const Navigation: FunctionComponent = () => {
         >
           <span className="material-icons-outlined">menu</span>
         </button>
-        {authUser && (
-          <NavItem className="hidden lg:flex" href="/my-movies">
+        {authUser ? (
+          <NavItem className="hidden lg:flex" href={`/user/${authUser.uid}`}>
             <div className="mr-4 flex items-center">
               <Image
                 alt={authUser.displayName || 'user'}
@@ -46,6 +47,15 @@ const Navigation: FunctionComponent = () => {
               />
             </div>
             <Typography>{authUser.displayName}</Typography>
+          </NavItem>
+        ) : (
+          <NavItem className="hidden lg:block" href="/login">
+            <Button
+              className=" text-dark-background w-full text-center"
+              variant="primary"
+            >
+              Login
+            </Button>
           </NavItem>
         )}
       </div>
@@ -60,8 +70,8 @@ const Navigation: FunctionComponent = () => {
             <aside className="bg-dark-background absolute right-0 top-0 h-screen w-3/5 text-dark-text">
               <ul className=" mt-5 space-y-5">
                 <li>
-                  {authUser && (
-                    <NavItem href="/my-movies">
+                  {authUser ? (
+                    <NavItem href={`/user/${authUser.uid}`}>
                       <div className="mr-4 flex items-center">
                         <Image
                           alt={authUser.displayName || 'user'}
@@ -72,6 +82,15 @@ const Navigation: FunctionComponent = () => {
                         />
                       </div>
                       <Typography>{authUser.displayName}</Typography>
+                    </NavItem>
+                  ) : (
+                    <NavItem href="/login">
+                      <Button
+                        className=" text-dark-background w-full text-center"
+                        variant="primary"
+                      >
+                        Login
+                      </Button>
                     </NavItem>
                   )}
                 </li>

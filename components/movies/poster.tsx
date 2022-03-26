@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { FunctionComponent, useState } from 'react';
 
-import { Movie, Person } from '../../models/TMDB';
-import { TVshow } from '../../models/TMDB/tv';
+import { MovieDetails, Person } from '../../models/TMDB';
+import { TVDetails } from '../../models/TMDB/tv';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 
 interface Props {
-  media: Movie | TVshow | Person;
+  media: MovieDetails | TVDetails | Person;
   clickable?: boolean;
 }
 
@@ -26,7 +26,7 @@ const Poster: FunctionComponent<Props> = ({ media, clickable }) => {
     router.push(`/${media.media_type}/${formatTitleUrl(onClickTitle, id)}`);
   };
 
-  const renderMovie = ({ title, poster_path, id }: Movie) => (
+  const renderMovie = ({ title, poster_path, id }: MovieDetails) => (
     <Link href={`/movie/${formatTitleUrl(title, id)}?videos=true`}>
       <a>
         <div className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative">
@@ -44,7 +44,7 @@ const Poster: FunctionComponent<Props> = ({ media, clickable }) => {
     </Link>
   );
 
-  const renderTV = ({ name, poster_path, id }: TVshow) => (
+  const renderTV = ({ name, poster_path, id }: TVDetails) => (
     <button
       className="bg-black cursor-pointer w-32 h-52 md:w-48 md:h-80 rounded relative"
       disabled={!clickable}

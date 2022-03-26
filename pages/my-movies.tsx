@@ -31,7 +31,11 @@ const MyMovie: NextPage = () => {
     <div>
       <Navigation />
       <div className="p-5">
-        <ReviewedMoviesTable fetchMovies={fetchMovies} movies={movies} />
+        <ReviewedMoviesTable
+          enableDelete
+          fetchMovies={fetchMovies}
+          movies={movies}
+        />
       </div>
     </div>
   );
