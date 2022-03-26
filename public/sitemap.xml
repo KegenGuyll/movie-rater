@@ -33,6 +33,10 @@
   </url>
 
   <url>
+    <loc>https://movielot.vercel.app/tv/[name]</loc>
+  </url>
+
+  <url>
     <loc>https://movielot.vercel.app/watch-list/[id]</loc>
   </url>
 
@@ -41,6 +45,6 @@
   </url>
 
   <url>
-    <loc>https://movielot.vercel.app/tv/[name]</loc>
+    <loc>https://movielot.vercel.app/user/[id]</loc>
   </url>
 </urlset>
