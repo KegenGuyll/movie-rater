@@ -32,12 +32,12 @@ import getMovieImages from '../../endpoints/TMDB/getMovieImages';
 import getMovieKeywords from '../../endpoints/TMDB/getMovieKeywords';
 import getMovieVideos from '../../endpoints/TMDB/getMovieVideos';
 import getSimilarMovies from '../../endpoints/TMDB/getSimilarMovies';
+import addUserBackdrop from '../../endpoints/user/addUserBackdrop';
 import { MovieDocument } from '../../models/firestore';
 import {
   Backdrops,
   Cast,
   Keyword,
-  Movie as MovieType,
   MovieDetails,
   Poster as PosterType,
   Video,
@@ -55,7 +55,7 @@ const RadialBarChart = dynamic(
 interface Props {
   details: MovieDetails | null;
   casts: Cast[] | null;
-  similarMovies: MovieType[] | null;
+  similarMovies: MovieDetails[] | null;
   keywords: Keyword[] | null;
 }
 
@@ -97,6 +97,18 @@ const Movie: NextPage<Props> = ({
       );
       setActiveMedia(media);
     }
+  };
+
+  const addToProfileBackDrop = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    path: string
+  ) => {
+    if (!authUser) return;
+
+    e.stopPropagation();
+    const token = await authUser.getIdToken();
+
+    await addUserBackdrop({ backdropPath: path }, token);
   };
 
   const fetchAvgScore = async () => {
@@ -667,23 +679,35 @@ const Movie: NextPage<Props> = ({
             {activeMedia === 'backdrops' && (
               <div className="grid grid-rows-1 grid-flow-col overflow-scroll  gap-2 py-3">
                 {backdrops.slice(0, 2).map((backdrop) => (
-                  <Link
-                    key={backdrop.file_path}
-                    passHref
-                    href={`${imageUrl(100, false)}${backdrop.file_path}`}
-                  >
-                    <a>
-                      <div className="h-[200px] md:h-[400px] relative w-full">
-                        <Image
-                          alt="backdrops"
-                          className="rounded"
-                          layout="fill"
-                          objectFit="cover"
-                          src={`${imageUrl(500, false)}${backdrop.file_path}`}
-                        />
-                      </div>
-                    </a>
-                  </Link>
+                  <div key={backdrop.file_path}>
+                    <div className="h-[200px] md:h-[400px] relative w-full">
+                      <Link
+                        passHref
+                        href={`${imageUrl(100, false)}${backdrop.file_path}`}
+                      >
+                        <a>
+                          <Image
+                            alt="backdrops"
+                            className="rounded"
+                            layout="fill"
+                            objectFit="cover"
+                            src={`${imageUrl(500, false)}${backdrop.file_path}`}
+                          />
+                        </a>
+                      </Link>
+                      {authUser && (
+                        <button
+                          className="absolute top-0 right-0 bg-dark-components p-2 rounded"
+                          type="button"
+                          onClick={(e) =>
+                            addToProfileBackDrop(e, backdrop.file_path)
+                          }
+                        >
+                          add to Profile
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}

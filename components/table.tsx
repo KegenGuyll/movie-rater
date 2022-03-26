@@ -26,8 +26,11 @@ interface Props {
       enabled: boolean;
       sortKey: string;
     };
-    // eslint-disable-next-line no-unused-vars
-    delete?: (id: (string | number)[]) => void;
+    delete: {
+      enable: boolean;
+      // eslint-disable-next-line no-unused-vars
+      function?: (id: (string | number)[]) => void;
+    }
   };
 }
 
@@ -111,15 +114,15 @@ const Table: React.FC<Props> = ({
           </div>
         )}
         <div className='flex flex-grow items-center '>
-          {options && options.delete && (
+          {options && options.delete.enable && (
             <button
               className='flex items-center ml-4 text-white disabled:text-gray-500'
               disabled={!selected.length}
               tabIndex={0}
               type='button'
               onClick={() => {
-                if (options && options.delete) {
-                  options.delete(selected);
+                if (options && options.delete.enable && options.delete.function) {
+                  options.delete.function(selected);
                   setSelected([]);
                 }
               }}>

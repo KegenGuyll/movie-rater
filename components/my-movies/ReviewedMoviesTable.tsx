@@ -10,12 +10,15 @@ import Table, { Columns } from '../table';
 
 interface Props {
   movies: MovieDocument[] | null;
-  fetchMovies: () => Promise<void>;
+  // eslint-disable-next-line react/require-default-props
+  fetchMovies?: () => Promise<void>;
+  enableDelete: boolean;
 }
 
 const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
   movies,
   fetchMovies,
+  enableDelete,
 }) => {
   const router = useRouter();
   const { authUser } = useAuth();
@@ -77,11 +80,16 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
       })
     );
 
-    await fetchMovies();
+    if (fetchMovies) {
+      await fetchMovies();
+    }
   };
 
   const options = {
-    delete: deleteMovie,
+    delete: {
+      enable: enableDelete,
+      function: deleteMovie,
+    },
     rowsSelectable: true,
     search: {
       enabled: true,
