@@ -4,8 +4,8 @@ import React, { FunctionComponent } from 'react';
 interface Props {
   title: string;
   description: string;
-  image: string;
-  largeImage: string;
+  image?: string;
+  largeImage?: string;
   url: string;
 }
 
@@ -37,5 +37,10 @@ const MetaTags: FunctionComponent<Props> = ({
     <meta content={largeImage} property="twitter:image" />
   </Head>
 );
+
+MetaTags.defaultProps = {
+  image: '',
+  largeImage: '',
+};
 
 export default MetaTags;

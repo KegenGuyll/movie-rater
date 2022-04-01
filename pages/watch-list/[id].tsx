@@ -1,13 +1,17 @@
+/* eslint-disable no-loops/no-loops */
+/* eslint-disable no-plusplus */
 import clsx from 'clsx';
 import dayjs from 'dayjs';
 import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { NextPage } from 'next/types';
+import { GetServerSidePropsContext, NextPage } from 'next/types';
+import nookies from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import Button from '../../components/button';
 import CopyLink from '../../components/copyLink';
+import MetaTags from '../../components/metaTags';
 import Modal from '../../components/modal';
 import Navigation from '../../components/navigation';
 import Spinner from '../../components/spinner';
@@ -27,8 +31,60 @@ import { WatchList } from '../../models/watchlist';
 import formatTitleUrl from '../../utils/formatTitleUrl';
 import imageUrl from '../../utils/imageUrl';
 
-export const WatchListPage: NextPage = () => {
-  const [watchList, setWatchLists] = useState<WatchList | null>(null);
+interface Props {
+  watchList: WatchList | null;
+}
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  try {
+    const { id } = ctx.query;
+    const cookies = nookies.get(ctx);
+    let watchList: WatchList | null = null;
+
+    if (!id || typeof id !== 'string') {
+      throw new Error(`watchList broken: ${id}`);
+    }
+
+    if (cookies.token) {
+      const { res, err } = await getWatchList(id, cookies.token);
+
+      if (res) {
+        watchList = { ...res.data };
+      }
+
+      if (err) {
+        throw err;
+      }
+    } else {
+      const { res, err } = await getWatchList(id, undefined);
+
+      if (res) {
+        watchList = { ...res.data };
+      }
+
+      if (err) {
+        throw err;
+      }
+    }
+
+    return {
+      props: {
+        watchList,
+      },
+    };
+  } catch (error) {
+    // Logger.error(error);
+
+    return {
+      props: {
+        watchList: null,
+      },
+    };
+  }
+};
+
+export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
+  // const [watchList, setWatchLists] = useState<WatchList | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [creator, setCreator] = useState<User | null>(null);
@@ -117,7 +173,7 @@ export const WatchListPage: NextPage = () => {
     const { res } = await updateWatchList(payload, token, watchList._id);
 
     if (res) {
-      setWatchLists(res.data);
+      // setWatchLists(res.data);
       setOpen(false);
     }
   };
@@ -135,7 +191,7 @@ export const WatchListPage: NextPage = () => {
     if (!authUser) {
       getWatchList(watchListId, undefined).then(({ res, err }) => {
         if (res) {
-          setWatchLists(res.data);
+          // setWatchLists(res.data);
 
           getUserByUid(res.data.userId).then(({ res: userRes }) => {
             if (userRes) {
@@ -157,7 +213,7 @@ export const WatchListPage: NextPage = () => {
     authUser.getIdToken(true).then((authToken) => {
       getWatchList(watchListId, authToken).then(({ res }) => {
         if (res) {
-          setWatchLists(res.data);
+          // setWatchLists(res.data);
           setError('');
         }
       });
@@ -171,7 +227,7 @@ export const WatchListPage: NextPage = () => {
       {list.map((value) => (
         <button
           key={value.id}
-          className="flex lg:flex-row flex-col text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded"
+          className="grid lg:grid-cols-2 h-max lg:h-96 overflow-hidden grid-rows-2 gap-2 lg:gap-4 text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded"
           type="button"
           onClick={() =>
             router.push(
@@ -182,11 +238,12 @@ export const WatchListPage: NextPage = () => {
             )
           }
         >
-          <div className="lg:mr-8 mr-0 flex-grow flex w-full items-center justify-center">
+          <div className="h-56 w-full relative">
             <Image
               alt={value.media_type === 'movie' ? value.title : value.name}
               className="rounded shadow"
               height="400"
+              layout="fill"
               objectFit="cover"
               src={`${imageUrl(300)}${value.poster_path}`}
               width="235"
@@ -200,10 +257,11 @@ export const WatchListPage: NextPage = () => {
             >
               {value.media_type === 'movie' ? value.title : value.name}
             </Typography>
-
-            <Typography title={value.overview} variant="light">
-              {value.overview}
-            </Typography>
+            <div className="w-full max-h-20 lg:max-h-44">
+              <Typography title={value.overview} variant="light">
+                {value.overview}
+              </Typography>
+            </div>
           </div>
         </button>
       ))}
@@ -238,10 +296,11 @@ export const WatchListPage: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>{`WatchList | ${watchList?.title}`}</title>
-        <meta content={watchList?.description} name="description" />
-      </Head>
+      <MetaTags
+        description={watchList?.description || ''}
+        title={watchList?.title || ''}
+        url={router.asPath}
+      />
       <Navigation />
       <div className="mb-4 text-dark-text bg-dark-background sticky  top-16  z-30 px-2 lg:px-8 py-4 ">
         <div className="flex items-center space-x-2">

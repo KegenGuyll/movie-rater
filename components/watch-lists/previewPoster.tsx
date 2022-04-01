@@ -14,7 +14,7 @@ const PreviewPoster: FunctionComponent<Props> = ({ watchList, ...props }) => (
     <a {...props}>
       <div>
         <div className="flex flex-col items-center justify-center text-left hover:bg-dark-light bg-dark-components w-64 overflow-hidden p-4 rounded text-dark-text">
-          <div className="my-4 shadow">
+          <div className="my-4 shadow flex-grow">
             <Image
               alt={watchList.title}
               className="rounded shadow"
