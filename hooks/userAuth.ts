@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
 import {
-  getAuth,
-  User,
   createUserWithEmailAndPassword as createEmailPassword,
-  signInWithEmailAndPassword as signEmailPassword,
-  signInAnonymously as signAnonymously,
+  getAuth,
   GoogleAuthProvider,
+  signInAnonymously as signAnonymously,
+  signInWithEmailAndPassword as signEmailPassword,
   signInWithPopup,
+  User,
 } from 'firebase/auth';
+import nookies from 'nookies';
+import { useEffect, useState } from 'react';
 
 export default function useFirebaseAuth() {
   const [authUser, setAuthUser] = useState<User | null>(null);
@@ -19,12 +20,14 @@ export default function useFirebaseAuth() {
     if (!authState) {
       setAuthUser(null);
       setLoading(false);
-      return;
+      nookies.set(undefined, 'token', '', { path: '/' });
+    } else {
+      setLoading(true);
+      setAuthUser(authState);
+      const token = await authState.getIdToken();
+      nookies.set(undefined, 'token', token, { path: '/' });
+      setLoading(false);
     }
-
-    setLoading(true);
-    setAuthUser(authState);
-    setLoading(false);
   };
 
   const clear = () => {
@@ -52,11 +55,11 @@ export default function useFirebaseAuth() {
 
   return {
     authUser,
-    loading,
-    signOut,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
+    loading,
     signInAnonymously,
+    signInWithEmailAndPassword,
     signInWithGoogle,
+    signOut,
   };
 }
