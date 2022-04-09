@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import getUserByUid from '../../endpoints/user/getUserByUid';
@@ -44,27 +45,31 @@ const LeaderboardCard: FunctionComponent<Props> = ({ user }) => {
         key={user._id}
         className=" bg-dark-components rounded p-4 text-dark-text h-60 md:h-auto"
       >
-        <div className="flex items-center flex-wrap space-x-0 md:space-x-3 my-3 space-y-3 lg:space-y-0">
-          <Image
-            className="rounded-full"
-            height={64}
-            src={
-              userExtra.photoUrl ||
-              `https://avatars.dicebear.com/api/initials/${
-                userExtra.displayName || user.email
-              }.svg`
-            }
-            width={64}
-          />
-          <Typography variant="h3">
-            {userExtra.displayName || user.email.split('@')[0]}
-          </Typography>
-          <div className=" py-1 px-2 rounded bg-cta text-dark-background">
-            <Typography variant="subtitle">{`${user.reviews} ${
-              user.reviews > 1 ? 'Reviews' : 'Review'
-            }`}</Typography>
-          </div>
-        </div>
+        <Link passHref href={`/user/${user.uuid}`}>
+          <a>
+            <div className="flex items-center flex-wrap space-x-0 md:space-x-3 my-3 space-y-3 lg:space-y-0">
+              <Image
+                className="rounded-full"
+                height={64}
+                src={
+                  userExtra.photoUrl ||
+                  `https://avatars.dicebear.com/api/initials/${
+                    userExtra.displayName || user.email
+                  }.svg`
+                }
+                width={64}
+              />
+              <Typography variant="h3">
+                {userExtra.displayName || user.email.split('@')[0]}
+              </Typography>
+              <div className=" py-1 px-2 rounded bg-cta text-dark-background">
+                <Typography variant="subtitle">{`${user.reviews} ${
+                  user.reviews > 1 ? 'Reviews' : 'Review'
+                }`}</Typography>
+              </div>
+            </div>
+          </a>
+        </Link>
       </div>
     </div>
   );

@@ -28,6 +28,14 @@ const UserMedia: FunctionComponent<Props> = ({
   const [lists, setLists] = useState<(MovieDetails | TVDetails)[]>([]);
   const [open, setOpen] = useState<boolean>(true);
 
+  const findScore = (details: MovieDetails | TVDetails) => {
+    if (!media) return 0;
+
+    const index = media.findIndex((value) => value.tmdbID === details.id);
+
+    return media[index].score || 0;
+  };
+
   const handleFetchMovies = async () => {
     if (!media) return;
 
@@ -88,12 +96,13 @@ const UserMedia: FunctionComponent<Props> = ({
                   <Poster media={list} />
                   {media && media[index] && (
                     <div className=" h-16 w-16 bg-dark-components rounded-full p-1 text-dark-text absolute top-1 right-1">
-                      <RadialBarChart score={media[index].score * 10} />
+                      <RadialBarChart score={findScore(list) * 10} />
                     </div>
                   )}
                 </div>
               ))}
             {watchLists &&
+              !!watchLists.length &&
               watchLists.map((watchlist) => {
                 if (!watchlist.public) {
                   if (auth) {
