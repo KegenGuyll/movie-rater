@@ -29,7 +29,7 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
     const selectedMovie = movies[id];
 
     router.push(
-      `/movie/${formatTitleUrl(selectedMovie.title, selectedMovie.tmdbID)}`
+      `/movie/${formatTitleUrl(selectedMovie.title, selectedMovie.tmdbID)}`,
     );
   };
 
@@ -77,7 +77,7 @@ const ReviewedMoviesTable: React.FunctionComponent<Props> = ({
     await Promise.all(
       ids.map(async (id) => {
         await deleteReviewedMovie(movies[Number(id)]._id, token);
-      })
+      }),
     );
 
     if (fetchMovies) {

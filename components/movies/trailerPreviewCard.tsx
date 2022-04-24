@@ -20,8 +20,7 @@ const TrailerPreviewCard: FunctionComponent<Props> = ({ movie }: Props) => {
 
     if (res) {
       const trailers = res.data.results.filter(
-        (value) =>
-          value.type === 'Trailer' && value.official && value.site === 'YouTube'
+        (value) => value.type === 'Trailer' && value.official && value.site === 'YouTube',
       );
 
       router.push(`?key=${trailers[0].key}`, undefined, { shallow: true });

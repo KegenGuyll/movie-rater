@@ -2,8 +2,9 @@ import clsx from 'clsx';
 import { NextPage } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
+import Button from '../../components/button';
 import CopyLink from '../../components/copyLink';
 import MetaTags from '../../components/metaTags';
 import ReviewedMoviesTable from '../../components/my-movies/ReviewedMoviesTable';
@@ -11,10 +12,13 @@ import Navigation from '../../components/navigation';
 import UserMedia from '../../components/sections/userMedia';
 import Typography from '../../components/typography';
 import { useAuth } from '../../context/AuthUserContext';
+import followUser from '../../endpoints/user/followUser';
 import getFullUser, { GetUserResponse } from '../../endpoints/user/getUser';
+import getUserByUid from '../../endpoints/user/getUserByUid';
 import getUserTopMovies, {
   GetUserTopMovies,
 } from '../../endpoints/user/getUserTopMovies';
+import { User } from '../../models/user';
 import imageUrl from '../../utils/imageUrl';
 import Logger from '../../utils/logger';
 
@@ -31,6 +35,51 @@ const UserProfile: NextPage<Props> = ({
 }: Props) => {
   const router = useRouter();
   const { authUser } = useAuth();
+  const [currentUser, setCurrentUser] = useState<User>();
+  const [isFollowing, setIsFollowing] = useState<boolean>(false);
+
+  const getUser = async () => {
+    if (!authUser) return;
+
+    const { res } = await getUserByUid(authUser.uid);
+
+    if (res) {
+      setCurrentUser(res.data);
+    }
+  };
+
+  const renderFollowStatus = () => {
+    if (!currentUser) return;
+
+    if (
+      currentUser.following
+      && fullUser
+      && currentUser.following.includes(fullUser.uuid)
+    ) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+  };
+
+  const handleFollowUser = async () => {
+    if (!authUser || !currentUser) return;
+    if (!router.query.id || typeof router.query.id !== 'string') return;
+
+    const token = await authUser.getIdToken();
+
+    await followUser(router.query.id, token);
+
+    await getUser();
+  };
+
+  useEffect(() => {
+    getUser();
+  }, [authUser]);
+
+  useEffect(() => {
+    renderFollowStatus();
+  }, [currentUser, fullUser]);
 
   const canDelete = useMemo(() => {
     if (!authUser) return false;
@@ -71,7 +120,7 @@ const UserProfile: NextPage<Props> = ({
 
         <div
           className={clsx(
-            ' w-full bg-dark-background bg-opacity-80 absolute top-0 bottom-0 left-0 right-0'
+            ' w-full bg-dark-background bg-opacity-80 absolute top-0 bottom-0 left-0 right-0',
           )}
         />
         <div className="relative h-16 w-16 lg:h-32 lg:w-32 rounded-full">
@@ -79,9 +128,9 @@ const UserProfile: NextPage<Props> = ({
             className="rounded-full"
             layout="fill"
             src={
-              fullUser.profilePath ||
-              fullUser.photoUrl ||
-              `https://avatars.dicebear.com/api/initials/${
+              fullUser.profilePath
+              || fullUser.photoUrl
+              || `https://avatars.dicebear.com/api/initials/${
                 fullUser.displayName || fullUser.email
               }.svg`
             }
@@ -101,6 +150,22 @@ const UserProfile: NextPage<Props> = ({
               {`${fullUser.watchLists.length} WatchLists`}
             </Typography>
           </div>
+          {authUser && authUser.uid !== router.query.id && (
+            <Button
+              className=" text-dark-background w-full text-center mt-3"
+              variant="primary"
+              onClick={handleFollowUser}
+            >
+              <div className="text-center w-full flex items-center justify-center space-x-3 ">
+                <span className="material-icons-outlined">
+                  {isFollowing ? 'check' : 'add'}
+                </span>
+                <Typography variant="h4">
+                  {isFollowing ? 'Following' : 'Follow'}
+                </Typography>
+              </div>
+            </Button>
+          )}
         </div>
       </section>
       <section className="mb-20">

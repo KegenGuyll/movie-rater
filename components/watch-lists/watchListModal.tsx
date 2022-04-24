@@ -113,7 +113,7 @@ const WatchListModal: FunctionComponent<Props> = ({
           title: watchListTitle,
           userId: authUser.uid,
         },
-        authToken
+        authToken,
       );
 
       handleGetLists();
@@ -174,9 +174,7 @@ const WatchListModal: FunctionComponent<Props> = ({
             >
               <span className="material-icons-outlined mr-4">
                 {existMovie
-                  ? existMovie.map((movieValue) =>
-                      movieValue.listId === value._id ? 'checklist_rtl' : 'list'
-                    )
+                  ? existMovie.map((movieValue) => (movieValue.listId === value._id ? 'checklist_rtl' : 'list'))
                   : 'list'}
               </span>
               {value.title}

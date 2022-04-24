@@ -89,7 +89,7 @@ const TrendingMedia: FunctionComponent<Props> = ({
       >
         <Typography className=" text-cta flex-grow" variant="h2">
           {`Trending ${createMediaCopy(mediaType)} ${createTimeFrameCopy(
-            timeWindow
+            timeWindow,
           )}`}
         </Typography>
         <span className="material-icons-outlined text-dark-text">
@@ -101,7 +101,7 @@ const TrendingMedia: FunctionComponent<Props> = ({
           <div
             className={clsx(
               ' py-2 w-max gap-2 md:gap-4',
-              'grid grid-flow-col overflow-auto'
+              'grid grid-flow-col overflow-auto',
             )}
           >
             {trendingMovies.results.map((value) => (

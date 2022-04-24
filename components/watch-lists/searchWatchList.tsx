@@ -54,7 +54,7 @@ const SearchWatchList: FunctionComponent<Props> = ({
           aria-label="search box"
           className={clsx(
             'py-[12px] px-3 w-full bg-dark-components rounded',
-            'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
+            'focus:border focus:border-cta transition-colors duration-300 focus:outline-none',
           )}
           onChange={debouncedChangeHandler}
         />
@@ -62,7 +62,7 @@ const SearchWatchList: FunctionComponent<Props> = ({
       <button
         className={clsx(
           'py-[7px] px-3 rounded-r bg-dark-light flex items-center justify-center',
-          'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
+          'focus:border focus:border-cta transition-colors duration-300 focus:outline-none',
         )}
         type="button"
       >

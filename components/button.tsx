@@ -57,7 +57,7 @@ const Button: FunctionComponent<Props> = ({
         !disabled && hoverBg,
         disabled && 'cursor-not-allowed',
         bg,
-        color
+        color,
       )}
       disabled={disabled}
     >

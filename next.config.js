@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+
 module.exports = {
   images: {
     domains: [
@@ -18,8 +19,7 @@ module.exports = {
   swcMinify: true,
   webpack: (config, { isServer }) => {
     if (isServer) {
-      // eslint-disable-next-line global-require
-      require('./scripts/generate-sitemap.js');
+      import('./scripts/generate-sitemap.js');
     }
 
     return config;

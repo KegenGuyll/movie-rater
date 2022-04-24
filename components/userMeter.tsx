@@ -47,7 +47,8 @@ const UserMeter: FunctionComponent<Props> = ({
           <Typography className="ml-5" variant="h4">
             <span className="text-3xl">
               {documentMovie.averagedAdvancedScore}
-            </span>{' '}
+            </span>
+            {' '}
             / 10
           </Typography>
         </div>
@@ -58,7 +59,9 @@ const UserMeter: FunctionComponent<Props> = ({
             <Typography>Simple Score</Typography>
           )}
           <Typography className="ml-5" variant="h4">
-            <span className="text-3xl">{documentMovie.simpleScore}</span> / 10
+            <span className="text-3xl">{documentMovie.simpleScore}</span>
+            {' '}
+            / 10
           </Typography>
         </div>
       )}

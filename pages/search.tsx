@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import clsx from 'clsx';
 import debounce from 'lodash.debounce';
 import { NextPage } from 'next';
@@ -34,15 +33,15 @@ const SearchPage: NextPage = () => {
 
     if (res) {
       const filteredMovie = res.data.results.filter(
-        (movie) => movie.media_type === "movie"
+        (movie) => movie.media_type === 'movie',
       ) as unknown as Movie[];
       setMovies(filteredMovie);
       const filteredTv = res.data.results.filter(
-        (movie) => movie.media_type === "tv"
+        (movie) => movie.media_type === 'tv',
       ) as unknown as TV[];
       setTv(filteredTv);
       const filteredPeople = res.data.results.filter(
-        (movie) => movie.media_type === "person"
+        (movie) => movie.media_type === 'person',
       ) as unknown as Person[];
       setPeople(filteredPeople);
     }
@@ -67,7 +66,7 @@ const SearchPage: NextPage = () => {
           aria-label="search box"
           className={clsx(
             'py-[7px] px-3 w-full bg-dark-components rounded',
-            'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
+            'focus:border focus:border-cta transition-colors duration-300 focus:outline-none',
           )}
           placeholder="start a search..."
           onChange={debouncedChangeHandler}
@@ -89,8 +88,8 @@ const SearchPage: NextPage = () => {
               </div>
             </button>
 
-            {!collapseMovies &&
-              movies.map((value) => (
+            {!collapseMovies
+              && movies.map((value) => (
                 <Link
                   key={value.id}
                   passHref
@@ -109,10 +108,13 @@ const SearchPage: NextPage = () => {
                         />
                       </div>
                       <div className=" flex-grow w-full ml-5">
-                        <Typography variant="h4">{value.title} </Typography>
+                        <Typography variant="h4">
+                          {value.title}
+                          {' '}
+                        </Typography>
                         <Typography>
-                          {value.release_date &&
-                            value.release_date.split('-')[0]}
+                          {value.release_date
+                            && value.release_date.split('-')[0]}
                         </Typography>
                       </div>
                     </div>
@@ -137,8 +139,8 @@ const SearchPage: NextPage = () => {
                 </span>
               </div>
             </button>
-            {!collapseTv &&
-              tv.map((value) => (
+            {!collapseTv
+              && tv.map((value) => (
                 <Link
                   key={value.id}
                   passHref
@@ -157,10 +159,13 @@ const SearchPage: NextPage = () => {
                         />
                       </div>
                       <div className=" flex-grow w-full ml-5">
-                        <Typography variant="h4">{value.name} </Typography>
+                        <Typography variant="h4">
+                          {value.name}
+                          {' '}
+                        </Typography>
                         <Typography>
-                          {value.first_air_date &&
-                            value.first_air_date.split('-')[0]}
+                          {value.first_air_date
+                            && value.first_air_date.split('-')[0]}
                         </Typography>
                       </div>
                     </div>
@@ -185,8 +190,8 @@ const SearchPage: NextPage = () => {
                 </span>
               </div>
             </button>
-            {!collapsePeople &&
-              people.map((value) => (
+            {!collapsePeople
+              && people.map((value) => (
                 <Link
                   key={value.id}
                   passHref
@@ -205,7 +210,10 @@ const SearchPage: NextPage = () => {
                         />
                       </div>
                       <div className=" flex-grow w-full ml-5">
-                        <Typography variant="h4">{value.name} </Typography>
+                        <Typography variant="h4">
+                          {value.name}
+                          {' '}
+                        </Typography>
                       </div>
                     </div>
                   </a>

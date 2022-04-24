@@ -18,7 +18,7 @@ const MediaCard: FunctionComponent<Props> = ({
     {...props}
     className={clsx(
       'rounded w-full min-h-fit max-h-72 overflow-auto  bg-dark-components text-dark-text relative',
-      className
+      className,
     )}
   >
     {title && (

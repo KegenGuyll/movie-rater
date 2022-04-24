@@ -52,8 +52,8 @@ const LeaderboardCard: FunctionComponent<Props> = ({ user }) => {
                 className="rounded-full"
                 height={64}
                 src={
-                  userExtra.photoUrl ||
-                  `https://avatars.dicebear.com/api/initials/${
+                  userExtra.photoUrl
+                  || `https://avatars.dicebear.com/api/initials/${
                     userExtra.displayName || user.email
                   }.svg`
                 }
@@ -63,9 +63,11 @@ const LeaderboardCard: FunctionComponent<Props> = ({ user }) => {
                 {userExtra.displayName || user.email.split('@')[0]}
               </Typography>
               <div className=" py-1 px-2 rounded bg-cta text-dark-background">
-                <Typography variant="subtitle">{`${user.reviews} ${
-                  user.reviews > 1 ? 'Reviews' : 'Review'
-                }`}</Typography>
+                <Typography variant="subtitle">
+                  {`${user.reviews} ${
+                    user.reviews > 1 ? 'Reviews' : 'Review'
+                  }`}
+                </Typography>
               </div>
             </div>
           </a>

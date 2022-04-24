@@ -21,7 +21,7 @@ const NavItem: FunctionComponent<Props> = ({
         className,
         'hover:bg-dark-light',
         'flex items-center mx-4 p-1 rounded',
-        'focus:border focus:border-cta transition-colors duration-300 focus:outline-none'
+        'focus:border focus:border-cta transition-colors duration-300 focus:outline-none',
       )}
     >
       {children}

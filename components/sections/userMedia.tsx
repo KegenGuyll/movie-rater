@@ -86,13 +86,14 @@ const UserMedia: FunctionComponent<Props> = ({
           <div
             className={clsx(
               ' py-2 w-max gap-2 md:gap-4',
-              'grid grid-flow-col overflow-auto'
+              'grid grid-flow-col overflow-auto',
             )}
           >
-            {media &&
-              lists.length &&
-              lists.map((list, index) => (
-                <div key={list.id} className="relative">
+            {media
+              && lists.length
+              && lists.map((list, index) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <div key={index} className="relative">
                   <Poster media={list} />
                   {media && media[index] && (
                     <div className=" h-16 w-16 bg-dark-components rounded-full p-1 text-dark-text absolute top-1 right-1">
@@ -101,9 +102,9 @@ const UserMedia: FunctionComponent<Props> = ({
                   )}
                 </div>
               ))}
-            {watchLists &&
-              !!watchLists.length &&
-              watchLists.map((watchlist) => {
+            {watchLists
+              && !!watchLists.length
+              && watchLists.map((watchlist) => {
                 if (!watchlist.public) {
                   if (auth) {
                     return (

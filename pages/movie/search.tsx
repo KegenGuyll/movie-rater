@@ -32,7 +32,7 @@ const Search: NextPage = () => {
 
   const onSelect = (value: IMDBMovie) => {
     router.push(
-      `/movie/${value.title}?year=${value.year}&imdbuuid=${value.uuid}`
+      `/movie/${value.title}?year=${value.year}&imdbuuid=${value.uuid}`,
     );
   };
 

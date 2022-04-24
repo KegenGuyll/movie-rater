@@ -49,17 +49,16 @@ const Rating: FunctionComponent<Props> = ({
   const [openNotes, setOpenNotes] = useState<boolean>(false);
   const { authUser } = useAuth();
   const buttonDisabled = useMemo(
-    () =>
-      !plot ||
-      !theme ||
-      !climax ||
-      !ending ||
-      !acting ||
-      !characters ||
-      !music ||
-      !cinematography ||
-      !visuals ||
-      !personalScore,
+    () => !plot
+      || !theme
+      || !climax
+      || !ending
+      || !acting
+      || !characters
+      || !music
+      || !cinematography
+      || !visuals
+      || !personalScore,
     [
       plot,
       theme,
@@ -71,22 +70,22 @@ const Rating: FunctionComponent<Props> = ({
       cinematography,
       visuals,
       personalScore,
-    ]
+    ],
   );
 
   const submitAdvanceScore = async () => {
     if (!authUser) return;
     if (
-      plot &&
-      theme &&
-      climax &&
-      ending &&
-      acting &&
-      characters &&
-      music &&
-      cinematography &&
-      visuals &&
-      personalScore
+      plot
+      && theme
+      && climax
+      && ending
+      && acting
+      && characters
+      && music
+      && cinematography
+      && visuals
+      && personalScore
     ) {
       const docData = {
         advancedScore: {
@@ -102,17 +101,17 @@ const Rating: FunctionComponent<Props> = ({
           visuals,
         },
         averagedAdvancedScore:
-          (plot +
-            theme +
-            climax +
-            ending +
-            acting +
-            characters +
-            music +
-            cinematography +
-            visuals +
-            personalScore) /
-          10,
+          (plot
+            + theme
+            + climax
+            + ending
+            + acting
+            + characters
+            + music
+            + cinematography
+            + visuals
+            + personalScore)
+          / 10,
         createdAt: Timestamp.fromDate(new Date()),
         notes,
         public: publicStatus,
@@ -266,7 +265,7 @@ const Rating: FunctionComponent<Props> = ({
             type="button"
             onClick={() => setOpenNotes(!openNotes)}
           >
-            <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
+            <Typography>{openNotes ? 'Close Notes' : 'Add Notes'}</Typography>
           </button>
           <button
             className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"
@@ -315,7 +314,7 @@ const Rating: FunctionComponent<Props> = ({
           type="button"
           onClick={() => setOpenNotes(!openNotes)}
         >
-          <Typography>{openNotes ? 'Close Notes' : `Add Notes`}</Typography>
+          <Typography>{openNotes ? 'Close Notes' : 'Add Notes'}</Typography>
         </button>
         <button
           className="bg-dark-components py-1 px-3 rounded text-dark-text disabled:opacity-50 disabled:cursor-not-allowed"

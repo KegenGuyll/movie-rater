@@ -33,7 +33,11 @@
   </url>
 
   <url>
-    <loc>https://movielot.vercel.app/user/[id]</loc>
+    <loc>https://movielot.vercel.app/poll/[id]</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/poll/index</loc>
   </url>
 
   <url>
@@ -46,5 +50,9 @@
 
   <url>
     <loc>https://movielot.vercel.app/watch-list/index</loc>
+  </url>
+
+  <url>
+    <loc>https://movielot.vercel.app/user/[id]</loc>
   </url>
 </urlset>

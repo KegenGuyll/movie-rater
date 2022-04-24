@@ -38,7 +38,7 @@ const TrailerCarousel: FunctionComponent<Props> = ({ movies }: Props) => {
           <button
             className={clsx(
               'flex items-center justify-center border-2 border-dark-components hover:bg-dark-light p-2 rounded text-dark-text',
-              'absolute z-50 top-0 right-12 bottom-0 my-auto h-max'
+              'absolute z-50 top-0 right-12 bottom-0 my-auto h-max',
             )}
             type="button"
             onClick={(e) => {
@@ -53,7 +53,7 @@ const TrailerCarousel: FunctionComponent<Props> = ({ movies }: Props) => {
           <button
             className={clsx(
               'flex items-center justify-center border-2 border-dark-components hover:bg-dark-light p-2 rounded text-dark-text',
-              'absolute z-50 top-0 left-12 bottom-0 my-auto h-max'
+              'absolute z-50 top-0 left-12 bottom-0 my-auto h-max',
             )}
             type="button"
             onClick={(e) => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import clsx from 'clsx';
 import ISO6391 from 'iso-639-1';
 import { NextPage } from 'next';
@@ -40,7 +41,7 @@ import Logger from '../../utils/logger';
 
 const RadialBarChart = dynamic(
   () => import('../../components/charts/radialbarChart'),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface Props {
@@ -70,8 +71,7 @@ const TVshow: NextPage<Props> = ({
   const router = useRouter();
   const { authUser } = useAuth();
 
-  const sortVotes = (a: CombineMedia, b: CombineMedia) =>
-    b.vote_average - a.vote_average;
+  const sortVotes = (a: CombineMedia, b: CombineMedia) => b.vote_average - a.vote_average;
 
   const handleShallowRoute = (media: MediaType) => {
     if (details) {
@@ -80,7 +80,7 @@ const TVshow: NextPage<Props> = ({
         undefined,
         {
           shallow: true,
-        }
+        },
       );
       setActiveMedia(media);
     }
@@ -137,7 +137,9 @@ const TVshow: NextPage<Props> = ({
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { backdrops, posters, title, videos } = router.query;
+    const {
+      backdrops, posters, title, videos,
+    } = router.query;
     if ((backdrops || posters) && title && typeof title === 'string') {
       fetchImages(Number(title.split('-')[0]));
       if (backdrops) {
@@ -166,7 +168,7 @@ const TVshow: NextPage<Props> = ({
     <div
       className={clsx(
         'relative w-full overflow-hidden',
-        'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+        'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]',
       )}
     >
       <Image
@@ -180,14 +182,14 @@ const TVshow: NextPage<Props> = ({
       <div
         className={clsx(
           ' w-full bg-dark-background bg-opacity-70 absolute top-0',
-          'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+          'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]',
         )}
       />
       <div className={clsx('flex p-8 xl:p-32')}>
         <div
           className={clsx(
             'relative flex flex-col',
-            'h-[175px] w-[115px] md:h-[250px] md:w-[160px] lg:h-[400px] lg:w-[250px]  xl:h-[500px] xl:w-[331px]'
+            'h-[175px] w-[115px] md:h-[250px] md:w-[160px] lg:h-[400px] lg:w-[250px]  xl:h-[500px] xl:w-[331px]',
           )}
         >
           <Image
@@ -333,7 +335,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'videos' && 'underline'
+                activeMedia === 'videos' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('videos')}
@@ -343,7 +345,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'backdrops' && 'underline'
+                activeMedia === 'backdrops' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('backdrops')}
@@ -353,7 +355,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'posters' && 'underline'
+                activeMedia === 'posters' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('posters')}
@@ -517,8 +519,8 @@ const TVshow: NextPage<Props> = ({
                   className="rounded-full"
                   height={64}
                   src={
-                    authUser.photoURL ||
-                    `https://avatars.dicebear.com/api/initials/${
+                    authUser.photoURL
+                    || `https://avatars.dicebear.com/api/initials/${
                       authUser.displayName || authUser.email
                     }.svg`
                   }
@@ -543,7 +545,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'videos' && 'underline'
+                activeMedia === 'videos' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('videos')}
@@ -553,7 +555,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'backdrops' && 'underline'
+                activeMedia === 'backdrops' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('backdrops')}
@@ -563,7 +565,7 @@ const TVshow: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'posters' && 'underline'
+                activeMedia === 'posters' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('posters')}

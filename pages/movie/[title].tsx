@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import clsx from 'clsx';
 import ISO6391 from 'iso-639-1';
 import { NextPage } from 'next';
@@ -49,7 +50,7 @@ import Logger from '../../utils/logger';
 
 const RadialBarChart = dynamic(
   () => import('../../components/charts/radialbarChart'),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface Props {
@@ -71,8 +72,7 @@ const Movie: NextPage<Props> = ({
 }: Props) => {
   const [advancedScoring, setAdvancedScoring] = useState<boolean>(true);
   const [movieReview, setMovieReview] = useState<boolean>(false);
-  const [publicMovieReviews, setPublicMovieReviews] =
-    useState<MovieDocument[]>();
+  const [publicMovieReviews, setPublicMovieReviews] = useState<MovieDocument[]>();
   const [avgScore, setAvgScore] = useState<MovieScore[]>([]);
   const [viewDetailedScore, setViewDetailedScore] = useState<boolean>(false);
   const [userData, setUserData] = useState<MovieDocument>();
@@ -83,8 +83,7 @@ const Movie: NextPage<Props> = ({
   const router = useRouter();
   const { authUser } = useAuth();
 
-  const sortVotes = (a: CombineMedia, b: CombineMedia) =>
-    b.vote_average - a.vote_average;
+  const sortVotes = (a: CombineMedia, b: CombineMedia) => b.vote_average - a.vote_average;
 
   const handleShallowRoute = (media: MediaType) => {
     if (details) {
@@ -93,7 +92,7 @@ const Movie: NextPage<Props> = ({
         undefined,
         {
           shallow: true,
-        }
+        },
       );
       setActiveMedia(media);
     }
@@ -101,7 +100,7 @@ const Movie: NextPage<Props> = ({
 
   const addToProfileBackDrop = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    path: string
+    path: string,
   ) => {
     if (!authUser) return;
 
@@ -201,7 +200,9 @@ const Movie: NextPage<Props> = ({
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-shadow
-    const { backdrops, posters, title, videos } = router.query;
+    const {
+      backdrops, posters, title, videos,
+    } = router.query;
     if ((backdrops || posters) && title && typeof title === 'string') {
       fetchImages(Number(title.split('-')[0]));
       if (backdrops) {
@@ -230,7 +231,7 @@ const Movie: NextPage<Props> = ({
     <div
       className={clsx(
         'relative w-full overflow-hidden',
-        'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+        'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]',
       )}
     >
       <Image
@@ -244,14 +245,14 @@ const Movie: NextPage<Props> = ({
       <div
         className={clsx(
           ' w-full bg-dark-background bg-opacity-70 absolute top-0',
-          'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]'
+          'h-[265px] md:h-[400px] lg:h-[600px] xl:h-[800px]',
         )}
       />
       <div className={clsx('flex p-8 xl:p-32')}>
         <div
           className={clsx(
             'relative flex flex-col',
-            'h-[175px] w-[115px] md:h-[250px] md:w-[160px] lg:h-[400px] lg:w-[250px]  xl:h-[500px] xl:w-[331px]'
+            'h-[175px] w-[115px] md:h-[250px] md:w-[160px] lg:h-[400px] lg:w-[250px]  xl:h-[500px] xl:w-[331px]',
           )}
         >
           <Image
@@ -301,11 +302,11 @@ const Movie: NextPage<Props> = ({
               {avgScore && !!avgScore.length && (
                 <RadialBarChart score={avgScore[0].totalScore * 10} />
               )}
-              {userData &&
-                userData.averagedAdvancedScore &&
-                !avgScore.length && (
+              {userData
+                && userData.averagedAdvancedScore
+                && !avgScore.length && (
                   <RadialBarChart score={userData.averagedAdvancedScore * 10} />
-                )}
+              )}
               {!userData && !avgScore.length && (
                 <RadialBarChart score={details.vote_average * 10} />
               )}
@@ -313,10 +314,10 @@ const Movie: NextPage<Props> = ({
 
             <Typography className="w-16 mr-9" variant="h3">
               {avgScore && !!avgScore.length && 'MovieLot Score'}
-              {userData &&
-                userData.averagedAdvancedScore &&
-                !avgScore.length &&
-                'User Score'}
+              {userData
+                && userData.averagedAdvancedScore
+                && !avgScore.length
+                && 'User Score'}
               {!userData && !avgScore.length && 'Audience Score'}
             </Typography>
             {avgScore && !!avgScore.length && (
@@ -434,7 +435,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'videos' && 'underline'
+                activeMedia === 'videos' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('videos')}
@@ -444,7 +445,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'backdrops' && 'underline'
+                activeMedia === 'backdrops' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('backdrops')}
@@ -454,7 +455,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'posters' && 'underline'
+                activeMedia === 'posters' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('posters')}
@@ -546,7 +547,7 @@ const Movie: NextPage<Props> = ({
                 passHref
                 href={`/movie/${formatTitleUrl(
                   movie.title,
-                  movie.id
+                  movie.id,
                 )}&videos=true`}
               >
                 <a id={movie.original_title}>
@@ -626,7 +627,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'videos' && 'underline'
+                activeMedia === 'videos' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('videos')}
@@ -636,7 +637,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'backdrops' && 'underline'
+                activeMedia === 'backdrops' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('backdrops')}
@@ -646,7 +647,7 @@ const Movie: NextPage<Props> = ({
             <button
               className={clsx(
                 'hover:underline decoration-cta',
-                activeMedia === 'posters' && 'underline'
+                activeMedia === 'posters' && 'underline',
               )}
               type="button"
               onClick={() => handleShallowRoute('posters')}
@@ -699,9 +700,7 @@ const Movie: NextPage<Props> = ({
                         <button
                           className="absolute top-0 right-0 bg-dark-components p-2 rounded"
                           type="button"
-                          onClick={(e) =>
-                            addToProfileBackDrop(e, backdrop.file_path)
-                          }
+                          onClick={(e) => addToProfileBackDrop(e, backdrop.file_path)}
                         >
                           add to Profile
                         </button>
@@ -868,7 +867,7 @@ Movie.getInitialProps = async (context) => {
     }
 
     const { res: movieDetailsData } = await getMovieDetails(
-      titleId || existingId
+      titleId || existingId,
     );
     const updatedMovie = movieDetailsData?.data;
 
@@ -881,7 +880,7 @@ Movie.getInitialProps = async (context) => {
       movie.media_type = 'movie';
     });
     const { res: movieKeywords } = await getMovieKeywords(
-      titleId || existingId
+      titleId || existingId,
     );
 
     return {

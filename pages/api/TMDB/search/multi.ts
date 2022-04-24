@@ -6,7 +6,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     if (req.method === 'GET') {
       const { q } = req.query;
       const response = await axios.get(
-        `https://www.themoviedb.org/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${q}`
+        `https://www.themoviedb.org/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${q}`,
       );
 
       res.status(200).send(response.data);

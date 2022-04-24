@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Chart, registerables } from 'chart.js';
 import React, { FunctionComponent, useMemo } from 'react';
 import { Bar } from 'react-chartjs-2';
@@ -69,12 +68,12 @@ const LeaderboardChart: FunctionComponent<Props> = ({ allTimeScore }) => {
         },
       ],
     }),
-    [allTimeScore]
+    [allTimeScore],
   );
 
   return (
     <div className="relative flex items-center w-full h-full">
-      <Bar data={data} height="100%" options={options as any } width="100%" />
+      <Bar data={data} height="100%" options={options as any} width="100%" />
       {/* <Typography
         className="absolute flex items-center right-0 left-0 mx-auto w-max"
         variant="h4"

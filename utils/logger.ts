@@ -1,10 +1,9 @@
 /* eslint-disable no-console */
 class Logger {
-  // eslint-disable-next-line prettier/prettier
   private static log(
     consoleType: 'debug' | 'error' | 'info' | 'warn',
     data: any,
-    showTime: boolean
+    showTime: boolean,
   ) {
     if (process.env.NODE_ENV === 'production') return;
 

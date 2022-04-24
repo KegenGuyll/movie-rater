@@ -95,7 +95,7 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
   const toggleClass = ' transform translate-x-5 bg-dark-component';
   const [toggle, setToggle] = useState(watchList?.public);
   const [removedWatchListItems, setRemovedWatchListItems] = useState<string[]>(
-    []
+    [],
   );
   const [list, setList] = useState<(MovieDetails | TVDetails)[]>([]);
   const [title, setTitle] = useState(watchList?.title || '');
@@ -229,14 +229,12 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
           key={value.id}
           className="grid lg:grid-cols-2 h-max lg:h-96 overflow-hidden grid-rows-2 gap-2 lg:gap-4 text-left bg-dark-components hover:bg-dark-light text-dark-text p-4 rounded"
           type="button"
-          onClick={() =>
-            router.push(
-              `/${value.media_type}/${formatTitleUrl(
-                value.media_type === 'movie' ? value.title : value.name,
-                value.id
-              )}`
-            )
-          }
+          onClick={() => router.push(
+            `/${value.media_type}/${formatTitleUrl(
+              value.media_type === 'movie' ? value.title : value.name,
+              value.id,
+            )}`,
+          )}
         >
           <div className="h-56 w-full relative">
             <Image
@@ -304,7 +302,10 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
       <Navigation />
       <div className="mb-4 text-dark-text bg-dark-background sticky  top-16  z-30 px-2 lg:px-8 py-4 ">
         <div className="flex items-center space-x-2">
-          <Typography variant="h1">WatchList | {watchList?.title}</Typography>
+          <Typography variant="h1">
+            WatchList |
+            {watchList?.title}
+          </Typography>
           {authUser && authUser.uid === watchList?.userId && (
             <>
               <WatchListVisibility visible={watchList?.public} />
@@ -326,7 +327,7 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
         {watchList && (
           <Typography variant="legal">
             {`Last Updated - ${dayjs(
-              watchList.updated_at._seconds * 1000
+              watchList.updated_at._seconds * 1000,
             ).format('MMMM, DD YYYY')}`}
           </Typography>
         )}
@@ -369,7 +370,7 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
               <button
                 className={clsx(
                   'md:w-14 md:h-7 w-12 h-6 flex items-center rounded-full p-1',
-                  !toggle ? ' bg-dark-components' : ' bg-dark-light'
+                  !toggle ? ' bg-dark-components' : ' bg-dark-light',
                 )}
                 type="button"
                 onClick={() => {
@@ -394,8 +395,8 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
                 <Typography
                   className={clsx(
                     'flex-grow',
-                    removedWatchListItems.includes(media.id.toString()) &&
-                      'line-through'
+                    removedWatchListItems.includes(media.id.toString())
+                      && 'line-through',
                   )}
                 >
                   {media.media_type === 'movie' ? media.title : media.name}
@@ -403,7 +404,7 @@ export const WatchListPage: NextPage<Props> = ({ watchList }: Props) => {
                 <button
                   className={clsx(
                     'flex items-center justify-center p-2 hover:bg-dark-light rounded-full',
-                    'transition-all duration-100'
+                    'transition-all duration-100',
                   )}
                   type="button"
                   onClick={() => handleRemoveMovies(media.id.toString())}

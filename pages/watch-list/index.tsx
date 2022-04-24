@@ -96,7 +96,10 @@ const WatchListComponent: FunctionComponent<Props> = () => {
   return (
     <>
       <Head>
-        <title>WatchList | {`${authUser?.displayName}` || 'User'}</title>
+        <title>
+          WatchList |
+          {`${authUser?.displayName}` || 'User'}
+        </title>
         <meta content="View and Create movie WatchLists" name="description" />
       </Head>
       <Navigation />

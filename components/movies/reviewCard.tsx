@@ -31,14 +31,14 @@ const ReviewCard: FunctionComponent<Props> = ({
     <MediaCard
       className={clsx(
         'col-span-1 gap-1',
-        'lg:col-span-2 lg:gap-2  2xl:gap-4 2xl:col-span-1'
+        'lg:col-span-2 lg:gap-2  2xl:gap-4 2xl:col-span-1',
       )}
       title="Reviews"
     >
       <div
         className={clsx(
           'flex flex-col items-stretch',
-          'lg:grid lg:grid-rows-1 lg:grid-flow-col-dense'
+          'lg:grid lg:grid-rows-1 lg:grid-flow-col-dense',
         )}
       >
         {movie && (

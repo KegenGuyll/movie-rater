@@ -6,7 +6,7 @@ import Typography from '../typography';
 
 const RadialBarChart = dynamic(
   () => import('../../components/charts/radialbarChart'),
-  { ssr: false }
+  { ssr: false },
 );
 
 interface Props {

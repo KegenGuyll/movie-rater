@@ -25,42 +25,42 @@ const WhereToWatch: FunctionComponent<Props> = ({
     switch (provider) {
       case 'fandango':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/fandango.7e22d1f94b5.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/fandango.7e22d1f94b5.svg',
         );
         break;
       case 'amazon-prime-video-us':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/amazon_prime_video.aea370299cd.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/amazon_prime_video.aea370299cd.svg',
         );
         break;
       case 'hbo-max':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/hbo_max.2426e881c8f.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/hbo_max.2426e881c8f.svg',
         );
         break;
       case 'itunes':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/apple_tv.da7a28db8f5.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/apple_tv.da7a28db8f5.svg',
         );
         break;
       case 'netflix':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/netflix.62f265e4a21.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/netflix.62f265e4a21.svg',
         );
         break;
       case 'hulu':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/hulu.3bc560ceca6.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/hulu.3bc560ceca6.svg',
         );
         break;
       case 'vudu':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/vudu.7b6da49f202.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/vudu.7b6da49f202.svg',
         );
         break;
       case 'disney-plus-us':
         setImage(
-          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/disney_plus.38158a14466.svg'
+          'https://www.rottentomatoes.com/assets/pizza-pie/images/affiliates/disney_plus.38158a14466.svg',
         );
         break;
       default:

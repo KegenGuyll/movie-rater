@@ -26,7 +26,8 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
             />
 
             <Typography className="ml-2" variant="light">
-              {ratings.rotten.tomatometerscore}%
+              {ratings.rotten.tomatometerscore}
+              %
             </Typography>
           </div>
         )}
@@ -42,7 +43,8 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
             />
 
             <Typography className="ml-2" variant="light">
-              {ratings.rotten.audiencescore}%
+              {ratings.rotten.audiencescore}
+              %
             </Typography>
           </div>
         )}
@@ -63,9 +65,9 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
             </Typography>
           </div>
         )}
-        {user &&
-          user.displayName &&
-          (ratings.personal.advancedScore || ratings.personal.simpleScore) && (
+        {user
+          && user.displayName
+          && (ratings.personal.advancedScore || ratings.personal.simpleScore) && (
             <div className="flex items-center">
               {user.photoUrl && (
                 <Image
@@ -82,7 +84,7 @@ const MoviePosterRating: FunctionComponent<Props> = ({ ratings, user }) => (
                 {ratings.personal.advancedScore || ratings.personal.simpleScore}
               </Typography>
             </div>
-          )}
+        )}
       </>
     )}
   </div>

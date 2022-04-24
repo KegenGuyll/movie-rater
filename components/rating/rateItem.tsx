@@ -18,7 +18,7 @@ const RateItem: FunctionComponent<Props> = ({
     <button
       className={clsx(
         'rounded-full p-1 px-3',
-        selected && 'border-2 border-dark-text'
+        selected && 'border-2 border-dark-text',
       )}
       type="button"
       onClick={() => setClicked(value)}

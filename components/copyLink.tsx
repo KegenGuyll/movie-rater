@@ -23,11 +23,7 @@ const CopyLink: FunctionComponent<Props> = ({ link }: Props) => {
     <button
       className="flex items-center justify-center p-2 rounded-full hover:bg-dark-light hover:bg-opacity-60"
       type="button"
-      onClick={() =>
-        copyToClipboard(`https://movielot.vercel.app${link}`, () =>
-          setCopiedSuccessful(true)
-        )
-      }
+      onClick={() => copyToClipboard(`https://movielot.vercel.app${link}`, () => setCopiedSuccessful(true))}
     >
       <span className="material-icons-outlined">
         {!copiedSuccessful ? 'link' : 'done'}

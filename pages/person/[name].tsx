@@ -62,15 +62,15 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
       router.push(
         `/${selectedMovie.media_type}/${formatTitleUrl(
           selectedMovie.name,
-          selectedMovie.id
-        )}`
+          selectedMovie.id,
+        )}`,
       );
     } else if (selectedMovie.media_type === 'movie') {
       router.push(
         `/${selectedMovie.media_type}/${formatTitleUrl(
           selectedMovie.title,
-          selectedMovie.id
-        )}`
+          selectedMovie.id,
+        )}`,
       );
     }
   };
@@ -95,7 +95,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
         type: 'number',
       },
     ],
-    [combinedCredits]
+    [combinedCredits],
   );
 
   const tvCreditColumns: Columns[] = useMemo(
@@ -118,7 +118,7 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
         type: 'number',
       },
     ],
-    [combinedCredits]
+    [combinedCredits],
   );
 
   const movieCreditRows = useMemo(() => {
@@ -127,9 +127,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
 
     combinedCredits.cast.forEach((cast) => {
       if (
-        cast.media_type === 'movie' &&
-        cast.vote_count > 100 &&
-        cast.vote_average
+        cast.media_type === 'movie'
+        && cast.vote_count > 100
+        && cast.vote_average
       ) {
         rows.push({
           Score: cast.vote_average || '-',
@@ -141,9 +141,8 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
     });
 
     return rows.filter(
-      (value, index, array) =>
-        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
-        index
+      (value, index, array) => array.findIndex((t) => t.id === value.id && t.Title === value.Title)
+        === index,
     );
   }, [combinedCredits]);
 
@@ -171,9 +170,8 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
     });
 
     return rows.filter(
-      (value, index, array) =>
-        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
-        index
+      (value, index, array) => array.findIndex((t) => t.id === value.id && t.Title === value.Title)
+        === index,
     );
   }, [combinedCredits]);
 
@@ -183,9 +181,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
 
     combinedCredits.cast.forEach((cast) => {
       if (
-        cast.media_type === 'tv' &&
-        cast.vote_count > 100 &&
-        cast.vote_average
+        cast.media_type === 'tv'
+        && cast.vote_count > 100
+        && cast.vote_average
       ) {
         rows.push({
           Score: cast.vote_average || '-',
@@ -197,9 +195,8 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
     });
 
     return rows.filter(
-      (value, index, array) =>
-        array.findIndex((t) => t.id === value.id && t.Title === value.Title) ===
-        index
+      (value, index, array) => array.findIndex((t) => t.id === value.id && t.Title === value.Title)
+        === index,
     );
   }, [combinedCredits]);
 
@@ -287,7 +284,11 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           >
             <a className=" text-cta hover:underline font-bold">
               <Typography variant="h4">
-                {topRated.title} ({parseYear(topRated.release_date)})
+                {topRated.title}
+                {' '}
+                (
+                {parseYear(topRated.release_date)}
+                )
               </Typography>
             </a>
           </Link>
@@ -303,8 +304,15 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           >
             <a className="text-cta hover:underline font-bold">
               <Typography variant="h4">
-                {topRated.name} ({parseYear(topRated.first_air_date)} -{' '}
-                {parseYear(topRated.last_air_date)})
+                {topRated.name}
+                {' '}
+                (
+                {parseYear(topRated.first_air_date)}
+                {' '}
+                -
+                {' '}
+                {parseYear(topRated.last_air_date)}
+                )
               </Typography>
             </a>
           </Link>
@@ -320,7 +328,11 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           >
             <a className="text-cta hover:underline font-bold">
               <Typography variant="h4">
-                {lowestRated.title} ({parseYear(lowestRated.release_date)})
+                {lowestRated.title}
+                {' '}
+                (
+                {parseYear(lowestRated.release_date)}
+                )
               </Typography>
             </a>
           </Link>
@@ -337,8 +349,15 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
             <a className="text-cta hover:underline font-bold">
               <Typography variant="h4">
                 {' '}
-                {lowestRated.name} ({parseYear(lowestRated.first_air_date)} -{' '}
-                {parseYear(lowestRated.last_air_date)})
+                {lowestRated.name}
+                {' '}
+                (
+                {parseYear(lowestRated.first_air_date)}
+                {' '}
+                -
+                {' '}
+                {parseYear(lowestRated.last_air_date)}
+                )
               </Typography>
             </a>
           </Link>
@@ -392,8 +411,12 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
               <div>
                 <Typography variant="h3">Birthday</Typography>
                 <Typography variant="subtitle">
-                  {dayjs(details.birthday).format('MMMM DD, YYYY')} (
-                  {birthday(new Date(details.birthday))} years old)
+                  {dayjs(details.birthday).format('MMMM DD, YYYY')}
+                  {' '}
+                  (
+                  {birthday(new Date(details.birthday))}
+                  {' '}
+                  years old)
                 </Typography>
               </div>
             )}
@@ -420,10 +443,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           <div className="space-y-6">
             <Typography variant="h2">Most Popular Movies</Typography>
             <div className="grid grid-rows-1 grid-flow-col overflow-auto  gap-3 pb-3">
-              {sortedCredits &&
-                sortedCredits.slice(0, 15).map((cast) => {
-                  if (!cast.poster_path || cast.media_type === 'tv')
-                    return null;
+              {sortedCredits
+                && sortedCredits.slice(0, 15).map((cast) => {
+                  if (!cast.poster_path || cast.media_type === 'tv') { return null; }
                   return (
                     <Link
                       key={cast.id}
@@ -452,7 +474,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           {!!movieCreditRows.length && (
             <div className="space-y-6">
               <Typography variant="h2">
-                Top Movie Credits ({movieCreditRows.length})
+                Top Movie Credits (
+                {movieCreditRows.length}
+                )
               </Typography>
               <div className=" max-h-96 overflow-auto">
                 <Table columns={movieCreditColumns} rows={movieCreditRows} />
@@ -462,7 +486,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           {!!tvCreditRows.length && (
             <div className="space-y-6">
               <Typography variant="h2">
-                Top Tv Credits ({tvCreditRows.length})
+                Top Tv Credits (
+                {tvCreditRows.length}
+                )
               </Typography>
               <div className=" max-h-96 overflow-auto">
                 <Table columns={tvCreditColumns} rows={tvCreditRows} />
@@ -472,7 +498,9 @@ const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
           {!!productionCreditRows.length && (
             <div className="space-y-6">
               <Typography variant="h2">
-                Productions ({productionCreditRows.length})
+                Productions (
+                {productionCreditRows.length}
+                )
               </Typography>
               <div className=" max-h-96 overflow-auto">
                 <Table columns={tvCreditColumns} rows={productionCreditRows} />

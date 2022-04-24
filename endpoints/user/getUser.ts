@@ -1,8 +1,8 @@
-import { AxiosResponse } from 'axios';
+import { AxiosResponse } from "axios";
 
-import { MovieDocument } from '../../models/firestore';
-import { WatchList } from '../../models/watchlist';
-import resolve from '../resolver';
+import { MovieDocument } from "../../models/firestore";
+import { WatchList } from "../../models/watchlist";
+import resolve from "../resolver";
 
 export interface GetUserResponse {
   displayName: string;
@@ -14,6 +14,7 @@ export interface GetUserResponse {
   watchLists: WatchList[];
   backdropPath?: string;
   profilePath?: string;
+  following?: string[];
 }
 
 interface IResponse extends AxiosResponse {
@@ -28,7 +29,7 @@ interface IResolvedPopular {
 export default function getFullUser(uuid: string): Promise<IResolvedPopular> {
   return resolve(
     {
-      method: 'GET',
+      method: "GET",
       url: `/user/full/${uuid}`,
     },
     true

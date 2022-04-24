@@ -48,8 +48,8 @@ const SocialRatingCard: FunctionComponent<Props> = ({ media }: Props) => {
               className="rounded-full"
               height={64}
               src={
-                user.photoUrl ||
-                `https://avatars.dicebear.com/api/initials/${
+                user.photoUrl
+                || `https://avatars.dicebear.com/api/initials/${
                   user.displayName || user.email
                 }.svg`
               }

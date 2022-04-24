@@ -28,6 +28,10 @@ const Navigation: FunctionComponent = () => {
           <span className="material-icons-outlined mr-4">list</span>
           <Typography>Watch List</Typography>
         </NavItem>
+        <NavItem href="/poll">
+          <span className="material-icons-outlined mr-4">how_to_vote</span>
+          <Typography>Create Poll</Typography>
+        </NavItem>
         <button
           className="flex lg:hidden p-1 rounded hover:bg-dark-light items-center justify-center"
           type="button"
@@ -42,7 +46,7 @@ const Navigation: FunctionComponent = () => {
                 alt={authUser.displayName || 'user'}
                 className="rounded-full"
                 height="40"
-                src={authUser.photoURL || ''}
+                src={authUser.photoURL || `https://avatars.dicebear.com/api/bottts/${authUser.displayName}`}
                 width="40"
               />
             </div>
@@ -63,7 +67,7 @@ const Navigation: FunctionComponent = () => {
         <div
           className={clsx(
             'absolute z-50 h-screen w-screen top-0 bg-opacity-50 bg-dark-background',
-            'transition-all duration-75'
+            'transition-all duration-75',
           )}
         >
           <OutsideClickHandler onOutsideClick={() => setOpen(false)}>
@@ -77,7 +81,7 @@ const Navigation: FunctionComponent = () => {
                           alt={authUser.displayName || 'user'}
                           className="rounded-full"
                           height="40"
-                          src={authUser.photoURL || ''}
+                          src={authUser.photoURL || `https://avatars.dicebear.com/api/bottts/${authUser.displayName}`}
                           width="40"
                         />
                       </div>
@@ -112,6 +116,12 @@ const Navigation: FunctionComponent = () => {
                   <NavItem href="/watch-list">
                     <span className="material-icons-outlined mr-4">list</span>
                     <Typography>Watch List</Typography>
+                  </NavItem>
+                </li>
+                <li>
+                  <NavItem href="/poll">
+                    <span className="material-icons-outlined mr-4">how_to_vote</span>
+                    <Typography>Create Poll</Typography>
                   </NavItem>
                 </li>
               </ul>

@@ -1,4 +1,6 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, {
+  FunctionComponent, useEffect, useMemo, useState,
+} from 'react';
 
 import Typography from '../typography';
 import RateItem from './rateItem';
@@ -18,7 +20,7 @@ const RateList: FunctionComponent<Props> = ({
   defaultValue,
 }: Props) => {
   const [selectedValue, setSelectedValue] = useState<number | null>(
-    defaultValue || null
+    defaultValue || null,
   );
 
   useEffect(() => {
@@ -28,7 +30,7 @@ const RateList: FunctionComponent<Props> = ({
 
   const array = useMemo(
     () => Array.from({ length: scale }, (v, k) => k + 1),
-    [scale]
+    [scale],
   );
 
   useEffect(() => {
