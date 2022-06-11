@@ -45,14 +45,14 @@
   </url>
 
   <url>
+    <loc>https://movielot.vercel.app/user/[id]</loc>
+  </url>
+
+  <url>
     <loc>https://movielot.vercel.app/watch-list/[id]</loc>
   </url>
 
   <url>
     <loc>https://movielot.vercel.app/watch-list/index</loc>
-  </url>
-
-  <url>
-    <loc>https://movielot.vercel.app/user/[id]</loc>
   </url>
 </urlset>

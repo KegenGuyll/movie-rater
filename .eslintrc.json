@@ -31,6 +31,8 @@
     "jest"
   ],
   "rules": {
+    "indent": "off",
+    "@typescript-eslint/indent": ["error", 2], // 2 spaces === 1 tab
     "react/jsx-filename-extension": [
       2,
       {
