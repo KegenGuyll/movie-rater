@@ -439,7 +439,7 @@ const Search: FunctionComponent<Props> = ({
                                 {' '}
                               </Typography>
                               <Typography>
-                                {value.known_for[0] && value.known_for[0].name}
+                                {value.known_for && value.known_for[0].name}
                               </Typography>
                             </div>
                           </div>
