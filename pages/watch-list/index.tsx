@@ -12,7 +12,16 @@ import getAllWatchLists from '../../endpoints/watchlist/getAllWatchLists';
 import { WatchListSearch } from '../../endpoints/watchlist/searchWatchList';
 import { WatchList } from '../../models/watchlist';
 
-interface Props {}
+interface Props { }
+
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: true,
+    },
+  };
+}
 
 const WatchListComponent: FunctionComponent<Props> = () => {
   const [watchList, setWatchLists] = useState<WatchList[] | null>(null);

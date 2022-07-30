@@ -12,7 +12,7 @@ const fetch = (config: AxiosRequestConfig, internalURL = false) => {
   if (internalURL) {
     newConfig = {
       ...config,
-      url: `${productionURL}${config.url}`,
+      url: `https://api.tmrev.io${config.url}`,
     };
   }
 

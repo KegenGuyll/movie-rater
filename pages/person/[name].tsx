@@ -43,6 +43,15 @@ type AllVotes = {
   scoreCount: number,
 };
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const PersonPage: NextPage<Props> = ({ details, combinedCredits }: Props) => {
   const [topRated, setTopRated] = useState<MovieDetails | TVDetails>();
   const [lowestRated, setLowestRated] = useState<MovieDetails | TVDetails>();

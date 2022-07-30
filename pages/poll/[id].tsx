@@ -18,6 +18,15 @@ interface Props {
     winnerIndex: number | null
 }
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const PollVoting: NextPage<Props> = ({ poll, totalVotes, winnerIndex }:Props) => {
   const { authUser, signInAnonymously } = useAuth();
   const router = useRouter();

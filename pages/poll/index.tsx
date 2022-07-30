@@ -15,6 +15,15 @@ import createPoll, {
 } from '../../endpoints/poll/createPoll';
 import Logger from '../../utils/logger';
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const Poll: NextPage = () => {
   const [categories, setCategories] = useState<Categories[]>([]);
   const [title, setTitle] = useState<string>('');

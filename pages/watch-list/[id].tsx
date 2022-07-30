@@ -6,7 +6,6 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { GetServerSidePropsContext, NextPage } from 'next/types';
-import nookies from 'nookies';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import Button from '../../components/button';
@@ -38,40 +37,45 @@ interface Props {
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   try {
     const { id } = ctx.query;
-    const cookies = nookies.get(ctx);
-    let watchList: WatchList | null = null;
 
     if (!id || typeof id !== 'string') {
       throw new Error(`watchList broken: ${id}`);
     }
 
-    if (cookies.token) {
-      const { res, err } = await getWatchList(id, cookies.token);
-
-      if (res) {
-        watchList = { ...res.data };
-      }
-
-      if (err) {
-        throw err;
-      }
-    } else {
-      const { res, err } = await getWatchList(id, undefined);
-
-      if (res) {
-        watchList = { ...res.data };
-      }
-
-      if (err) {
-        throw err;
-      }
-    }
-
     return {
-      props: {
-        watchList,
+      redirect: {
+        destination: `https://tmrev.io/watch-list/${id}`,
+        permanent: true,
       },
     };
+
+    // if (cookies.token) {
+    //   const { res, err } = await getWatchList(id, cookies.token);
+
+    //   if (res) {
+    //     watchList = { ...res.data };
+    //   }
+
+    //   if (err) {
+    //     throw err;
+    //   }
+    // } else {
+    //   const { res, err } = await getWatchList(id, undefined);
+
+    //   if (res) {
+    //     watchList = { ...res.data };
+    //   }
+
+    //   if (err) {
+    //     throw err;
+    //   }
+    // }
+
+    // return {
+    //   props: {
+    //     watchList,
+    //   },
+    // };
   } catch (error) {
     // Logger.error(error);
 

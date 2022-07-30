@@ -55,6 +55,15 @@ type MediaType = 'videos' | 'backdrops' | 'posters' | '';
 
 type CombineMedia = PosterType | Backdrops;
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const TVshow: NextPage<Props> = ({
   details,
   casts,

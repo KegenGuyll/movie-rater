@@ -26,13 +26,8 @@ import getAvgMovieReview, {
   MovieScore,
 } from '../../endpoints/review/getAvgMovieReview';
 import getReviewedMovie from '../../endpoints/review/getReviewMovie';
-import getFindExternalId from '../../endpoints/TMDB/getFindExternalId';
-import getMovieDetails from '../../endpoints/TMDB/getMovie';
-import getMovieCast from '../../endpoints/TMDB/getMovieCast';
 import getMovieImages from '../../endpoints/TMDB/getMovieImages';
-import getMovieKeywords from '../../endpoints/TMDB/getMovieKeywords';
 import getMovieVideos from '../../endpoints/TMDB/getMovieVideos';
-import getSimilarMovies from '../../endpoints/TMDB/getSimilarMovies';
 import addUserBackdrop from '../../endpoints/user/addUserBackdrop';
 import { MovieDocument } from '../../models/firestore';
 import {
@@ -63,6 +58,17 @@ interface Props {
 type MediaType = 'videos' | 'backdrops' | 'posters' | '';
 
 type CombineMedia = PosterType | Backdrops;
+
+export async function getServerSideProps(context: any) {
+  const { title } = context.query;
+
+  return {
+    redirect: {
+      destination: `https://tmrev.io/movie/${title}`,
+      permanent: true,
+    },
+  };
+}
 
 const Movie: NextPage<Props> = ({
   details,
@@ -848,57 +854,57 @@ const Movie: NextPage<Props> = ({
   );
 };
 
-Movie.getInitialProps = async (context) => {
-  try {
-    const { imdbuuid, title } = context.query;
-    let existingId = '';
+// Movie.getInitialProps = async (context) => {
+//   try {
+//     const { imdbuuid, title } = context.query;
+//     let existingId = '';
 
-    if (!title || typeof title !== 'string') {
-      throw new Error(`title broken: ${title}`);
-    }
+//     if (!title || typeof title !== 'string') {
+//       throw new Error(`title broken: ${title}`);
+//     }
 
-    const titleId = title.split('-')[0];
+//     const titleId = title.split('-')[0];
 
-    if (imdbuuid && typeof imdbuuid === 'string') {
-      const { res } = await getFindExternalId(imdbuuid, 'imdb_id');
-      if (res) {
-        existingId = String(res.data.movie_results[0].id);
-      }
-    }
+//     if (imdbuuid && typeof imdbuuid === 'string') {
+//       const { res } = await getFindExternalId(imdbuuid, 'imdb_id');
+//       if (res) {
+//         existingId = String(res.data.movie_results[0].id);
+//       }
+//     }
 
-    const { res: movieDetailsData } = await getMovieDetails(
-      titleId || existingId,
-    );
-    const updatedMovie = movieDetailsData?.data;
+//     const { res: movieDetailsData } = await getMovieDetails(
+//       titleId || existingId,
+//     );
+//     const updatedMovie = movieDetailsData?.data;
 
-    if (updatedMovie) updatedMovie.media_type = 'movie';
+//     if (updatedMovie) updatedMovie.media_type = 'movie';
 
-    const { res: movieCastData } = await getMovieCast(titleId || existingId);
-    const { res: movieSimilar } = await getSimilarMovies(titleId || existingId);
-    movieSimilar?.data.results.forEach((movie) => {
-      // eslint-disable-next-line no-param-reassign
-      movie.media_type = 'movie';
-    });
-    const { res: movieKeywords } = await getMovieKeywords(
-      titleId || existingId,
-    );
+//     const { res: movieCastData } = await getMovieCast(titleId || existingId);
+//     const { res: movieSimilar } = await getSimilarMovies(titleId || existingId);
+//     movieSimilar?.data.results.forEach((movie) => {
+//       // eslint-disable-next-line no-param-reassign
+//       movie.media_type = 'movie';
+//     });
+//     const { res: movieKeywords } = await getMovieKeywords(
+//       titleId || existingId,
+//     );
 
-    return {
-      casts: movieCastData && movieCastData.data.cast,
-      details: updatedMovie || null,
-      keywords: movieKeywords && movieKeywords.data.keywords,
-      similarMovies: movieSimilar && movieSimilar.data.results,
-    };
-  } catch (error) {
-    Logger.error(error);
+//     return {
+//       casts: movieCastData && movieCastData.data.cast,
+//       details: updatedMovie || null,
+//       keywords: movieKeywords && movieKeywords.data.keywords,
+//       similarMovies: movieSimilar && movieSimilar.data.results,
+//     };
+//   } catch (error) {
+//     Logger.error(error);
 
-    return {
-      casts: null,
-      details: null,
-      keywords: null,
-      similarMovies: null,
-    };
-  }
-};
+//     return {
+//       casts: null,
+//       details: null,
+//       keywords: null,
+//       similarMovies: null,
+//     };
+//   }
+// };
 
 export default Movie;

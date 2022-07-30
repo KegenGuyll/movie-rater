@@ -15,6 +15,15 @@ import { MovieDocument } from '../models/firestore';
 import { Movie } from '../models/TMDB';
 import Logger from '../utils/logger';
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const Home: NextPage = () => {
   const [discoverMovies, setDiscoverMovies] = useState<Movie[]>([]);
   const [followerFeedData, setFollowerFeedData] = useState<MovieDocument[]>([]);

@@ -28,6 +28,15 @@ interface Props {
   worstMovies: GetUserTopMovies[] | null;
 }
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io',
+      permanent: false,
+    },
+  };
+}
+
 const UserProfile: NextPage<Props> = ({
   fullUser,
   bestMovies,

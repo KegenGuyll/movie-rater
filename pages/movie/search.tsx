@@ -10,6 +10,15 @@ import Typography from '../../components/typography';
 import searchIMDBMovie from '../../endpoints/imdb/searchIMDBMovie';
 import { IMDBMovie } from '../../models/imdb/popular';
 
+export async function getServerSideProps() {
+  return {
+    redirect: {
+      destination: 'https://tmrev.io/search',
+      permanent: true,
+    },
+  };
+}
+
 const Search: NextPage = () => {
   const [results, setResults] = useState<IMDBMovie[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
